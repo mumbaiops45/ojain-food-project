@@ -12,13 +12,13 @@ function Hero() {
           <div>
 
             {/* Badge */}
-            <div
+            {/* <div
               className="inline-flex items-center gap-2 bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[13px] font-semibold animate-fade-up"
               style={{ animationDelay: "0.05s" }}
             >
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
               100% Homemade Food
-            </div>
+            </div> */}
 
             {/* Heading */}
             <h1
