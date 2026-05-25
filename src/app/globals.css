@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* ── Category marquee (infinite auto-scroll) ── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ── Hide scrollbars everywhere needed ── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide                     { -ms-overflow-style: none; scrollbar-width: none; }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -21,10 +38,12 @@
 }
 
 @keyframes imageReveal {
-  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-
+.animate-fade-up {
+  animation: fadeUp 0.3s ease-out;
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -35,27 +54,35 @@
   --animate-slide-right: slideRight  0.65s ease-out both;
   --animate-slide-down:  slideDown   0.4s  ease-out both;
   --animate-image:       imageReveal 0.65s ease-out both;
+
+  /* Ojain Brand Palette — Pure Veg Green + Orange Accent */
+  --color-brand-green:       #2E7D32;
+  --color-brand-green-mid:   #66BB6A;
+  --color-brand-green-pale:  #EBF5E9;
+  --color-brand-bg:          #F9FFF6;
+  --color-brand-orange:      #FF8F00;
+  --color-brand-text:        #333333;
 }
 
 /* Scroll reveal — triggered by JS adding .revealed */
-[data-reveal] {
+/* [data-reveal] {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 [data-reveal].revealed {
   opacity: 1;
   transform: translateY(0);
 }
 [data-reveal][data-delay="1"] { transition-delay: 0.05s; }
-[data-reveal][data-delay="2"] { transition-delay: 0.10s; }
+[data-reveal][data-delay="2"] { transition-delay: 0.1s; }
 [data-reveal][data-delay="3"] { transition-delay: 0.15s; }
-[data-reveal][data-delay="4"] { transition-delay: 0.20s; }
-[data-reveal][data-delay="5"] { transition-delay: 0.25s; }
+[data-reveal][data-delay="4"] { transition-delay: 0.2s; }
+[data-reveal][data-delay="5"] { transition-delay: 0.25s; } */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F9FFF6;
+  --foreground: #333333;
 }
 
 body {

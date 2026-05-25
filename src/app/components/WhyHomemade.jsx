@@ -2,26 +2,22 @@
 
 const points = [
   {
-    image:
-      "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80",
     title: "No Preservatives",
     text: "Fresh homemade meals prepared using healthy natural ingredients only.",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80",
     title: "Cooked Fresh Daily",
     text: "Every dish is freshly prepared with hygiene, care and homemade love.",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=600&q=80",
     title: "Support Home Chefs",
     text: "Helping women entrepreneurs and local home kitchens grow daily.",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
     title: "Authentic Indian Taste",
     text: "Traditional recipes crafted with authentic homemade flavors.",
   },
@@ -29,83 +25,80 @@ const points = [
 
 function WhyHomemade() {
   return (
-    <section className="py-10 md:py-14 bg-[#fffaf5] overflow-hidden">
+    <section className="relative py-16 md:py-24 overflow-hidden bg-linear-to-br from-white via-brand-bg to-brand-green-pale">
 
-      <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="absolute top-0 left-0 w-72 h-72 bg-brand-green-pale rounded-full blur-3xl opacity-40"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-green-mid rounded-full blur-3xl opacity-15"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-brand-green-pale rounded-full blur-3xl opacity-20"></div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto">
-
-          <span className="inline-flex items-center gap-2 bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-semibold">
-
-            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-
-            Why Choose Orjian
-
+          {/* Badge */}
+          <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-brand-orange/20 text-brand-orange px-5 py-2 rounded-full text-sm font-semibold shadow-lg">
+            <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
+            Why Choose Ojain
           </span>
 
-          <h2 className="mt-5 text-3xl sm:text-[38px] md:text-[44px] leading-[1.05] font-extrabold tracking-[-1.5px] md:tracking-[-2px] text-[#0f172a]">
-
-            Homemade Food You Can Trust
-
+          <h2 className="mt-5 text-4xl sm:text-5xl md:text-6xl leading-tight font-black tracking-tight text-slate-900">
+            Homemade Food{" "}
+            <span className="text-brand-green">You Can Trust</span>
           </h2>
 
-          <p className="mt-4 text-[16px] leading-7 text-slate-500">
-
+          <p className="mt-5 text-[17px] leading-8 text-slate-600">
             Freshly prepared homemade meals with authentic taste,
             hygiene and love from trusted home chefs.
-
           </p>
-
         </div>
 
         {/* Cards */}
-        <div className="mt-10 md:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-
+        <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {points.map((point, index) => (
             <div
               key={index}
-              className="group bg-white rounded-[24px] overflow-hidden border border-orange-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+              className="group relative overflow-hidden rounded-[30px] bg-white/80 backdrop-blur-xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3"
             >
+              {/* Hover Glow */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 bg-linear-to-b from-brand-green/0 via-brand-green/0 to-brand-green-pale/40"></div>
 
               {/* Image */}
               <div className="relative overflow-hidden">
-
                 <img
                   src={point.image}
                   alt={point.title}
-                  className="w-full h-[180px] sm:h-[220px] object-cover group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-50 sm:h-57.5 object-cover group-hover:scale-110 transition-all duration-700"
                 />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
-
+                {/* Badge — brand-orange */}
+                <div className="absolute top-4 left-4 px-4 py-1.5 rounded-full bg-brand-orange text-white text-xs font-bold shadow-lg">
+                  Premium Quality
+                </div>
               </div>
 
               {/* Content */}
-              <div className="p-5">
+              <div className="relative p-6">
+                {/* Green Line */}
+                <div className="w-16 h-1 rounded-full bg-brand-green mb-5"></div>
 
-                <h3 className="text-[22px] font-bold text-[#0f172a] leading-tight">
-
+                {/* Title — brand-green */}
+                <h3 className="text-[24px] font-black text-brand-green leading-tight">
                   {point.title}
-
                 </h3>
 
-                <p className="mt-3 text-[14px] leading-7 text-slate-500">
-
+                <p className="mt-4 text-[15px] leading-7 text-slate-600">
                   {point.text}
-
                 </p>
-
               </div>
 
+              {/* Bottom Glow */}
+              <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 w-44 h-24 bg-brand-green-mid/30 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
             </div>
           ))}
-
         </div>
 
       </div>
-
     </section>
   );
 }

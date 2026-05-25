@@ -112,24 +112,25 @@
 import { useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import { MdSearch, MdNotifications, MdMenu } from "react-icons/md";
+import { FaLeaf } from "react-icons/fa";
 
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#f9fafb" }}>
-      {/* Mobile overlay */}
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "#F0F7F0" }}>
+      {/* ── Mobile overlay ── */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* ── Sidebar ── */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-50 lg:static lg:z-auto
+          fixed inset-y-0 left-0 z-50 lg:relative lg:z-auto lg:flex lg:shrink-0
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
@@ -137,57 +138,104 @@ export default function AdminLayout({ children }) {
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Header - White, simple border, no blur */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
-          {/* Left section */}
+      {/* ── Main content ── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden">
+
+        {/* ── Header ── */}
+        <header
+          className="sticky top-0 z-30 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4"
+          style={{
+            background: "rgba(255,255,255,0.95)",
+            borderBottom: "1px solid #C8E6C9",
+            backdropFilter: "blur(8px)",
+            boxShadow: "0 1px 12px rgba(46,125,50,0.07)",
+          }}
+        >
+          {/* Left */}
           <div className="flex items-center gap-3 min-w-0">
+            {/* Hamburger — mobile */}
             <button
-              className="lg:hidden p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+              className="lg:hidden p-2 rounded-xl transition-colors"
+              style={{ background: "#EBF5E9", color: "#2E7D32" }}
               onClick={() => setSidebarOpen(true)}
+              aria-label="Open sidebar"
+              onMouseEnter={e => (e.currentTarget.style.background = "#C8E6C9")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#EBF5E9")}
             >
               <MdMenu className="text-2xl" />
             </button>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Admin Dashboard</h1>
-              <p className="text-sm text-gray-500 hidden sm:block">Manage your platform</p>
+
+            {/* Brand mark — visible on mobile when sidebar is hidden */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <FaLeaf style={{ color: "#2E7D32", fontSize: 18 }} />
+              <span className="font-extrabold tracking-widest text-base" style={{ color: "#2E7D32" }}>
+                OJAIN
+              </span>
+            </div>
+
+            {/* Page title — desktop */}
+            <div className="hidden lg:block">
+              <h1 className="text-2xl font-bold" style={{ color: "#1B5E20" }}>
+                Admin Dashboard
+              </h1>
+              <p className="text-sm" style={{ color: "#66BB6A" }}>
+                Welcome back 👋 Manage your platform
+              </p>
             </div>
           </div>
 
-          {/* Right section */}
-          <div className="flex items-center gap-4">
-            {/* Search */}
-            <div className="hidden lg:flex items-center bg-gray-50 rounded-lg px-4 py-2 w-72 border border-gray-200">
-              <MdSearch className="text-xl text-gray-400" />
+          {/* Right */}
+          <div className="flex items-center gap-3">
+            {/* Search — desktop */}
+            <div
+              className="hidden lg:flex items-center gap-2 rounded-xl px-4 py-2.5 w-72 border transition-colors"
+              style={{ background: "#F9FFF6", borderColor: "#C8E6C9" }}
+            >
+              <MdSearch className="text-xl shrink-0" style={{ color: "#66BB6A" }} />
               <input
                 type="text"
-                placeholder="Search..."
-                className="bg-transparent outline-none px-2 w-full text-gray-700"
+                placeholder="Search orders, vendors…"
+                className="bg-transparent outline-none w-full text-sm"
+                style={{ color: "#333333" }}
               />
             </div>
 
             {/* Notifications */}
-            <button className="relative p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
-              <MdNotifications className="text-2xl text-gray-600" />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
+            <button
+              className="relative p-2.5 rounded-xl transition-colors"
+              style={{ background: "#EBF5E9" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#C8E6C9")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#EBF5E9")}
+              aria-label="Notifications"
+            >
+              <MdNotifications className="text-xl" style={{ color: "#2E7D32" }} />
+              <span
+                className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
+                style={{ background: "#FF8F00", boxShadow: "0 0 5px rgba(255,143,0,0.6)" }}
+              />
             </button>
 
             {/* Profile */}
-            <div className="flex items-center gap-3">
+            <div
+              className="flex items-center gap-3 pl-3 pr-1 py-1 rounded-2xl border"
+              style={{ background: "#F9FFF6", borderColor: "#C8E6C9" }}
+            >
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-700">Super Admin</p>
-                <p className="text-xs text-gray-500">Admin</p>
+                <p className="text-sm font-semibold" style={{ color: "#1B5E20" }}>Super Admin</p>
+                <p className="text-xs" style={{ color: "#66BB6A" }}>Administrator</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold shadow-sm">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-sm"
+                style={{ background: "linear-gradient(135deg, #FF8F00, #FFB300)" }}
+              >
                 A
               </div>
             </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-6 lg:p-8">
+        {/* ── Page Content ── */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

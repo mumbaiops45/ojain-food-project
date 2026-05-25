@@ -1,40 +1,103 @@
 // ✅ Full Name
 export const validateName = (name) => {
-  if (!name.trim()) return "Name is required";
-  if (name.length < 3) return "Minimum 3 characters required";
+  const value = name?.trim();
+
+  if (!value) return "Name is required";
+
+  if (value.length < 3) {
+    return "Minimum 3 characters required";
+  }
+
+  if (!/^[A-Za-z\s]+$/.test(value)) {
+    return "Only letters allowed";
+  }
+
   return "";
 };
 
 // ✅ Email
 export const validateEmail = (email) => {
-  if (!email) return "Email is required";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const value = email?.trim();
+
+  if (!value) return "Email is required";
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
     return "Enter valid email";
   }
-  return null;
+
+  return "";
 };
 
 // ✅ Mobile
 export const validateMobile = (mobile) => {
-  if (!mobile) return "Mobile number required";
-  if (!/^[0-9]{10}$/.test(mobile)) {
-    return "Enter valid 10-digit number";
-  }
-  return "";
-};
+  const value = mobile?.trim();
 
-// ✅ OTP
-export const validateOtp = (otp) => {
-  if (!otp) return "OTP required";
-  if (!/^[0-9]{6}$/.test(otp)) {
-    return "Enter valid 6-digit OTP";
+  if (!value) return "Mobile number required";
+
+  if (!/^[6-9]\d{9}$/.test(value)) {
+    return "Enter valid 10-digit Indian mobile number";
   }
+
   return "";
 };
 
 // ✅ Password
 export const validatePassword = (password) => {
   if (!password) return "Password required";
-  if (password.length < 6) return "Minimum 6 characters required";
+
+  if (password.length < 6) {
+    return "Minimum 6 characters required";
+  }
+
+  // strong password
+  if (
+    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/.test(password)
+  ) {
+    return "Password must contain uppercase, lowercase, number & special character";
+  }
+
+  return "";
+};
+
+// ✅ Bank Account Number
+export const validateBankAccount = (accountNumber) => {
+  const value = accountNumber?.trim();
+
+  if (!value) return "Bank account number is required";
+
+  if (!/^\d{9,18}$/.test(value)) {
+    return "Enter valid account number";
+  }
+
+  return "";
+};
+
+// ✅ IFSC
+export const validateIfsc = (ifsc) => {
+  const value = ifsc?.trim().toUpperCase();
+
+  if (!value) return "IFSC code is required";
+
+  if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
+    return "Invalid IFSC code";
+  }
+
+  return "";
+};
+
+// ✅ Description
+export const validateDescription = (description) => {
+  if (!description) return "";
+
+  const value = description.trim();
+
+  if (value.length > 500) {
+    return "Maximum 500 characters allowed";
+  }
+
+  if (/\s{2,}/.test(value)) {
+    return "Multiple spaces not allowed";
+  }
+
   return "";
 };

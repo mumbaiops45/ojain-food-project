@@ -79,13 +79,13 @@ export default function AdminLoginPage() {
 
   return (
 
-    <div
-      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-cover bg-center"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')",
-      }}
-    >
+   <div
+  className="min-h-screen flex items-center justify-center py-16 px-4 relative overflow-hidden bg-cover bg-center"
+ style={{
+  backgroundImage:
+    "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1532336414038-cf19250c5757?q=80&w=2070&auto=format&fit=crop')",
+}}
+>
 
       {/* DARK OVERLAY */}
       <div className="absolute inset-0 bg-black/70"></div>
@@ -122,9 +122,9 @@ export default function AdminLoginPage() {
                 Email Address
               </label>
 
-              <div className="flex items-center h-14 rounded-2xl border border-gray-300 bg-white px-4 focus-within:border-orange-500 focus-within:bg-gray-100 transition-all duration-300">
+              <div className="flex items-center h-14 rounded-2xl border border-gray-300 bg-white px-4 focus-within:border-brand-green focus-within:bg-gray-100 transition-all duration-300">
 
-                <MdEmail className="text-xl text-orange-500" />
+                <MdEmail className="text-xl text-brand-green" />
 
                 <input
                   type="email"
@@ -147,9 +147,9 @@ export default function AdminLoginPage() {
                 Password
               </label>
 
-              <div className="flex items-center h-14 rounded-2xl border border-gray-300 bg-white px-4 focus-within:border-orange-500 focus-within:bg-gray-100 transition-all duration-300">
+              <div className="flex items-center h-14 rounded-2xl border border-gray-300 bg-white px-4 focus-within:border-brand-green focus-within:bg-gray-100 transition-all duration-300">
 
-                <MdLock className="text-xl text-orange-500" />
+                <MdLock className="text-xl text-brand-green" />
 
                 <input
                   type="password"
@@ -180,7 +180,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-14 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold transition-all duration-300"
+              className="w-full h-14 rounded-2xl bg-brand-green hover:bg-[#1B5E20] text-white text-lg font-bold transition-all duration-300"
             >
 
               {loading
@@ -189,35 +189,7 @@ export default function AdminLoginPage() {
 
             </button>
 
-          </form>
-
-          {/* DEMO */}
-          <div className="mt-6 rounded-2xl bg-orange-50 border border-orange-100 p-5">
-
-            <h3 className="text-orange-600 font-bold mb-3">
-              Demo Credentials
-            </h3>
-
-            <div className="space-y-1 text-sm text-gray-700">
-
-              <p>
-                Email:
-                <span className="font-bold ml-2">
-                  admin@gmail.com
-                </span>
-              </p>
-
-              <p>
-                Password:
-                <span className="font-bold ml-2">
-                  Admin@123
-                </span>
-              </p>
-
-            </div>
-
-          </div>
-
+          </form>        
         </div>
 
       </div>

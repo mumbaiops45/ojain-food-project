@@ -1,27 +1,28 @@
-// src/api/customer.js
+// =============================================
+// src/api/customerApi.js
+// =============================================
 
 import api from "../utils/axios";
 
-/* =========================
-   CUSTOMER AUTH APIs
-========================= */
+// BASE URL
+const BASE = "/auth";
 
-// Register Customer
+// REGISTER
 export const registerCustomer = (data) =>
-  api.post("/auth/register", data);
+  api.post(`${BASE}/register`, data);
 
-// Login Customer
+// LOGIN
 export const loginCustomer = (data) =>
-  api.post("/auth/login", data);
+  api.post(`${BASE}/login`, data);
 
-// Get Profile
-export const getCustomerProfile = () =>
-  api.get("/auth/profile");
-
-// Update Profile
-export const updateCustomerProfile = (data) =>
-  api.put("/auth/profile", data);
-
-// Logout
+// LOGOUT
 export const logoutCustomer = () =>
-  api.post("/auth/logout");
+  api.post(`${BASE}/logout`);
+
+// PROFILE
+export const getCustomerProfile = () =>
+  api.get(`/customer/profile`);
+
+// UPDATE PROFILE
+export const updateCustomerProfile = (data) =>
+  api.put(`/customer/profile`, data); 

@@ -1,163 +1,104 @@
-// stores/customer.store.js
-
+// store/customer.store.js
 import { create } from "zustand";
-import { registerCustomerService,loginCustomerService,getCustomerProfileService,updateCustomerProfileService,logoutCustomerService } from "../services/customer.service";
+import {
+  registerCustomerService,
+  loginCustomerService,
+  getCustomerProfileService,
+  updateCustomerProfileService,
+  logoutCustomerService,
+} from "../services/customer.service";
 
-let customerProfileRequest = null;
+// Helper: save / clear token in localStorage
+const saveToken  = (token) => { if (typeof window !== "undefined") localStorage.setItem("token", token); };
+const clearToken = ()      => { if (typeof window !== "undefined") localStorage.removeItem("token"); };
+
+let profileRequest = null;
 
 export const useCustomerStore = create((set, get) => ({
-  // State
   customer: null,
-  loading: false,
-  error: null,
+  loading:  false,
+  error:    null,
 
-  /* =========================
-     REGISTER CUSTOMER
-  ========================= */
+  /* ── REGISTER ── */
   registerCustomer: async (data) => {
     set({ loading: true, error: null });
-
     try {
       const res = await registerCustomerService(data);
-
-      set({
-        customer: res,
-        loading: false,
-      });
-
+      // Backend returns { token, customer } or { token, user }
+      if (res?.token) saveToken(res.token);
+      const customer = res?.customer || res?.user || res;
+      set({ customer, loading: false });
       return res;
     } catch (err) {
-      set({
-        error: err.message,
-        loading: false,
-      });
-
+      set({ error: err?.response?.data?.message || err.message, loading: false });
       throw err;
     }
   },
 
-  /* =========================
-     LOGIN CUSTOMER
-  ========================= */
+  /* ── LOGIN ── */
   loginCustomer: async (data) => {
     set({ loading: true, error: null });
-
     try {
       const res = await loginCustomerService(data);
-
-      set({
-        customer: res,
-        loading: false,
-      });
-
+      if (res?.token) saveToken(res.token);
+      const customer = res?.customer || res?.user || res;
+      set({ customer, loading: false });
       return res;
     } catch (err) {
-      set({
-        error: err.message,
-        loading: false,
-      });
-
+      set({ error: err?.response?.data?.message || err.message, loading: false });
       throw err;
     }
   },
 
-  /* =========================
-     FETCH CUSTOMER PROFILE
-  ========================= */
+  /* ── FETCH PROFILE ── */
   fetchCustomerProfile: async () => {
-    if (customerProfileRequest) return customerProfileRequest;
-
-    customerProfileRequest = (async () => {
+    if (profileRequest) return profileRequest;
+    profileRequest = (async () => {
       try {
         set({ loading: true, error: null });
-
         const res = await getCustomerProfileService();
-
-        console.log("Fetched Customer Profile:", res);
-
-        set({
-          customer: res,
-          loading: false,
-        });
-
-        return res;
+        const customer = res?.customer || res?.user || res;
+        set({ customer, loading: false });
+        return customer;
       } catch (err) {
-        set({
-          error: err.message,
-          loading: false,
-        });
-
+        set({ error: err?.response?.data?.message || err.message, loading: false });
         throw err;
       } finally {
-        customerProfileRequest = null;
+        profileRequest = null;
       }
     })();
-
-    return customerProfileRequest;
+    return profileRequest;
   },
 
-  /* =========================
-     UPDATE CUSTOMER PROFILE
-  ========================= */
+  /* ── UPDATE PROFILE ── */
   updateCustomerProfile: async (data) => {
     set({ loading: true, error: null });
-
     try {
       const updated = await updateCustomerProfileService(data);
-
       await get().fetchCustomerProfile();
-
       set({ loading: false });
-
       return updated;
     } catch (err) {
-      set({
-        error: err.message,
-        loading: false,
-      });
-
+      set({ error: err?.response?.data?.message || err.message, loading: false });
       throw err;
     }
   },
 
-  /* =========================
-     LOGOUT CUSTOMER
-  ========================= */
+  /* ── LOGOUT ── */
   logoutCustomer: async () => {
     set({ loading: true, error: null });
-
     try {
       await logoutCustomerService();
-
-      set({
-        customer: null,
-        loading: false,
-      });
-    } catch (err) {
-      set({
-        error: err.message,
-        loading: false,
-      });
-
-      throw err;
-    }
+    } catch (_) {}
+    clearToken();
+    set({ customer: null, loading: false });
   },
 
-  /* =========================
-     CLEAR ERROR
-  ========================= */
+  /* ── UTILS ── */
   clearError: () => set({ error: null }),
-
-  /* =========================
-     RESET STORE
-  ========================= */
   reset: () => {
-    set({
-      customer: null,
-      loading: false,
-      error: null,
-    });
-
-    customerProfileRequest = null;
+    clearToken();
+    profileRequest = null;
+    set({ customer: null, loading: false, error: null });
   },
 }));

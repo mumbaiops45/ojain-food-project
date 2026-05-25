@@ -43,3 +43,31 @@ export const markPayoutPaid = (data) =>
     "/admin/payouts/mark-paid",
     data
   );
+
+  /* =========================================
+   USERS API
+========================================= */
+
+// GET ALL USERS
+export const getAllUsers = () =>
+  api.get("/auth/admin/users");
+
+// GET SINGLE USER
+export const getUserById = (id) =>
+  api.get(`/auth/admin/users/${id}`);
+
+// UPDATE USER
+export const updateUser = (
+  id,
+  data
+) =>
+  api.put(
+    `/auth/admin/users/${id}`,
+    data
+  );
+
+// DELETE USER
+export const deleteUser = (id) =>
+  api.delete(
+    `/auth/admin/users/${id}`
+  );

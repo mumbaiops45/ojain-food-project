@@ -1,159 +1,115 @@
 "use client";
 
-import {
-  FaStar,
-  FaQuoteRight,
-  FaHeart,
-} from "react-icons/fa";
+import { FaStar, FaQuoteRight, FaHeart } from "react-icons/fa";
 
 const reviews = [
   {
     name: "Priya Sharma",
     city: "Hyderabad",
-    image:
-      "https://images.unsplash.com/photo-1619895862022-09114b41f16f?w=400&q=80",
-    review:
-      "Absolutely loved the homemade sweets. It tasted exactly like food made at home.",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
+    review: "Absolutely loved the homemade sweets. It tasted exactly like food made at home.",
   },
   {
     name: "Rahul Verma",
     city: "Bangalore",
-    image:
-      "https://images.unsplash.com/photo-1566753323558-f4e0952af115?w=400&q=80",
-    review:
-      "Fresh food, fast delivery and amazing customer support. Highly recommended.",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+    review: "Fresh food, fast delivery and amazing customer support. Highly recommended.",
   },
   {
     name: "Meena Kapoor",
     city: "Mumbai",
-    image:
-      "https://images.unsplash.com/photo-1619895862022-09114b41f16f?w=400&q=80",
-    review:
-      "Amazing platform supporting local home chefs and authentic homemade meals.",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
+    review: "Amazing platform supporting local home chefs and authentic homemade meals.",
   },
 ];
 
 function Reviews() {
   return (
-    <section className="relative py-14 md:py-24 bg-gradient-to-b from-[#fffaf5] to-white overflow-hidden">
+    <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-white via-brand-bg to-brand-green-pale">
 
       {/* Background Glow */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-orange-100 rounded-full blur-3xl opacity-30"></div>
+      <div className="absolute top-0 left-0 w-80 h-80 bg-brand-green-pale rounded-full blur-3xl opacity-40"></div>
+      <div className="absolute bottom-0 right-0 w-[420px] h-[420px] bg-brand-green-mid/20 rounded-full blur-3xl opacity-30"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-green-pale rounded-full blur-3xl opacity-20"></div>
 
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-200 rounded-full blur-3xl opacity-20"></div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto">
-
-          <span className="inline-flex items-center gap-2 bg-orange-100 text-orange-600 px-5 py-2 rounded-full text-sm font-semibold shadow-sm">
-
+          <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl border border-brand-green/20 text-brand-green px-5 py-2 rounded-full text-sm font-bold shadow-lg">
             <FaHeart size={12} />
-
             Customer Feedback
-
           </span>
 
-          <h2 className="mt-6 text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-
-            Loved By Food Lovers
-
+          <h2 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight text-slate-900">
+            Loved By{" "}
+            <span className="text-brand-green">Food Lovers</span>
           </h2>
 
-          <p className="mt-6 text-lg leading-8 text-slate-500">
-
-            Thousands of happy customers trust Orjian
-            for fresh homemade meals, authentic flavors,
-            and quick delivery every single day.
-
+          <p className="mt-6 text-lg leading-8 text-slate-600">
+            Thousands of happy customers trust Ojain for fresh homemade meals,
+            authentic flavors, and quick delivery every single day.
           </p>
-
         </div>
 
         {/* Reviews Grid */}
-        <div className="mt-10 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-
+        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-7">
           {reviews.map((review, index) => (
             <div
               key={index}
-              className="group relative bg-white rounded-[32px] p-8 border border-orange-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden"
+              className="group relative overflow-hidden rounded-[35px] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_10px_40px_rgba(46,125,50,0.08)] hover:shadow-[0_20px_70px_rgba(46,125,50,0.15)] transition-all duration-500 hover:-translate-y-3"
             >
+              {/* Top Gradient — brand green */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-green via-brand-green-mid to-brand-green"></div>
 
-              {/* Gradient Glow */}
-              <div className="absolute -top-24 -right-24 w-56 h-56 bg-orange-200/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              {/* Hover Glow */}
+              <div className="absolute -top-20 -right-20 w-52 h-52 bg-brand-green/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
 
-              {/* Quote Icon */}
-              <div className="absolute top-6 right-6 text-orange-100 text-[70px] group-hover:scale-110 transition-all duration-500">
+              {/* Content */}
+              <div className="relative z-10 p-8">
+                <div className="flex items-center justify-between">
+                  {/* Stars */}
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <FaStar key={s} className="text-yellow-400 drop-shadow-sm" size={16} />
+                    ))}
+                  </div>
 
-                <FaQuoteRight />
-
-              </div>
-
-              {/* Stars */}
-              <div className="relative z-10 flex items-center gap-1">
-
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <FaStar
-                    key={s}
-                    className="text-yellow-400"
-                    size={15}
-                  />
-                ))}
-
-              </div>
-
-              {/* Review Text */}
-              <p className="relative z-10 mt-6 text-[16px] leading-8 text-slate-500">
-
-                “{review.review}”
-
-              </p>
-
-              {/* User Info */}
-              <div className="relative z-10 mt-8 flex items-center gap-4">
-
-                <div className="relative">
-
-                  <img
-                    src={review.image}
-                    alt={review.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-orange-100 shadow-md"
-                  />
-
-                  {/* Online Dot */}
-                  <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white"></span>
-
+                  {/* Quote — brand-orange */}
+                  <div className="w-14 h-14 rounded-2xl bg-brand-orange flex items-center justify-center text-white shadow-lg group-hover:rotate-12 transition-all duration-500">
+                    <FaQuoteRight size={18} />
+                  </div>
                 </div>
 
-                <div>
+                <p className="mt-7 text-[16px] leading-8 text-slate-600 font-medium">
+                  "{review.review}"
+                </p>
 
-                  <h4 className="text-[18px] font-black tracking-tight text-slate-900">
+                <div className="mt-8 pt-6 border-t border-brand-green-pale flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-brand-green blur-md opacity-20"></div>
+                    <img
+                      src={review.image}
+                      alt={review.name}
+                      className="relative w-16 h-16 rounded-full object-cover border-2 border-white shadow-lg"
+                    />
+                    <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-2 border-white"></span>
+                  </div>
 
-                    {review.name}
-
-                  </h4>
-
-                  <p className="text-sm text-slate-500 mt-1">
-
-                    {review.city}
-
-                  </p>
-
+                  <div>
+                    <h4 className="text-[20px] font-black text-slate-900 tracking-tight">{review.name}</h4>
+                    <p className="text-sm text-brand-orange font-semibold mt-1">{review.city}</p>
+                  </div>
                 </div>
-
               </div>
 
-              {/* Bottom Hover Line */}
-              <div className="absolute bottom-0 left-0 w-0 h-[4px] bg-orange-500 group-hover:w-full transition-all duration-500"></div>
-
+              {/* Bottom Glow */}
+              <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-48 h-24 bg-brand-green/20 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
             </div>
           ))}
-
         </div>
 
       </div>
-
     </section>
   );
 }

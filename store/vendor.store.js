@@ -1,31 +1,402 @@
+// // =============================================
+// // src/store/vendor.store.js
+// // =============================================
+
+// import { create } from "zustand";
+
+// import {
+//   // AUTH
+//   registerVendorService,
+//   loginVendorService,
+//   logoutVendorService,
+
+//   // PROFILE
+//   getVendorProfileService,
+//   updateVendorProfileService,
+
+//   // EARNINGS
+//   getVendorEarningsService,
+
+//   // DASHBOARD
+//   getVendorDashboardService,
+// } from "../services/vendor.service";
+
+// export const useVendorStore =
+//   create((set, get) => ({
+//     // =============================================
+//     // STATE
+//     // =============================================
+
+//     vendor: null,
+
+//     dashboard: null,
+
+//     earnings: null,
+
+//     loading: false,
+
+//     error: null,
+
+//     // =============================================
+//     // REGISTER
+//     // =============================================
+
+//     registerVendor:
+//       async (data) => {
+//         try {
+//           set({
+//             loading: true,
+//             error: null,
+//           });
+
+//           const res =
+//             await registerVendorService(
+//               data
+//             );
+
+//           // SAVE TOKEN
+//           if (res.token) {
+//             localStorage.setItem(
+//               "token",
+//               res.token
+//             );
+//           }
+
+//           // SAVE VENDOR
+//           if (res.vendor) {
+//             localStorage.setItem(
+//               "vendor",
+//               JSON.stringify(
+//                 res.vendor
+//               )
+//             );
+//           }
+
+//           set({
+//             vendor:
+//               res.vendor || null,
+
+//             loading: false,
+//           });
+
+//           return res;
+//         } catch (err) {
+//           set({
+//             error:
+//               err?.response?.data
+//                 ?.message ||
+//               "Vendor registration failed",
+
+//             loading: false,
+//           });
+
+//           throw err;
+//         }
+//       },
+
+//     // =============================================
+//     // LOGIN
+//     // =============================================
+
+//     loginVendor:
+//       async (formData) => {
+//         try {
+//           set({
+//             loading: true,
+//             error: null,
+//           });
+
+//           const res =
+//             await loginVendorService(
+//               formData
+//             );
+
+//           // SAVE TOKEN
+//           localStorage.setItem(
+//             "token",
+//             res.token
+//           );
+
+//           // SAVE VENDOR
+//           localStorage.setItem(
+//             "vendor",
+//             JSON.stringify(
+//               res.vendor
+//             )
+//           );
+
+//           set({
+//             vendor:
+//               res.vendor,
+
+//             loading: false,
+//           });
+
+//           return res;
+//         } catch (error) {
+//           set({
+//             error:
+//               error?.response?.data
+//                 ?.message ||
+//               "Login failed",
+
+//             loading: false,
+//           });
+
+//           throw error;
+//         }
+//       },
+
+//     // =============================================
+//     // FETCH PROFILE
+//     // =============================================
+
+//     fetchVendorProfile:
+//       async () => {
+//         try {
+//           set({
+//             loading: true,
+//             error: null,
+//           });
+
+//           const res =
+//             await getVendorProfileService();
+
+//           // IMPORTANT FIX
+//           set({
+//             vendor:
+//               res.vendor,
+
+//             loading: false,
+//           });
+
+//           // UPDATE LOCAL STORAGE
+//           localStorage.setItem(
+//             "vendor",
+//             JSON.stringify(
+//               res.vendor
+//             )
+//           );
+
+//           return res;
+//         } catch (err) {
+//           set({
+//             error:
+//               err?.response?.data
+//                 ?.message ||
+//               "Failed to fetch profile",
+
+//             loading: false,
+//           });
+
+//           throw err;
+//         }
+//       },
+
+//     // =============================================
+//     // UPDATE PROFILE
+//     // =============================================
+
+//     updateVendorProfile:
+//       async (data) => {
+//         try {
+//           set({
+//             loading: true,
+//             error: null,
+//           });
+
+//           const res =
+//             await updateVendorProfileService(
+//               data
+//             );
+
+//           // UPDATE STATE
+//           set({
+//             vendor:
+//               res.vendor,
+
+//             loading: false,
+//           });
+
+//           // UPDATE LOCAL STORAGE
+//           localStorage.setItem(
+//             "vendor",
+//             JSON.stringify(
+//               res.vendor
+//             )
+//           );
+
+//           return res;
+//         } catch (err) {
+//           set({
+//             error:
+//               err?.response?.data
+//                 ?.message ||
+//               "Profile update failed",
+
+//             loading: false,
+//           });
+
+//           throw err;
+//         }
+//       },
+
+//     // =============================================
+//     // FETCH DASHBOARD
+//     // =============================================
+
+//     fetchVendorDashboard:
+//       async () => {
+//         try {
+//           set({
+//             loading: true,
+//             error: null,
+//           });
+
+//           const res =
+//             await getVendorDashboardService();
+
+//           set({
+//             dashboard: res,
+
+//             loading: false,
+//           });
+
+//           return res;
+//         } catch (err) {
+//           set({
+//             error:
+//               err?.response?.data
+//                 ?.message ||
+//               "Failed to fetch dashboard",
+
+//             loading: false,
+//           });
+
+//           throw err;
+//         }
+//       },
+
+//     // =============================================
+//     // FETCH EARNINGS
+//     // =============================================
+
+//     fetchVendorEarnings:
+//       async () => {
+//         try {
+//           set({
+//             loading: true,
+//             error: null,
+//           });
+
+//           const res =
+//             await getVendorEarningsService();
+
+//           set({
+//             earnings: res,
+
+//             loading: false,
+//           });
+
+//           return res;
+//         } catch (err) {
+//           set({
+//             error:
+//               err?.response?.data
+//                 ?.message ||
+//               "Failed to fetch earnings",
+
+//             loading: false,
+//           });
+
+//           throw err;
+//         }
+//       },
+
+//     // =============================================
+//     // LOGOUT
+//     // =============================================
+
+//     logoutVendor:
+//       async () => {
+//         try {
+//           await logoutVendorService();
+
+//           // REMOVE STORAGE
+//           localStorage.removeItem(
+//             "token"
+//           );
+
+//           localStorage.removeItem(
+//             "vendor"
+//           );
+
+//           set({
+//             vendor: null,
+//             dashboard: null,
+//             earnings: null,
+//             error: null,
+//           });
+//         } catch (err) {
+//           console.log(err);
+//         }
+//       },
+
+//     // =============================================
+//     // CLEAR ERROR
+//     // =============================================
+
+//     clearError: () =>
+//       set({
+//         error: null,
+//       }),
+
+//     // =============================================
+//     // RESET STORE
+//     // =============================================
+
+//     reset: () =>
+//       set({
+//         vendor: null,
+//         dashboard: null,
+//         earnings: null,
+//         loading: false,
+//         error: null,
+//       }),
+//   }));
+
 // =============================================
 // src/store/vendor.store.js
 // =============================================
 
-import { create }
-from "zustand";
+import { create } from "zustand";
 
 import {
-
+  // AUTH
   registerVendorService,
-
   loginVendorService,
-
-  getVendorProfileService,
-
-  updateVendorProfileService,
-
-  getVendorEarningsService,
-
   logoutVendorService,
 
+  // PROFILE
+  getVendorProfileService,
+  updateVendorProfileService,
+
+  // EARNINGS
+  getVendorEarningsService,
+
+  // DASHBOARD
+  getVendorDashboardService,
 } from "../services/vendor.service";
 
 export const useVendorStore =
   create((set, get) => ({
-
+    // =============================================
     // STATE
+    // =============================================
+
     vendor: null,
+
+    dashboard: null,
 
     earnings: null,
 
@@ -39,9 +410,7 @@ export const useVendorStore =
 
     registerVendor:
       async (data) => {
-
         try {
-
           set({
             loading: true,
             error: null,
@@ -52,20 +421,38 @@ export const useVendorStore =
               data
             );
 
+          // SAVE TOKEN
+          if (res.token) {
+            localStorage.setItem(
+              "token",
+              res.token
+            );
+          }
+
+          // SAVE VENDOR
+          if (res.vendor) {
+            localStorage.setItem(
+              "vendor",
+              JSON.stringify(
+                res.vendor
+              )
+            );
+          }
+
           set({
-            vendor: res.vendor,
+            vendor:
+              res.vendor || null,
+
             loading: false,
           });
 
           return res;
-
         } catch (err) {
-
           set({
             error:
               err?.response?.data
                 ?.message ||
-              "Vendor register failed",
+              "Vendor registration failed",
 
             loading: false,
           });
@@ -79,10 +466,8 @@ export const useVendorStore =
     // =============================================
 
     loginVendor:
-      async (data) => {
-
+      async (formData) => {
         try {
-
           set({
             loading: true,
             error: null,
@@ -90,23 +475,24 @@ export const useVendorStore =
 
           const res =
             await loginVendorService(
-              data
+              formData
             );
 
+          // SAVE TOKEN
           localStorage.setItem(
-            "vendorToken",
+            "token",
             res.token
           );
 
+          // SAVE VENDOR
           localStorage.setItem(
-            "vendorData",
+            "vendor",
             JSON.stringify(
               res.vendor
             )
           );
 
           set({
-
             vendor:
               res.vendor,
 
@@ -114,49 +500,53 @@ export const useVendorStore =
           });
 
           return res;
-
-        } catch (err) {
-
+        } catch (error) {
           set({
             error:
-              err?.response?.data
+              error?.response?.data
                 ?.message ||
-              "Vendor login failed",
+              "Login failed",
 
             loading: false,
           });
 
-          throw err;
+          throw error;
         }
       },
 
     // =============================================
-    // PROFILE
+    // FETCH PROFILE
     // =============================================
 
     fetchVendorProfile:
       async () => {
-
         try {
-
           set({
             loading: true,
+            error: null,
           });
 
           const res =
             await getVendorProfileService();
 
           set({
-
-            vendor: res,
+            vendor:
+              res.vendor,
 
             loading: false,
           });
 
+          // UPDATE STORAGE
+          localStorage.setItem(
+            "vendor",
+            JSON.stringify(
+              res.vendor
+            )
+          );
+
+          return res;
         } catch (err) {
-
           set({
-
             error:
               err?.response?.data
                 ?.message ||
@@ -164,6 +554,10 @@ export const useVendorStore =
 
             loading: false,
           });
+
+          console.log(err);
+
+          throw err;
         }
       },
 
@@ -173,11 +567,10 @@ export const useVendorStore =
 
     updateVendorProfile:
       async (data) => {
-
         try {
-
           set({
             loading: true,
+            error: null,
           });
 
           const res =
@@ -185,22 +578,64 @@ export const useVendorStore =
               data
             );
 
-          await get().fetchVendorProfile();
+          set({
+            vendor:
+              res.vendor,
+
+            loading: false,
+          });
+
+          // UPDATE STORAGE
+          localStorage.setItem(
+            "vendor",
+            JSON.stringify(
+              res.vendor
+            )
+          );
+
+          return res;
+        } catch (err) {
+          set({
+            error:
+              err?.response?.data
+                ?.message ||
+              "Profile update failed",
+
+            loading: false,
+          });
+
+          throw err;
+        }
+      },
+
+    // =============================================
+    // DASHBOARD
+    // =============================================
+
+    fetchVendorDashboard:
+      async () => {
+        try {
+          set({
+            loading: true,
+            error: null,
+          });
+
+          const res =
+            await getVendorDashboardService();
 
           set({
+            dashboard: res,
+
             loading: false,
           });
 
           return res;
-
         } catch (err) {
-
           set({
-
             error:
               err?.response?.data
                 ?.message ||
-              "Update failed",
+              "Dashboard fetch failed",
 
             loading: false,
           });
@@ -215,27 +650,24 @@ export const useVendorStore =
 
     fetchVendorEarnings:
       async () => {
-
         try {
-
           set({
             loading: true,
+            error: null,
           });
 
           const res =
             await getVendorEarningsService();
 
           set({
-
             earnings: res,
 
             loading: false,
           });
 
+          return res;
         } catch (err) {
-
           set({
-
             error:
               err?.response?.data
                 ?.message ||
@@ -243,6 +675,8 @@ export const useVendorStore =
 
             loading: false,
           });
+
+          throw err;
         }
       },
 
@@ -252,25 +686,24 @@ export const useVendorStore =
 
     logoutVendor:
       async () => {
-
         try {
-
           await logoutVendorService();
 
           localStorage.removeItem(
-            "vendorToken"
+            "token"
           );
 
           localStorage.removeItem(
-            "vendorData"
+            "vendor"
           );
 
           set({
             vendor: null,
+            dashboard: null,
+            earnings: null,
+            error: null,
           });
-
         } catch (err) {
-
           console.log(err);
         }
       },
@@ -279,26 +712,21 @@ export const useVendorStore =
     // CLEAR ERROR
     // =============================================
 
-    clearError:
-      () =>
-        set({
-          error: null,
-        }),
+    clearError: () =>
+      set({
+        error: null,
+      }),
 
     // =============================================
     // RESET
     // =============================================
 
-    reset:
-      () =>
-        set({
-
-          vendor: null,
-
-          earnings: null,
-
-          loading: false,
-
-          error: null,
-        }),
+    reset: () =>
+      set({
+        vendor: null,
+        dashboard: null,
+        earnings: null,
+        loading: false,
+        error: null,
+      }),
   }));
