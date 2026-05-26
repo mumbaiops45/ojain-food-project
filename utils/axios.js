@@ -98,24 +98,61 @@
 
 // export default api;
 
+// import axios from "axios";
+
+// const api = axios.create({
+//   // baseURL:
+//   //   "http://localhost:5000/api",
+//   baseURL: "https://ojain-backend-1.onrender.com",
+//   withCredentials: true,
+// });
+
+// // ==========================================
+// // REQUEST INTERCEPTOR
+// // ==========================================
+// api.interceptors.request.use(
+//   (config) => {
+//     if (typeof window !== "undefined") {
+//       // Admin token takes priority over regular user token
+//       const adminToken = localStorage.getItem("adminToken");
+//       const token = localStorage.getItem("token");
+//       const finalToken = adminToken || token;
+
+//       if (finalToken) {
+//         config.headers.Authorization = `Bearer ${finalToken}`;
+//       }
+//     }
+
+//     return config;
+//   },
+
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
+
+// export default api;
+
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL:
-  //   "http://localhost:5000/api",
-  baseURL: "https://ojain-backend-1.onrender.com/",
+  baseURL: "https://ojain-backend-1.onrender.com",
   withCredentials: true,
 });
 
 // ==========================================
 // REQUEST INTERCEPTOR
 // ==========================================
+
 api.interceptors.request.use(
   (config) => {
+
     if (typeof window !== "undefined") {
-      // Admin token takes priority over regular user token
+
       const adminToken = localStorage.getItem("adminToken");
+
       const token = localStorage.getItem("token");
+
       const finalToken = adminToken || token;
 
       if (finalToken) {
