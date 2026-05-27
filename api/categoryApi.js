@@ -1,5 +1,5 @@
 import api from "../utils/axios";
-const CATEGORY_BASE = "/category";
+const CATEGORY_BASE = "/api/category";
 
 // Get all categories
 export const getAllCategories = async () => {

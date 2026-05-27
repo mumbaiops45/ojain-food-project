@@ -1,6 +1,6 @@
 import api from "../utils/axios";
 
-const PRODUCT_BASE = "/products";
+const PRODUCT_BASE = "/api/products";
 
 // TOKEN CONFIG
 const getConfig = () => ({
