@@ -38,13 +38,16 @@ function Footer() {
           </div>
 
           {/* CTA Button — orange on green bg */}
-          <button className="group relative overflow-hidden shrink-0 h-[62px] px-9 rounded-2xl bg-brand-orange hover:bg-[#E65100] text-white font-bold shadow-[0_10px_40px_rgba(0,0,0,0.2)] hover:scale-105 transition-all duration-300">
+          <Link
+            href="/categories"
+            className="group relative overflow-hidden shrink-0 inline-flex h-[62px] px-9 rounded-2xl bg-brand-orange hover:bg-[#E65100] text-white font-bold shadow-[0_10px_40px_rgba(0,0,0,0.2)] hover:scale-105 transition-all duration-300 items-center"
+          >
             <span className="relative z-10 flex items-center gap-3">
               Order Food
               <FaArrowRight className="group-hover:translate-x-1 transition-all duration-300" />
             </span>
             <div className="absolute inset-0 translate-x-[-120%] group-hover:translate-x-[120%] transition-all duration-1000 bg-linear-to-r from-transparent via-white/25 to-transparent"></div>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -78,19 +81,22 @@ function Footer() {
               {/* Social Icons */}
               <div className="flex items-center gap-3 mt-8">
                 {[
-                  { icon: <FaFacebookF size={14} />, label: "Facebook" },
-                  { icon: <FaInstagram size={16} />, label: "Instagram" },
-                  { icon: <FaTwitter size={14} />, label: "Twitter" },
-                ].map(({ icon, label }, index) => (
-                  <button
-                    key={index}
+                  { icon: <FaFacebookF size={14} />, label: "Facebook", href: "https://facebook.com" },
+                  { icon: <FaInstagram size={16} />, label: "Instagram", href: "https://instagram.com" },
+                  { icon: <FaTwitter size={14} />, label: "Twitter", href: "https://twitter.com" },
+                ].map(({ icon, label, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={label}
                     className="group w-11 h-11 rounded-xl bg-brand-green-pale border border-brand-green/20 flex items-center justify-center hover:bg-brand-green hover:border-brand-green transition-all duration-300 hover:-translate-y-1 shadow-sm"
                   >
                     <span className="text-brand-green group-hover:text-white transition-all duration-300">
                       {icon}
                     </span>
-                  </button>
+                  </a>
                 ))}
               </div>
             </div>
@@ -101,25 +107,47 @@ function Footer() {
               <div className="w-12 h-[3px] rounded-full bg-brand-orange mt-3 mb-7"></div>
 
               <ul className="space-y-4">
-                {["About Us", "Contact Us", "Privacy Policy", "Terms & Conditions", "Become Seller"].map((item, index) => (
-                  <li key={index} className="group flex items-center gap-3 text-slate-500 hover:text-brand-green transition-all duration-300 cursor-pointer">
+                {[
+                  { label: "About Us", href: "/about" },
+                  { label: "Contact Us", href: "mailto:support@ojain.com" },
+                  { label: "Privacy Policy", href: "/privacy-policy" },
+                  { label: "Terms & Conditions", href: "/terms" },
+                  { label: "Become Seller", href: "/vendorLogin/login" },
+                ].map(({ label, href }) => (
+                  <li key={href} className="group flex items-center gap-3">
                     <span className="w-2 h-2 rounded-full bg-brand-green group-hover:scale-150 transition-all duration-300 shrink-0"></span>
-                    <span className="group-hover:translate-x-1 transition-all duration-300 font-medium">{item}</span>
+                    <Link
+                      href={href}
+                      className="text-slate-500 hover:text-brand-green group-hover:translate-x-1 transition-all duration-300 font-medium"
+                    >
+                      {label}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* ── CATEGORIES ── */}
+            {/* ── EXPLORE ── */}
             <div>
-              <h3 className="text-[22px] font-black text-brand-green">Categories</h3>
+              <h3 className="text-[22px] font-black text-brand-green">Explore</h3>
               <div className="w-12 h-[3px] rounded-full bg-brand-orange mt-3 mb-7"></div>
 
               <ul className="space-y-4">
-                {["Homemade Meals", "Biryani", "Desserts", "Healthy Food", "Snacks"].map((item, index) => (
-                  <li key={index} className="group flex items-center gap-3 text-slate-500 hover:text-brand-green transition-all duration-300 cursor-pointer">
+                {[
+                  { label: "Home", href: "/" },
+                  { label: "All Categories", href: "/categories" },
+                  { label: "Pickles", href: "/pickles" },
+                  { label: "Cart", href: "/cart" },
+                  { label: "Customer Login", href: "/customerLogin/login" },
+                ].map(({ label, href }) => (
+                  <li key={href} className="group flex items-center gap-3">
                     <span className="w-2 h-2 rounded-full bg-brand-green group-hover:scale-150 transition-all duration-300 shrink-0"></span>
-                    <span className="group-hover:translate-x-1 transition-all duration-300 font-medium">{item}</span>
+                    <Link
+                      href={href}
+                      className="text-slate-500 hover:text-brand-green group-hover:translate-x-1 transition-all duration-300 font-medium"
+                    >
+                      {label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -172,13 +200,25 @@ function Footer() {
 
           {/* ── BOTTOM BAR ── */}
           <div className="mt-14 pt-7 border-t border-brand-green-pale flex flex-col lg:flex-row items-center justify-between gap-4">
+
             <p className="text-slate-400 text-sm text-center lg:text-left">
               © 2026 <span className="font-bold text-brand-green">Ojain</span>. All Rights Reserved.
             </p>
+
             <p className="text-slate-400 text-sm text-center lg:text-right">
               Designed & Developed by{" "}
-              <span className="font-bold text-brand-green">Nakshatra Namaha Creations</span>
+
+              <a
+                href="https://www.nakshatranamahacreations.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-brand-green hover:underline"
+              >
+                Nakshatra Namaha Creations
+              </a>
+
             </p>
+
           </div>
 
         </div>

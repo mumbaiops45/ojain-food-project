@@ -5,7 +5,7 @@
 import api from "../utils/axios";
 
 // BASE URL
-const BASE = "/auth";
+const BASE = "/api/auth";
 
 // REGISTER
 export const registerCustomer = (data) =>
@@ -21,8 +21,8 @@ export const logoutCustomer = () =>
 
 // PROFILE
 export const getCustomerProfile = () =>
-  api.get(`/customer/profile`);
+  api.get(`/api/customer/profile`);
 
 // UPDATE PROFILE
 export const updateCustomerProfile = (data) =>
-  api.put(`/customer/profile`, data); 
+  api.put(`/api/customer/profile`, data); 

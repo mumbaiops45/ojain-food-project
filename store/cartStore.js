@@ -1,6 +1,6 @@
 // store/cartStore.js
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { cartAPI } from "../services/api";
 
 const useCartStore = create(
@@ -71,7 +71,7 @@ const useCartStore = create(
     }),
     {
       name: "cart-storage",
-      getStorage: () => localStorage,
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ cart: state.cart }),
     }
   )

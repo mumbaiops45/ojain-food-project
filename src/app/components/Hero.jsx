@@ -1,6 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 function Hero() {
+
+  const router = useRouter();
+
   return (
     <section className="bg-brand-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10 md:pb-16">
@@ -37,7 +42,8 @@ function Hero() {
               className="mt-7 flex flex-wrap items-center gap-3 sm:gap-4 animate-fade-up"
               style={{ animationDelay: "0.3s" }}
             >
-              <button className="group bg-brand-orange hover:bg-[#E65100] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold shadow-lg transition-all duration-300 flex items-center gap-2">
+              <button onClick={() => router.push("/categories")}
+              className="group bg-brand-orange hover:bg-[#E65100] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold shadow-lg transition-all duration-300 flex items-center gap-2">
                 Browse Products
                 <svg
                   className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
@@ -50,7 +56,8 @@ function Hero() {
                 </svg>
               </button>
 
-              <button className="border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white active:scale-95 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold transition-all duration-300">
+              <button onClick={() => router.push("/categories")}
+               className="border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white active:scale-95 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold transition-all duration-300">
                 Sell With Us
               </button>
             </div>

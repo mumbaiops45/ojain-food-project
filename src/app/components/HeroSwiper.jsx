@@ -154,7 +154,7 @@ function HeroSwiper() {
                     </p>
 
                     {/* BUTTON */}
-                    <div className="mt-10 flex flex-wrap gap-5">
+                    {/* <div className="mt-10 flex flex-wrap gap-5">
 
                       <Link
                         href="/menu"
@@ -165,7 +165,7 @@ function HeroSwiper() {
 
                       </Link>
 
-                    </div>
+                    </div> */}
 
                   </div>
 

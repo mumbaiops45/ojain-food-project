@@ -2,7 +2,7 @@
 
 const points = [
   {
-    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80",
     title: "No Preservatives",
     text: "Fresh homemade meals prepared using healthy natural ingredients only.",
   },
@@ -17,7 +17,7 @@ const points = [
     text: "Helping women entrepreneurs and local home kitchens grow daily.",
   },
   {
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
+    image:"https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80",
     title: "Authentic Indian Taste",
     text: "Traditional recipes crafted with authentic homemade flavors.",
   },

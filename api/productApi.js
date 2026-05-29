@@ -5,9 +5,7 @@ const PRODUCT_BASE = "/api/products";
 // TOKEN CONFIG
 const getConfig = () => ({
   headers: {
-    Authorization: `Bearer ${localStorage.getItem(
-      "token"
-    )}`,
+    Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("token") : ""}`,
   },
 });
 
@@ -95,7 +93,7 @@ export const getProductsByCategory =
 
     const response =
       await api.get(
-        `/products/category/${categoryId}`
+        `/api/products/category/${categoryId}`
       );
 
     return response.data;

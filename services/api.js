@@ -57,40 +57,40 @@ import api from "../utils/axios";
    CART API
 ========================================= */
 export const cartAPI = {
-  get: () => api.get("/cart"),
+  get: () => api.get("/api/cart"),
 
   add: (productId, quantity = 1) =>
-    api.post("/cart/add", {
+    api.post("/api/cart/add", {
       productId,
       quantity,
     }),
 
   update: (productId, quantity) =>
-    api.put("/cart/update", {
+    api.put("/api/cart/update", {
       productId,
       quantity,
     }),
 
   remove: (productId) =>
-    api.delete(`/cart/remove/${productId}`),
+    api.delete(`/api/cart/remove/${productId}`),
 
-  clear: () => api.delete("/cart"),
+  clear: () => api.delete("/api/cart"),
 };
 
 /* =========================================
    ADDRESS API
 ========================================= */
 export const addressAPI = {
-  getAll: () => api.get("/address"),
+  getAll: () => api.get("/api/address"),
 
   create: (data) =>
-    api.post("/address", data),
+    api.post("/api/address", data),
 
   update: (id, data) =>
-    api.put(`/address/${id}`, data),
+    api.put(`/api/address/${id}`, data),
 
   remove: (id) =>
-    api.delete(`/address/${id}`),
+    api.delete(`/api/address/${id}`),
 };
 
 /* =========================================
@@ -99,15 +99,15 @@ export const addressAPI = {
 export const orderAPI = {
   // Create Order
   create: (data) =>
-    api.post("/orders", data),
+    api.post("/api/orders", data),
 
   // Logged In User Orders
   getAll: () =>
-    api.get("/orders"),
+    api.get("/api/orders"),
 
   // Single Order
   getById: (id) =>
-    api.get(`/orders/${id}`),
+    api.get(`/api/orders/${id}`),
 };
 
 /* =========================================
@@ -116,25 +116,25 @@ export const orderAPI = {
 export const adminOrderAPI = {
   // Get All Orders
   getAllOrders: () =>
-    api.get("/orders/admin/all"),
+    api.get("/api/orders/admin/all"),
 
   // Get Single Order
   getOrderById: (id) =>
-    api.get(`/orders/${id}`),
+    api.get(`/api/orders/${id}`),
 
   // Update Full Order
   updateOrder: (id, data) =>
-    api.put(`/orders/admin/${id}`, data),
+    api.put(`/api/orders/admin/${id}`, data),
 
   // Update Order Status
   updateOrderStatus: (id, orderStatus) =>
-    api.put(`/orders/admin/status/${id}`, {
+    api.put(`/api/orders/admin/status/${id}`, {
       orderStatus,
     }),
 
   // Delete Order
   deleteOrder: (id) =>
-    api.delete(`/orders/admin/${id}`),
+    api.delete(`/api/orders/admin/${id}`),
 };
 
 /* =========================================

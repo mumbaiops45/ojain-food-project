@@ -8,7 +8,7 @@
   export const registerVendor =
     (data) =>
       api.post(
-        "/auth/vendor/register",
+        "/api/auth/vendor/register",
         data
       );
 
@@ -16,7 +16,7 @@
   export const loginVendor =
     (data) =>
       api.post(
-        "/auth/vendor/login",
+        "/api/auth/vendor/login",
         data
       );
 
@@ -24,14 +24,14 @@
   export const refreshVendorToken =
     () =>
       api.post(
-        "/vendors/refresh"
+        "/api/vendors/refresh"
       );
 
   // LOGOUT
   export const logoutVendor =
     () =>
       api.post(
-        "/auth/logout"
+        "/api/auth/logout"
       );
 
   /* =========================================
@@ -42,7 +42,7 @@
   export const getVendorDashboard =
     () =>
       api.get(
-        "/vendors/dashboard"
+        "/api/vendors/dashboard"
       );
 
   /* =========================================
@@ -53,13 +53,13 @@
   export const getVendorProfile =
     () =>
       api.get(
-        "/vendors/profile"
+        "/api/vendors/profile"
       );
 
   // UPDATE PROFILE  (accepts plain object OR FormData)
   export const updateVendorProfile = (data) => {
     const isFormData = data instanceof FormData;
-    return api.put("/vendors/profile", data, {
+    return api.put("/api/vendors/profile", data, {
       headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
     });
   };
@@ -72,7 +72,7 @@
   export const getVendorEarnings =
     () =>
       api.get(
-        "/vendors/earnings"
+        "/api/vendors/earnings"
       );
 
   /* =========================================
@@ -83,42 +83,42 @@
   export const getAllVendors =
     () =>
       api.get(
-        "/vendors"
+        "/api/vendors"
       );
 
   // GET SINGLE VENDOR
   export const getVendorById =
     (id) =>
       api.get(
-        `/vendors/${id}`
+        `/api/vendors/${id}`
       );
 
   // GET PENDING VENDORS
   export const getPendingVendors =
     () =>
       api.get(
-        "/vendors/pending"
+        "/api/vendors/pending"
       );
 
   // APPROVE VENDOR
   export const approveVendor =
     (id) =>
       api.put(
-        `/vendors/${id}/approve`
+        `/api/vendors/${id}/approve`
       );
 
   // UNAPPROVE VENDOR
   export const unapproveVendor =
     (id) =>
       api.put(
-        `/vendors/${id}/unapprove`
+        `/api/vendors/${id}/unapprove`
       );
 
   // UPDATE VENDOR
   export const updateVendor =
     (id, data) =>
       api.put(
-        `/vendors/${id}`,
+        `/api/vendors/${id}`,
         data
       );
 
@@ -126,5 +126,5 @@
   export const deleteVendor =
     (id) =>
       api.delete(
-        `/vendors/${id}`
+        `/api/vendors/${id}`
       );
