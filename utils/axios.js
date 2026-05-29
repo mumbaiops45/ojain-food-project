@@ -136,7 +136,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://ojain-backend-1.onrender.com",
+  baseURL: "https://ojain-backend-2.onrender.com",
     // baseURL:
     // "http://localhost:5000",
   withCredentials: true,
