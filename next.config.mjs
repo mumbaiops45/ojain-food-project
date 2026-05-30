@@ -19,6 +19,26 @@
 
 // export default nextConfig;
 
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   images: {
+//     remotePatterns: [
+//       {
+//         protocol: "https",
+//         hostname: "images.unsplash.com",
+//       },
+//       {
+//         protocol: "http",
+//         hostname: "localhost",
+//         port: "5000",          // ← your backend port
+//         pathname: "/**",       // allow all paths under this host
+//       },
+//     ],
+//   },
+// };
+
+// export default nextConfig;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -27,11 +47,20 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+
+      // local backend
       {
         protocol: "http",
         hostname: "localhost",
-        port: "5000",          // ← your backend port
-        pathname: "/**",       // allow all paths under this host
+        port: "5000",
+        pathname: "/**",
+      },
+
+      // production backend
+      {
+        protocol: "https",
+        hostname: "ojain-backend-2.onrender.com",
+        pathname: "/uploads/**",
       },
     ],
   },

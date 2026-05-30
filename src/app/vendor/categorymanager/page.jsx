@@ -598,7 +598,7 @@ export default function CategoryManager() {
                       alt={cat.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      unoptimized={cat.image?.includes("\\")}
+                      unoptimized={cat.image?.includes("\\") || cat.image?.startsWith("http")}
                     />
                   ) : (
                     /* placeholder when no image */
