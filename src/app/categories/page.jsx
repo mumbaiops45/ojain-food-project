@@ -8,11 +8,31 @@ import { useCategory } from "../../../hooks/useCategories";
 const toSlug = (name) => name?.toLowerCase().replace(/\s+/g, "-") ?? "";
 
 const getImageUrl = (imagePath) => {
-  if (!imagePath) return "/fallback-category.jpg";
-  if (imagePath.startsWith("http") || imagePath.startsWith("blob:")) return imagePath;
+  if (!imagePath) {
+    return "/category1.jpg";
+  }
+
+  // Already full URL
+  if (
+    imagePath.startsWith("http://") ||
+    imagePath.startsWith("https://") ||
+    imagePath.startsWith("blob:")
+  ) {
+    return imagePath;
+  }
+
+  // Normalize slashes
   let normalizedPath = imagePath.replace(/\\/g, "/");
-  if (normalizedPath.startsWith("/")) normalizedPath = normalizedPath.slice(1);
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+  // Remove starting slash
+  if (normalizedPath.startsWith("/")) {
+    normalizedPath = normalizedPath.slice(1);
+  }
+
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:5000";
+
   return `${API_BASE}/${normalizedPath}`;
 };
 
@@ -92,7 +112,7 @@ export default function CategoriesPage() {
                     src={getImageUrl(cat.image)}
                     alt={cat.name}
                     className="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-110"
-                    onError={(e) => (e.target.src = "/fallback-category.jpg")}
+                    onError={(e) => (e.target.src = "/category1.jpg")}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 </div>
