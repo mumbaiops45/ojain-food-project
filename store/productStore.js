@@ -14,15 +14,23 @@ import {
 
 } from "../services/product.service";
 
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 export const useProductStore = create(
-  (set) => ({
+  (set, get) => ({
     products: [],
     singleProduct: null,
     loading: false,
     error: null,
+    lastFetched: null,
 
     // GET ALL
-    fetchProducts: async () => {
+    fetchProducts: async (force = false) => {
+      const { products, lastFetched } = get();
+      if (!force && products.length > 0 && lastFetched && Date.now() - lastFetched < CACHE_TTL) {
+        return; // use cached data
+      }
+
       set({
         loading: true,
         error: null,
@@ -40,6 +48,7 @@ export const useProductStore = create(
         set({
           products: list,
           loading: false,
+          lastFetched: Date.now(),
         });
       } catch (error) {
         set({

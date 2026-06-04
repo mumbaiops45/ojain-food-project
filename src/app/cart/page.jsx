@@ -1168,7 +1168,7 @@ export default function CartPage() {
         amount:      orderData.amount,    // paise, returned by create-order
         currency:    orderData.currency,
         name:        "Ojain Pure Veg",
-        description: "Homemade Food Delivery",
+        description: "Food Delivery",
         image:       "/logo.png",
         order_id:    orderData.orderId,
         prefill: {
@@ -1237,7 +1237,7 @@ export default function CartPage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-5 p-8 text-center">
         <div className="text-7xl">🛒</div>
         <h2 className="text-2xl font-black text-gray-800">Your cart is empty</h2>
-        <p className="text-gray-400">Add some delicious homemade food first!</p>
+        <p className="text-gray-400">Add some delicious food first!</p>
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-2 bg-brand-orange hover:bg-[#E65100] text-white px-8 py-3 rounded-full font-bold shadow transition"

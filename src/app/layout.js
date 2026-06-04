@@ -288,8 +288,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "Ojain - Homemade Food Delivery",
-  description: "Fresh homemade food delivered with love",
+  title: "Ojain - Food Delivery",
+  description: "Fresh food delivered with love",
 };
 
 export default function RootLayout({ children }) {

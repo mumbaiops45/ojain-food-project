@@ -86,10 +86,10 @@ export default function CategoriesPage() {
             All Categories
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
-            Browse All <span className="text-orange-500">Food Categories</span>
+            Browse All <span className="text-orange-500">Product Categories</span>
           </h1>
           <p className="mt-4 text-lg text-gray-500 max-w-2xl">
-            Explore our full range of homemade food categories and find your favourite meals.
+            Explore our full range of pure Jain &amp; Satvik O-Jain premix product categories.
           </p>
         </div>
 
@@ -114,7 +114,7 @@ export default function CategoriesPage() {
                     className="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-110"
                     onError={(e) => (e.target.src = "/category1.jpg")}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
                 </div>
 
                 {/* Card Content */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   getCategoriesService,
   getSingleCategoryService,
@@ -9,21 +10,45 @@ import {
   deleteCategoryService,
 } from "../services/category.service";
 
-export const useCategoryStore = create((set) => ({
+let fetchRequest = null;
+
+export const useCategoryStore = create(
+  persist(
+    (set, get) => ({
   categories: [],
   singleCategory: null,
   loading: false,
   error: null,
 
-  fetchCategories: async () => {
-    set({ loading: true, error: null });
-    try {
-      const data = await getCategoriesService();
-      const list = Array.isArray(data) ? data : data?.categories ?? [];
-      set({ categories: list, loading: false });
-    } catch (error) {
-      set({ error: error.message, loading: false });
+  fetchCategories: async ({ force = false } = {}) => {
+    // Skip if already loaded and not forced (stale-while-revalidate)
+    const existing = get().categories;
+    if (existing.length > 0 && !force) {
+      // Silently refresh in background without touching loading state
+      getCategoriesService()
+        .then((data) => {
+          const list = Array.isArray(data) ? data : data?.categories ?? [];
+          set({ categories: list });
+        })
+        .catch(() => {});
+      return;
     }
+
+    // Deduplicate: reuse in-flight request
+    if (fetchRequest) return fetchRequest;
+    fetchRequest = (async () => {
+      set({ loading: true, error: null });
+      try {
+        const data = await getCategoriesService();
+        const list = Array.isArray(data) ? data : data?.categories ?? [];
+        set({ categories: list, loading: false });
+      } catch (error) {
+        set({ error: error.message, loading: false });
+      } finally {
+        fetchRequest = null;
+      }
+    })();
+    return fetchRequest;
   },
 
   fetchSingleCategory: async (id) => {
@@ -83,4 +108,12 @@ export const useCategoryStore = create((set) => ({
       throw error;
     }
   },
-}));
+    }),
+    {
+      name: "ojain-categories",
+      storage: createJSONStorage(() => localStorage),
+      // Only persist the category list, not transient UI state
+      partialize: (state) => ({ categories: state.categories }),
+    }
+  )
+);

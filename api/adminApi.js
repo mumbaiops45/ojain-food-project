@@ -12,6 +12,8 @@ export const getDashboardStats = () =>
 export const getPendingVendors = () =>
   api.get("/api/vendors/pending");
 
+
+
 // APPROVE VENDOR
 export const approveVendor = (id) =>
   api.put( `/api/admin/vendors/${id}/approve`);

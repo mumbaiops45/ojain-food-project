@@ -7,6 +7,64 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import useCartStore from "./store/cartStore";
+import AuthPopup from "@/app/components/AuthPopup";
+
+// Thin top progress bar that animates on every route change.
+// Detects navigation start via click interception; completes when pathname updates.
+function RouteProgressBar() {
+  const pathname = usePathname();
+  const [width, setWidth] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const timerRef = useRef(null);
+  const prevPathname = useRef(pathname);
+
+  const clearTimers = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  // Step 1 — detect navigation start via anchor-click
+  useEffect(() => {
+    const handleClick = (e) => {
+      const link = e.target.closest("a[href]");
+      if (!link) return;
+      const href = link.getAttribute("href");
+      if (!href || href.startsWith("#") || /^https?:\/\//.test(href) || href.startsWith("mailto")) return;
+
+      clearTimers();
+      setVisible(true);
+      setWidth(30);
+      timerRef.current = setTimeout(() => setWidth(70), 250);
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  // Step 2 — complete bar when pathname actually changes
+  useEffect(() => {
+    if (pathname === prevPathname.current) return;
+    prevPathname.current = pathname;
+    clearTimers();
+    setWidth(100);
+    timerRef.current = setTimeout(() => {
+      setVisible(false);
+      setWidth(0);
+    }, 350);
+  }, [pathname]);
+
+  useEffect(() => () => clearTimers(), []);
+
+  if (!visible) return null;
+  return (
+    <div
+      className="fixed top-0 left-0 z-9999 h-0.75 bg-orange-500 pointer-events-none"
+      style={{
+        width: `${width}%`,
+        transition: width === 100 ? "width 200ms ease-out" : "width 400ms ease-in-out",
+        boxShadow: "0 0 8px rgba(249,115,22,0.7)",
+      }}
+    />
+  );
+}
 
 // Global "View Cart" sticky bar.
 // Shows for 4 seconds after any cart action, then auto-hides.
@@ -84,11 +142,13 @@ export default function ClientLayout({ children }) {
 
   return (
     <AuthProvider>
+      <RouteProgressBar />
       <Toaster position="top-right" />
       {!hideLayout && <Navbar />}
       <main>{children}</main>
       {!hideLayout && <Footer />}
       {!hideLayout && <ViewCartBar />}
+      {!hideLayout && <AuthPopup />}
     </AuthProvider>
   );
 }

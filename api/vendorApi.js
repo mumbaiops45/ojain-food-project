@@ -94,11 +94,14 @@
       );
 
   // GET PENDING VENDORS
-  export const getPendingVendors =
-    () =>
-      api.get(
-        "/api/vendors/pending"
-      );
+  // export const getPendingVendors =
+  //   () =>
+  //     api.get(
+  //       "/api/vendors/pending"
+  //     );
+
+      export const getPendingVendors = () =>
+  api.get("/api/admin/vendors/pending");
 
   // APPROVE VENDOR
   export const approveVendor =

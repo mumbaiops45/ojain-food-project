@@ -18,11 +18,11 @@ import {
 
 /* ── image helper ─────────────────────────────────────── */
 const getImageUrl = (p) => {
-  if (!p) return "/fallback-category.jpg";
+  if (!p) return "/category1.jpg";
   if (p.startsWith("http") || p.startsWith("blob:")) return p;
   let n = p.replace(/\\/g, "/");
   if (n.startsWith("/")) n = n.slice(1);
-  return `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/${n}`;
+  return `${process.env.NEXT_PUBLIC_API_URL || "https://ojain-backend-2.onrender.com"}/${n}`;
 };
 
 /* ── field wrapper ────────────────────────────────────── */
@@ -115,13 +115,16 @@ export default function ProductManager() {
   const { products, loading, fetchProducts, createProduct, updateProduct, deleteProduct } = useProduct();
   const { categories, fetchCategories } = useCategory();
 
-  const formRef  = useRef(null);
-  const focus    = useInputFocus();
+  const formRef     = useRef(null);
+  const fileInputRef = useRef(null);
+  const focus       = useInputFocus();
 
-  const [editId,   setEditId]   = useState(null);
-  const [saving,   setSaving]   = useState(false);
-  const [deleting, setDeleting] = useState(null);
-  const [search,   setSearch]   = useState("");
+  const [editId,       setEditId]       = useState(null);
+  const [saving,       setSaving]       = useState(false);
+  const [deleting,     setDeleting]     = useState(null);
+  const [search,       setSearch]       = useState("");
+  const [imageFiles,   setImageFiles]   = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const [form, setForm] = useState({
     name: "", description: "", category: "",
@@ -130,8 +133,8 @@ export default function ProductManager() {
     stock: "", servingSize: "", tags: "",
   });
 
-  /* preview first image URL */
-  const previewUrl = form.images.split(",")[0]?.trim();
+  /* revoke object URLs on unmount / preview change */
+  useEffect(() => () => imagePreviews.forEach(URL.revokeObjectURL), [imagePreviews]);
 
   useEffect(() => { fetchProducts(); fetchCategories(); }, []);
 
@@ -143,6 +146,22 @@ export default function ProductManager() {
 
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
+  /* ── file pick ── */
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    imagePreviews.forEach(URL.revokeObjectURL);
+    setImageFiles(files);
+    setImagePreviews(files.map((f) => URL.createObjectURL(f)));
+  };
+
+  const removeFile = (idx) => {
+    URL.revokeObjectURL(imagePreviews[idx]);
+    setImageFiles((p) => p.filter((_, i) => i !== idx));
+    setImagePreviews((p) => p.filter((_, i) => i !== idx));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   /* ── submit ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,13 +171,31 @@ export default function ProductManager() {
     }
     setSaving(true);
     try {
-      const payload = {
-        ...form,
-        price: Number(form.price),
-        stock: Number(form.stock) || 0,
-        images: form.images.split(",").map((s) => s.trim()).filter(Boolean),
-        tags:   form.tags.split(",").map((s) => s.trim()).filter(Boolean),
-      };
+      let payload;
+      if (imageFiles.length > 0) {
+        payload = new FormData();
+        payload.append("name",        form.name.trim());
+        payload.append("description", form.description);
+        payload.append("category",    form.category);
+        payload.append("price",       Number(form.price));
+        payload.append("stock",       Number(form.stock) || 0);
+        payload.append("isVeg",       form.isVeg);
+        payload.append("isAvailable", form.isAvailable);
+        payload.append("status",      form.status);
+        payload.append("servingSize", form.servingSize);
+        form.tags.split(",").map((s) => s.trim()).filter(Boolean)
+          .forEach((t) => payload.append("tags", t));
+        imageFiles.forEach((f) => payload.append("images", f));
+      } else {
+        payload = {
+          ...form,
+          price:  Number(form.price),
+          stock:  Number(form.stock) || 0,
+          images: form.images.split(",").map((s) => s.trim()).filter(Boolean),
+          tags:   form.tags.split(",").map((s) => s.trim()).filter(Boolean),
+        };
+      }
+
       if (editId) {
         await updateProduct(editId, payload);
         toast.success("Product updated successfully! ✅");
@@ -205,6 +242,10 @@ export default function ProductManager() {
   const resetForm = () => {
     setEditId(null);
     setForm({ name: "", description: "", category: "", price: "", images: "", isVeg: true, isAvailable: true, status: "active", stock: "", servingSize: "", tags: "" });
+    imagePreviews.forEach(URL.revokeObjectURL);
+    setImageFiles([]);
+    setImagePreviews([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   /* ── filtered list ── */
@@ -365,37 +406,74 @@ export default function ProductManager() {
           <div className="space-y-4">
             <SectionHeader icon={<MdImage />} title="Media & Tags" color="#7B1FA2" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Image URLs" icon={<MdImage />} hint="Comma-separated URLs. First image shown as cover.">
-                <input
-                  name="images" type="text" value={form.images} onChange={handleChange}
-                  placeholder="https://…/img1.jpg, https://…/img2.jpg"
-                  className={inputCls} style={inputStyle} {...focus}
-                />
+
+              {/* File Upload */}
+              <Field label="Product Images" icon={<MdImage />} hint="JPG, PNG, WEBP. First image used as cover.">
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed cursor-pointer transition-all py-5"
+                  style={{ borderColor: "#C8E6C9", background: "#F9FFF6" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#2E7D32"; e.currentTarget.style.background = "#EBF5E9"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#C8E6C9"; e.currentTarget.style.background = "#F9FFF6"; }}
+                >
+                  <MdImage className="text-3xl" style={{ color: "#66BB6A" }} />
+                  <p className="text-sm font-bold" style={{ color: "#2E7D32" }}>
+                    {imageFiles.length > 0 ? `${imageFiles.length} file${imageFiles.length > 1 ? "s" : ""} selected` : "Click to select images"}
+                  </p>
+                  <p className="text-[11px]" style={{ color: "#81C784" }}>Multiple files allowed</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
               </Field>
 
               <Field label="Tags" icon={<MdLabel />} hint="Comma-separated keywords for search">
                 <input
                   name="tags" type="text" value={form.tags} onChange={handleChange}
-                  placeholder="spicy, homemade, healthy"
+                  placeholder="spicy, fresh, healthy"
                   className={inputCls} style={inputStyle} {...focus}
                 />
               </Field>
             </div>
 
-            {/* Image preview */}
-            {previewUrl && (
-              <div
-                className="flex items-center gap-4 p-3 rounded-xl border"
-                style={{ background: "#F9FFF6", borderColor: "#C8E6C9" }}
-              >
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
-                  <Image src={getImageUrl(previewUrl)} alt="Preview" fill className="object-cover" unoptimized
-                    onError={(e) => (e.target.style.display = "none")} />
-                </div>
-                <div>
-                  <p className="text-xs font-bold" style={{ color: "#1B5E20" }}>Cover Image Preview</p>
-                  <p className="text-[11px] mt-0.5 break-all" style={{ color: "#66BB6A" }}>{previewUrl}</p>
-                </div>
+            {/* Image previews */}
+            {(imagePreviews.length > 0 || (editId && form.images)) && (
+              <div className="flex flex-wrap gap-3">
+                {/* Newly selected files */}
+                {imagePreviews.map((url, i) => (
+                  <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0" style={{ border: "1px solid #C8E6C9" }}>
+                    <Image src={url} alt={`Preview ${i + 1}`} fill className="object-cover" unoptimized />
+                    <button
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white"
+                      style={{ background: "rgba(220,38,38,0.85)" }}
+                    >
+                      <MdClose size={11} />
+                    </button>
+                    {i === 0 && (
+                      <span className="absolute bottom-0 left-0 right-0 text-center text-[9px] font-bold text-white py-0.5" style={{ background: "rgba(46,125,50,0.85)" }}>Cover</span>
+                    )}
+                  </div>
+                ))}
+
+                {/* Existing images (edit mode, no new files selected) */}
+                {imagePreviews.length === 0 && editId && form.images &&
+                  form.images.split(",").filter(Boolean).map((url, i) => (
+                    <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0" style={{ border: "1px solid #C8E6C9" }}>
+                      <Image src={getImageUrl(url.trim())} alt={`Image ${i + 1}`} fill className="object-cover" unoptimized
+                        onError={(e) => (e.target.style.display = "none")} />
+                      {i === 0 && (
+                        <span className="absolute bottom-0 left-0 right-0 text-center text-[9px] font-bold text-white py-0.5" style={{ background: "rgba(46,125,50,0.85)" }}>Cover</span>
+                      )}
+                    </div>
+                  ))
+                }
               </div>
             )}
           </div>
@@ -543,6 +621,7 @@ export default function ProductManager() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     unoptimized
+                    onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
 

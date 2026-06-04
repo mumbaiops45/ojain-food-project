@@ -888,7 +888,7 @@
 
 
 import { create } from "zustand";
-import axios from "axios";
+import api from "../utils/axios";
 import {
   adminLoginService,
   getDashboardStatsService,
@@ -903,7 +903,6 @@ import {
   markPayoutPaidService,
 } from "../services/admin.service";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export const useAdminStore = create((set, get) => ({
   // State
@@ -956,9 +955,7 @@ export const useAdminStore = create((set, get) => ({
     if (!token) return;
     set({ loading: true });
     try {
-      const res = await axios.get(`${API_URL}/vendors`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.get("/api/vendors");
       const data = res.data;
       set({
         vendors: Array.isArray(data) ? data : data?.vendors || [],
@@ -980,40 +977,28 @@ export const useAdminStore = create((set, get) => ({
   },
 
   approveVendor: async (id) => {
-    const { token } = get();
-    if (!token) throw new Error("Not authenticated");
-    await axios.put(`${API_URL}/vendors/${id}/approve`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    await get().fetchAllVendors(); // refresh the list
+    if (!get().token) throw new Error("Not authenticated");
+    await api.put(`/api/vendors/${id}/approve`, {});
+    await get().fetchAllVendors();
   },
 
   // NEW: unapprove a vendor
   unapproveVendor: async (id) => {
-    const { token } = get();
-    if (!token) throw new Error("Not authenticated");
-    await axios.put(`${API_URL}/vendors/${id}/unapprove`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    if (!get().token) throw new Error("Not authenticated");
+    await api.put(`/api/vendors/${id}/unapprove`, {});
     await get().fetchAllVendors();
   },
 
   // NEW: admin updates any vendor
   updateVendor: async (id, data) => {
-    const { token } = get();
-    if (!token) throw new Error("Not authenticated");
-    await axios.put(`${API_URL}/vendors/${id}`, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    if (!get().token) throw new Error("Not authenticated");
+    await api.put(`/api/vendors/${id}`, data);
     await get().fetchAllVendors();
   },
 
   rejectVendor: async (id) => {
-    const { token } = get();
-    if (!token) throw new Error("Not authenticated");
-    await axios.delete(`${API_URL}/vendors/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    if (!get().token) throw new Error("Not authenticated");
+    await api.delete(`/api/vendors/${id}`);
     await get().fetchAllVendors();
   },
 

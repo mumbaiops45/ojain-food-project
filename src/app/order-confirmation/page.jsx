@@ -35,7 +35,7 @@ export default function OrderConfirmation() {
               Order Placed! 🎉
             </h1>
             <p className="mt-2 text-green-100 text-sm">
-              Your homemade food is being prepared with love!
+              Your food is being prepared with love!
             </p>
           </div>
         </div>

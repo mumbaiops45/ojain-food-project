@@ -8,6 +8,7 @@ import {
   FaStar, FaHeart, FaTimes, FaMinus, FaPlus,
   FaShoppingCart, FaFireAlt, FaLeaf, FaSpinner,
 } from "react-icons/fa";
+import ScrollReveal from "./ScrollReveal";
 import { useCart }    from "../../../hooks/useCart";
 import { useAuth }    from "../../contexts/AuthContext";
 import { useProduct } from "../../../hooks/useProduct";
@@ -222,7 +223,7 @@ function FeaturedProducts() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section header */}
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+          <ScrollReveal animation="fade-up" className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
             <div>
               <div className="inline-flex items-center gap-2 bg-brand-green-pale text-brand-green px-5 py-2 rounded-full text-sm font-bold shadow-sm">
                 <FaFireAlt /> Trending Foods
@@ -235,7 +236,7 @@ function FeaturedProducts() {
                 <span className="text-brand-green">You</span>
               </h2>
               <p className="mt-4 text-base text-gray-500 max-w-xl leading-7">
-                Discover authentic homemade meals from top-rated home chefs near you.
+                Discover authentic meals from top-rated chefs near you.
               </p>
             </div>
             <button
@@ -244,7 +245,7 @@ function FeaturedProducts() {
             >
               <FaFireAlt /> Explore All
             </button>
-          </div>
+          </ScrollReveal>
 
           {/* Product grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -262,14 +263,14 @@ function FeaturedProducts() {
             )}
 
             {/* Real product cards */}
-            {featured.map((product) => {
+            {featured.map((product, i) => {
               const qty      = cartQty(product._id);
               const isAdding = addingId === product._id;
 
               return (
+                <ScrollReveal key={product._id} animation="scale-up" delay={i * 100}>
                 <div
-                  key={product._id}
-                  className="group bg-white rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col"
+                  className="group bg-white rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full"
                 >
                   {/* ── Image ── */}
                   <div
@@ -364,19 +365,20 @@ function FeaturedProducts() {
                     </div>
                   </div>
                 </div>
+                </ScrollReveal>
               );
             })}
           </div>
 
           {/* Mobile CTA */}
-          <div className="mt-10 flex justify-center lg:hidden">
+          <ScrollReveal animation="fade-up" delay={100} className="mt-10 flex justify-center lg:hidden">
             <button
               onClick={() => router.push("/categories")}
               className="flex items-center gap-3 bg-black hover:bg-gray-800 text-white px-7 py-4 rounded-2xl font-bold shadow-xl transition"
             >
               <FaFireAlt /> Explore All Categories
             </button>
-          </div>
+          </ScrollReveal>
 
         </div>
       </section>

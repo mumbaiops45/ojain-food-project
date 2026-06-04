@@ -4,380 +4,374 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  FaSearch, FaShoppingCart, FaMapMarkerAlt, FaEdit,
-  FaUserCircle, FaBars, FaTimes, FaSpinner, FaLeaf,
+  FaSearch, FaShoppingCart, FaMapMarkerAlt, FaUserCircle,
+  FaBars, FaTimes, FaSpinner, FaChevronDown, FaSignOutAlt,
 } from "react-icons/fa";
-import useCartStore       from "../../../store/cartStore";
+import useCartStore from "../../../store/cartStore";
 import { useCategoryStore } from "../../../store/categoryStore";
-import getImageUrl          from "../../../utils/getImageUrl";
+import {useAuth} from "../../contexts/AuthContext";
+import getImageUrl from "../../../utils/getImageUrl";
 
-// Convert category name → URL slug  (same logic as category page)
 const toSlug = (name) => name?.toLowerCase().replace(/\s+/g, "-") ?? "";
 
 const fetchLocationSuggestions = async (query) => {
   if (!query.trim() || query.length < 2) return [];
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=10`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=8`
     );
     const data = await res.json();
     return data.map((item) => ({
       displayName: item.display_name.split(",")[0],
       fullName: item.display_name,
-      lat: item.lat,
-      lon: item.lon,
     }));
-  } catch (error) {
-    console.error("Location search error:", error);
+  } catch {
     return [];
   }
 };
 
 function Navbar() {
-  const [location, setLocation]               = useState("");
-  const [editing, setEditing]                 = useState(false);
-  const [mobileOpen, setMobileOpen]           = useState(false);
-  const [loginOpen, setLoginOpen]             = useState(false);
-  const [searchQuery, setSearchQuery]         = useState("");
-  const [suggestions, setSuggestions]         = useState([]);
-  const [isSearching, setIsSearching]         = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
-  const loginRef       = useRef(null);
-  const searchInputRef = useRef(null);
-  const router         = useRouter();
+  const [location, setLocation] = useState("Set location");
+  const [locOpen, setLocOpen] = useState(false);
+  const [locQuery, setLocQuery] = useState("");
+  const [locSuggestions, setLocSuggestions] = useState([]);
+  const [locSearching, setLocSearching] = useState(false);
 
-  // Dynamic cart count
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [loginMenuOpen, setLoginMenuOpen] = useState(false);
+
+  const locRef = useRef(null);
+  const userRef = useRef(null);
+  const loginRef = useRef(null);
+
   const totalItems = useCartStore((s) => s.totalItems());
-
-  // Dynamic categories from backend
-  const categories      = useCategoryStore((s) => s.categories);
+  const categories = useCategoryStore((s) => s.categories);
   const fetchCategories = useCategoryStore((s) => s.fetchCategories);
 
   useEffect(() => {
     if (categories.length === 0) fetchCategories();
   }, [categories.length, fetchCategories]);
 
-  const detectCurrentLocation = () => {
-    if (!navigator.geolocation) { alert("Geolocation not supported"); return; }
+  useEffect(() => {
+    const saved = localStorage.getItem("userLocation");
+    if (saved) setLocation(saved);
+  }, []);
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       async ({ coords: { latitude, longitude } }) => {
         try {
-          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          );
           const data = await res.json();
-          const detected = data.address.city || data.address.town || data.address.state || "Current Location";
-          setLocation(detected);
-          localStorage.setItem("userLocation", detected);
-          setEditing(false);
-          setSearchQuery("");
-          setShowSuggestions(false);
-        } catch { alert("Unable to fetch current location"); }
+          const name =
+            data.address.city || data.address.town || data.address.state || "Current Location";
+          setLocation(name);
+          localStorage.setItem("userLocation", name);
+          setLocOpen(false);
+        } catch {}
       },
-      () => alert("Location permission denied")
+      () => {}
     );
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem("userLocation");
-    if (saved) setLocation(saved);
-    else detectCurrentLocation();
-  }, []);
-
-  useEffect(() => {
     const id = setTimeout(async () => {
-      if (searchQuery.length >= 2) {
-        setIsSearching(true);
-        const results = await fetchLocationSuggestions(searchQuery);
-        setSuggestions(results);
-        setIsSearching(false);
-        setShowSuggestions(true);
+      if (locQuery.length >= 2) {
+        setLocSearching(true);
+        const results = await fetchLocationSuggestions(locQuery);
+        setLocSuggestions(results);
+        setLocSearching(false);
       } else {
-        setSuggestions([]);
+        setLocSuggestions([]);
       }
     }, 400);
     return () => clearTimeout(id);
-  }, [searchQuery]);
+  }, [locQuery]);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (searchInputRef.current && !searchInputRef.current.contains(e.target)) setShowSuggestions(false);
-      if (loginRef.current && !loginRef.current.contains(e.target)) setLoginOpen(false);
+    const handler = (e) => {
+      if (locRef.current && !locRef.current.contains(e.target)) setLocOpen(false);
+      if (userRef.current && !userRef.current.contains(e.target)) setUserMenuOpen(false);
+      if (loginRef.current && !loginRef.current.contains(e.target)) setLoginMenuOpen(false);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
-
-  const handleSelectSuggestion = (suggestion) => {
-    setLocation(suggestion.displayName);
-    localStorage.setItem("userLocation", suggestion.displayName);
-    setSearchQuery("");
-    setEditing(false);
-    setShowSuggestions(false);
-  };
-
-  const cancelEdit = () => {
-    setEditing(false);
-    setSearchQuery("");
-    setShowSuggestions(false);
-  };
 
   return (
     <>
       {/* ── ANNOUNCEMENT BAR ── */}
-      <div className="bg-brand-green text-white text-[11px] sm:text-[13px] py-2 text-center font-semibold tracking-widest uppercase">
-        🍛 Fresh Homemade Food Delivered Across India &nbsp;🚚
+      <div className="bg-brand-green text-white text-[11px] py-2 text-center font-semibold tracking-widest uppercase">
+        🌿 Be O-Jain. Live O-Jain. &nbsp;·&nbsp; Pure Jain &amp; Satvik Premix Products &nbsp;·&nbsp; A Brand That Serves Pure 👑
       </div>
 
       {/* ── MAIN NAVBAR ── */}
-      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-brand-green-pale">
-        <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10">
+      <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
+        <div className="w-full px-4 sm:px-6 lg:px-10">
 
-          {/* TOP ROW */}
-          <div className="flex items-center justify-between gap-4 py-3 lg:grid lg:grid-cols-[240px_1fr_340px] lg:gap-8">
+          {/* ── TOP ROW ── */}
+          <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5">
 
-            {/* ── LOGO ── */}
-            <Link href="/" className="shrink-0 flex items-center gap-3 group">
-              <div className="relative">
-                <img
-                  src="/logo.png"
-                  alt="OJAIN Logo"
-                  className="w-14 h-14 md:w-16 md:h-16 object-cover rounded-full ring-2 ring-brand-green/20 group-hover:ring-brand-orange/40 transition"
-                />
-                <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-green rounded-full flex items-center justify-center">
-                  <FaLeaf className="text-white text-[8px]" />
-                </span>
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-[20px] font-extrabold text-brand-green leading-none tracking-tight">OJAIN</p>
-                <p className="text-[11px] font-semibold text-brand-orange tracking-widest uppercase mt-0.5">Pure Veg</p>
+            {/* LOGO */}
+            <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+              <img
+                src="/logo.png"
+                alt="OJAIN"
+                className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover ring-2 ring-brand-green/25 group-hover:ring-brand-green/50 transition"
+              />
+              <div className="hidden sm:block leading-none">
+                <p className="text-[17px] font-black text-brand-green tracking-tight">OJAIN</p>
+                <p className="text-[9px] font-bold text-brand-orange tracking-[0.18em] uppercase mt-0.5">Pure Veg</p>
               </div>
             </Link>
 
-            {/* ── SEARCH ── */}
-            <div className="hidden lg:flex justify-center">
-              <div className="flex items-center w-full max-w-[560px] bg-brand-bg rounded-full overflow-hidden shadow-md border border-brand-green-pale focus-within:border-brand-green focus-within:shadow-[0_0_0_3px_rgba(46,125,50,0.12)] transition-all">
-                <input
-                  type="text"
-                  placeholder="Search homemade food..."
-                  className="w-full px-6 py-3.5 outline-none text-[14px] text-brand-text placeholder-gray-400 bg-transparent"
-                />
-                <button className="bg-brand-green hover:bg-[#1B5E20] active:bg-brand-orange text-white px-7 py-3.5 transition-colors flex items-center gap-2 text-[14px] font-semibold">
-                  <FaSearch size={14} />
-                  <span className="hidden xl:inline">Search</span>
-                </button>
-              </div>
-            </div>
-
-            {/* ── RIGHT CONTROLS ── */}
-            <div className="flex items-center gap-4 justify-end">
-
-              {/* LOCATION */}
-              <div className="hidden md:block relative" ref={searchInputRef}>
-                <div className="flex items-center gap-1 mb-0.5">
-                  <FaMapMarkerAlt className="text-brand-green" size={9} />
-                  <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Delivering To</span>
+            {/* LOCATION — desktop */}
+            <div className="hidden lg:block relative shrink-0" ref={locRef}>
+              <button
+                onClick={() => setLocOpen(!locOpen)}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 transition group"
+              >
+                <FaMapMarkerAlt className="text-brand-orange shrink-0" size={14} />
+                <div className="text-left">
+                  <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider leading-none mb-0.5">
+                    Delivering to
+                  </p>
+                  <p className="text-[13px] font-bold text-gray-800 max-w-[110px] truncate group-hover:text-brand-green transition leading-none">
+                    {location}
+                  </p>
                 </div>
+                <FaChevronDown
+                  size={9}
+                  className={`text-gray-400 transition-transform ${locOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
-                {editing ? (
-                  <div className="relative">
-                    <div className="flex items-center gap-2">
+              {/* Location dropdown */}
+              {locOpen && (
+                <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[9999] overflow-hidden">
+                  <div className="p-3 border-b border-gray-100">
+                    <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
+                      <FaSearch size={11} className="text-gray-400 shrink-0" />
                       <input
                         type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search city..."
-                        className="border border-brand-green-pale focus:border-brand-green rounded-full px-4 py-2 text-[13px] outline-none w-52 shadow-sm bg-brand-bg"
+                        value={locQuery}
+                        onChange={(e) => setLocQuery(e.target.value)}
+                        placeholder="Search city or area..."
+                        className="bg-transparent outline-none text-sm flex-1 placeholder-gray-400"
                         autoFocus
                       />
-                      <button onClick={cancelEdit} className="text-[11px] text-brand-orange font-semibold hover:text-[#E65100]">
-                        Cancel
-                      </button>
                     </div>
-
-                    {showSuggestions && (
-                      <div className="absolute left-0 top-14 w-72 bg-white border border-gray-100 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] z-[9999] overflow-hidden">
+                  </div>
+                  <button
+                    onClick={detectLocation}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-brand-green-pale transition border-b border-gray-100"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-brand-green-pale flex items-center justify-center shrink-0">
+                      <FaMapMarkerAlt className="text-brand-green" size={13} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-brand-green">Use current location</p>
+                      <p className="text-xs text-gray-400">Detect via GPS</p>
+                    </div>
+                  </button>
+                  <div className="max-h-52 overflow-y-auto">
+                    {locSearching ? (
+                      <div className="px-4 py-4 flex items-center gap-2 text-sm text-gray-400">
+                        <FaSpinner className="animate-spin text-brand-green" /> Searching...
+                      </div>
+                    ) : locSuggestions.length > 0 ? (
+                      locSuggestions.map((s, i) => (
                         <button
-                          onClick={detectCurrentLocation}
-                          className="w-full flex items-start gap-4 px-5 py-4 hover:bg-brand-green-pale transition border-b border-gray-100"
+                          key={i}
+                          onClick={() => {
+                            setLocation(s.displayName);
+                            localStorage.setItem("userLocation", s.displayName);
+                            setLocQuery("");
+                            setLocOpen(false);
+                          }}
+                          className="w-full flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-50 last:border-0"
                         >
-                          <div className="w-10 h-10 rounded-full bg-brand-green-pale text-brand-green flex items-center justify-center shrink-0 text-lg">
-                            📍
-                          </div>
-                          <div className="text-left">
-                            <p className="font-bold text-brand-text text-sm">Use Current Location</p>
-                            <p className="text-xs text-gray-400 mt-0.5">Detect your live location instantly</p>
+                          <FaMapMarkerAlt className="text-gray-300 mt-0.5 shrink-0" size={12} />
+                          <div>
+                            <p className="text-sm font-semibold text-gray-800">{s.displayName}</p>
+                            <p className="text-xs text-gray-400 truncate max-w-[220px]">{s.fullName}</p>
                           </div>
                         </button>
+                      ))
+                    ) : locQuery.length >= 2 ? (
+                      <p className="px-4 py-4 text-sm text-gray-400">No locations found</p>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+            </div>
 
-                        <div className="max-h-64 overflow-y-auto">
-                          {isSearching ? (
-                            <div className="px-5 py-5 flex items-center gap-3 text-sm text-gray-500">
-                              <FaSpinner className="animate-spin text-brand-green" />
-                              Searching locations...
-                            </div>
-                          ) : suggestions.length > 0 ? (
-                            suggestions.map((sug, idx) => (
-                              <button
-                                key={idx}
-                                onClick={() => handleSelectSuggestion(sug)}
-                                className="w-full text-left px-5 py-3.5 hover:bg-brand-green-pale transition border-b border-gray-50"
-                              >
-                                <div className="flex gap-3 items-start">
-                                  <FaMapMarkerAlt className="text-brand-green mt-1 shrink-0" size={12} />
-                                  <div>
-                                    <p className="font-semibold text-sm text-brand-text">{sug.displayName}</p>
-                                    <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{sug.fullName}</p>
-                                  </div>
-                                </div>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="px-5 py-5 text-sm text-gray-400">No locations found</div>
-                          )}
+            {/* SEARCH BAR — desktop */}
+            <div className="hidden md:flex flex-1 items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-11 focus-within:border-brand-green focus-within:ring-2 focus-within:ring-brand-green/15 transition-all">
+              <FaSearch className="ml-4 text-gray-400 shrink-0" size={13} />
+              <input
+                type="text"
+                placeholder="Search for biryani, thali, sweets..."
+                className="flex-1 px-3 py-0 h-full outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
+              />
+              <button className="h-full bg-brand-green hover:bg-[#1B5E20] text-white px-5 text-[13px] font-bold transition-colors whitespace-nowrap">
+                Search
+              </button>
+            </div>
+
+            {/* RIGHT SECTION */}
+            <div className="flex items-center gap-2 ml-auto lg:ml-0 shrink-0">
+
+              {/* About — desktop */}
+              <Link
+                href="/about"
+                className="hidden lg:flex items-center gap-2 bg-brand-green-pale hover:bg-brand-green text-brand-green hover:text-white px-4 py-2 rounded-xl text-[13px] font-bold transition-all duration-200 border border-brand-green/20 hover:border-brand-green group"
+              >
+                <span className="text-base group-hover:scale-110 transition-transform">🍲</span>
+                About Us
+              </Link>
+
+              {/* USER / LOGIN */}
+              <div className="hidden md:block relative" ref={userRef}>
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center gap-2 bg-brand-green-pale hover:bg-brand-green/15 text-brand-green px-3 py-2 rounded-xl transition"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-brand-green text-white flex items-center justify-center text-[11px] font-black shrink-0">
+                        {(user.name || "U")[0].toUpperCase()}
+                      </div>
+                      <span className="text-[13px] font-bold max-w-[80px] truncate">
+                        {user.name?.split(" ")[0] || "Account"}
+                      </span>
+                      <FaChevronDown
+                        size={9}
+                        className={`text-brand-green/60 transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {userMenuOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl z-[9999] py-2 overflow-hidden">
+                        <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                          <p className="text-xs text-gray-400">Signed in as</p>
+                          <p className="text-sm font-bold text-gray-800 truncate">{user.name}</p>
                         </div>
+                        <Link
+                          href="/profile"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                        >
+                          <FaUserCircle className="text-brand-green" size={14} /> My Profile
+                        </Link>
+                        <button
+                          onClick={() => { logout(); setUserMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
+                        >
+                          <FaSignOutAlt size={13} /> Sign Out
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="relative" ref={loginRef}>
+                    <button
+                      onClick={() => setLoginMenuOpen(!loginMenuOpen)}
+                      className="flex items-center gap-2 bg-brand-green hover:bg-[#1B5E20] text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition shadow-sm"
+                    >
+                      <FaUserCircle size={14} />
+                      Login
+                      <FaChevronDown size={9} className={`transition-transform ${loginMenuOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {loginMenuOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl z-[9999] py-2 overflow-hidden">
+                        <Link
+                          href="/customerLogin/login"
+                          onClick={() => setLoginMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-green-pale hover:text-brand-green transition"
+                        >
+                          <FaUserCircle size={14} className="text-brand-green" />
+                          Customer Login
+                        </Link>
+                        <Link
+                          href="/adminlogin"
+                          onClick={() => setLoginMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-green-pale hover:text-brand-green transition"
+                        >
+                          <FaUserCircle size={14} className="text-brand-orange" />
+                          Admin Login
+                        </Link>
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[13px] font-bold text-brand-text">
-                      {location || "Set location"}
-                    </span>
-                    <button
-                      onClick={() => { setEditing(true); setShowSuggestions(true); }}
-                      className="text-brand-green-mid hover:text-brand-green transition"
-                    >
-                      <FaEdit size={11} />
-                    </button>
-                  </div>
                 )}
               </div>
-
-              {/* LOGIN */}
-              <div ref={loginRef} className="relative hidden md:block">
-                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider text-right mb-0.5">Account</p>
-                <button
-                  onClick={() => setLoginOpen(!loginOpen)}
-                  className="flex items-center gap-1.5 text-[13px] font-bold text-brand-text hover:text-brand-green transition"
-                >
-                  <FaUserCircle size={17} className="text-brand-green" />
-                  Login
-                  <span className="text-[9px] text-gray-400">{loginOpen ? "▲" : "▼"}</span>
-                </button>
-
-                {loginOpen && (
-                  <div className="absolute right-0 top-14 w-64 bg-white border border-gray-100 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] z-[9999] overflow-hidden animate-slide-down">
-                    <div className="py-2">
-                      {[
-                        { href: "/customerLogin/login", label: "👤 Customer Login" },
-                        { href: "/vendorLogin/login",   label: "🏪 Vendor Login" },
-                        { href: "/adminlogin",          label: "🛡 Admin Login" },
-                      ].map(({ href, label }) => (
-                        <Link
-                          key={href}
-                          href={href}
-                          className="block px-6 py-3.5 text-[14px] font-semibold text-brand-text hover:bg-brand-green-pale hover:text-brand-green transition"
-                        >
-                          {label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* ORDER NOW CTA — desktop */}
-              {/* <Link
-                href="/menu"
-                className="hidden md:inline-flex items-center gap-2 bg-brand-orange hover:bg-[#E65100] text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all"
-              >
-                Order Now
-              </Link> */}
 
               {/* CART */}
               <button
                 onClick={() => router.push("/cart")}
-                className="relative hover:scale-110 transition"
+                className="relative flex items-center gap-2 bg-brand-orange/10 hover:bg-brand-orange/20 text-brand-orange px-3 py-2.5 rounded-xl transition"
                 aria-label="View cart"
               >
-                <FaShoppingCart size={20} className="text-brand-text" />
+                <FaShoppingCart size={16} />
                 {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-brand-orange text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow">
+                  <span className="text-[12px] font-black leading-none">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 )}
               </button>
 
-              {/* MOBILE MENU TOGGLE */}
+              {/* MOBILE TOGGLE */}
               <button
-                className="lg:hidden text-brand-text hover:text-brand-green transition"
+                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition"
                 onClick={() => setMobileOpen(!mobileOpen)}
-                aria-label="Toggle menu"
               >
-                {mobileOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+                {mobileOpen ? <FaTimes size={16} /> : <FaBars size={16} />}
               </button>
             </div>
           </div>
 
-          {/* ── DESKTOP CATEGORY MARQUEE ── */}
-          <div className="hidden lg:block border-t border-brand-green-pale py-2.5 overflow-hidden relative">
-
-            {/* Fade edges so scroll feels seamless */}
-            <div className="absolute left-0 top-0 bottom-0 w-12 bg-linear-to-r from-white to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-12 bg-linear-to-l from-white to-transparent z-10 pointer-events-none" />
+          {/* ── DESKTOP CATEGORY STRIP ── */}
+          <div className="hidden md:block border-t border-gray-100 py-1.5 overflow-hidden relative">
 
             {/* Skeleton while loading */}
             {categories.length === 0 && (
-              <div className="flex items-center gap-7 px-4">
-                {[1,2,3,4,5,6,7,8].map((i) => (
-                  <div key={i} className="flex items-center gap-1.5 animate-pulse shrink-0">
-                    <div className="w-5 h-5 rounded-full bg-gray-200" />
-                    <div className="h-3 w-16 bg-gray-200 rounded-full" />
-                  </div>
+              <div className="flex items-center gap-4 px-2">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <div key={i} className="h-7 w-20 rounded-full bg-gray-100 animate-pulse shrink-0" />
                 ))}
               </div>
             )}
 
-            {/* Marquee — items duplicated for seamless infinite loop */}
+            {/* Marquee — duplicated for seamless loop */}
             {categories.length > 0 && (
-              <div className="animate-marquee flex items-center gap-8 w-max">
-                {/* First copy */}
-                {[{ _id: "about", name: "About", image: null, _href: "/about" }, ...categories].map((cat) => (
+              <div className="animate-marquee flex items-center gap-2 w-max">
+                {[...categories, ...categories].map((cat, idx) => (
                   <Link
-                    key={"a-" + cat._id}
-                    href={cat._href ?? `/category/${toSlug(cat.name)}`}
-                    className="group flex items-center gap-1.5 text-[13px] font-semibold text-brand-text hover:text-brand-green transition whitespace-nowrap shrink-0"
+                    key={idx}
+                    href={`/category/${toSlug(cat.name)}`}
+                    tabIndex={idx >= categories.length ? -1 : 0}
+                    aria-hidden={idx >= categories.length}
+                    className="group flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-semibold text-gray-500 hover:text-brand-green hover:bg-brand-green-pale transition whitespace-nowrap shrink-0"
                   >
-                    {cat._href ? (
-                      <span className="text-[15px]">📖</span>
-                    ) : cat.image ? (
-                      <img src={getImageUrl(cat.image)} alt={cat.name} className="w-5 h-5 rounded-full object-cover ring-1 ring-brand-green/20 group-hover:ring-brand-green/60 transition shrink-0" />
+                    {cat.image ? (
+                      <img
+                        src={getImageUrl(cat.image)}
+                        alt=""
+                        className="w-7 h-7 rounded-full object-cover shrink-0"
+                      />
                     ) : (
-                      <span className="w-5 h-5 rounded-full bg-brand-green-pale flex items-center justify-center text-[10px] shrink-0">🍽</span>
+                      <span className="text-base">🍽</span>
                     )}
-                    <span className="relative">
-                      {cat.name}
-                      <span className="absolute left-0 -bottom-0.5 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover:w-full rounded-full" />
-                    </span>
-                  </Link>
-                ))}
-                {/* Second copy — makes loop seamless */}
-                {[{ _id: "about", name: "About", image: null, _href: "/about" }, ...categories].map((cat) => (
-                  <Link
-                    key={"b-" + cat._id}
-                    href={cat._href ?? `/category/${toSlug(cat.name)}`}
-                    className="group flex items-center gap-1.5 text-[13px] font-semibold text-brand-text hover:text-brand-green transition whitespace-nowrap shrink-0"
-                    tabIndex={-1}
-                    aria-hidden
-                  >
-                    {cat._href ? (
-                      <span className="text-[15px]">📖</span>
-                    ) : cat.image ? (
-                      <img src={getImageUrl(cat.image)} alt={cat.name} className="w-5 h-5 rounded-full object-cover ring-1 ring-brand-green/20 transition shrink-0" />
-                    ) : (
-                      <span className="w-5 h-5 rounded-full bg-brand-green-pale flex items-center justify-center text-[10px] shrink-0">🍽</span>
-                    )}
-                    <span>{cat.name}</span>
+                    {cat.name}
                   </Link>
                 ))}
               </div>
@@ -385,146 +379,116 @@ function Navbar() {
           </div>
         </div>
 
-        {/* ── MOBILE CATEGORY STRIP (always visible, no sidebar needed) ── */}
-        <div className="lg:hidden border-t border-brand-green-pale bg-white">
-          <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide px-4 py-2">
-
-            {/* About */}
-            <Link
-              href="/about"
-              onClick={() => setMobileOpen(false)}
-              className="flex flex-col items-center gap-1 shrink-0"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-brand-green-pale flex items-center justify-center text-xl border border-brand-green/10">
-                📖
-              </div>
-              <span className="text-[10px] font-semibold text-brand-text whitespace-nowrap">About</span>
-            </Link>
-
-            {/* Dynamic categories */}
-            {categories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/category/${toSlug(cat.name)}`}
-                onClick={() => setMobileOpen(false)}
-                className="flex flex-col items-center gap-1 shrink-0"
-              >
-                <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                  {cat.image ? (
-                    <img src={getImageUrl(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-brand-green-pale flex items-center justify-center text-xl">🍽</div>
-                  )}
-                </div>
-                <span className="text-[10px] font-semibold text-brand-text whitespace-nowrap max-w-14 truncate text-center">{cat.name}</span>
-              </Link>
-            ))}
-
-            {/* Skeleton */}
-            {categories.length === 0 && [1,2,3,4,5,6].map((i) => (
-              <div key={i} className="flex flex-col items-center gap-1 shrink-0 animate-pulse">
-                <div className="w-12 h-12 rounded-2xl bg-gray-200" />
-                <div className="h-2 w-10 bg-gray-200 rounded-full" />
-              </div>
-            ))}
+        {/* ── MOBILE SEARCH ── */}
+        <div className="md:hidden px-4 pb-2 border-t border-gray-100 pt-2">
+          <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10">
+            <FaSearch className="ml-3 text-gray-400 shrink-0" size={12} />
+            <input
+              type="text"
+              placeholder="Search food..."
+              className="flex-1 px-3 h-full outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
+            />
           </div>
+        </div>
+
+        {/* ── MOBILE CATEGORY STRIP ── */}
+        <div className="md:hidden overflow-hidden pb-3 border-t border-gray-100 pt-2">
+          {/* Skeleton */}
+          {categories.length === 0 && (
+            <div className="flex items-center gap-4 px-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex flex-col items-center gap-1 shrink-0 animate-pulse">
+                  <div className="w-12 h-12 rounded-2xl bg-gray-100" />
+                  <div className="h-2 w-10 bg-gray-100 rounded-full" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Marquee — duplicated for seamless loop */}
+          {categories.length > 0 && (
+            <div className="animate-marquee-mobile flex items-center gap-4 w-max px-4">
+              {[...categories, ...categories].map((cat, idx) => (
+                <Link
+                  key={idx}
+                  href={`/category/${toSlug(cat.name)}`}
+                  tabIndex={idx >= categories.length ? -1 : 0}
+                  aria-hidden={idx >= categories.length}
+                  className="flex flex-col items-center gap-1 shrink-0"
+                >
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    {cat.image ? (
+                      <img src={getImageUrl(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-brand-green-pale flex items-center justify-center text-xl">🍽</div>
+                    )}
+                  </div>
+                  <span className="text-[9px] font-semibold text-gray-500 max-w-14 truncate text-center">
+                    {cat.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── MOBILE MENU PANEL ── */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-brand-green-pale bg-white shadow-xl animate-slide-down">
-            {/* Mobile search */}
-            <div className="px-4 pt-4 pb-3">
-              <div className="flex items-center bg-brand-bg rounded-full overflow-hidden border border-brand-green-pale">
-                <input
-                  type="text"
-                  placeholder="Search homemade food..."
-                  className="w-full px-5 py-3 outline-none text-[14px] text-brand-text placeholder-gray-400 bg-transparent"
-                />
-                <button className="bg-brand-green text-white px-5 py-3">
-                  <FaSearch size={14} />
-                </button>
-              </div>
-            </div>
-
-            {/* Mobile login links */}
-            <div className="px-4 pb-3 flex flex-col gap-1">
-              {[
-                { href: "/customerLogin/login", label: "👤 Customer Login" },
-                { href: "/vendorLogin/login",   label: "🏪 Vendor Login" },
-                { href: "/adminlogin",          label: "🛡 Admin Login" },
-              ].map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-3 text-[14px] font-semibold text-brand-text hover:text-brand-green hover:bg-brand-green-pale rounded-xl transition"
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
-
-            {/* Mobile categories (dynamic) */}
-            <div className="px-4 pb-4 border-t border-brand-green-pale pt-3">
-              <p className="text-[11px] font-bold text-brand-green uppercase tracking-widest mb-3 px-1">Categories</p>
-
-              {/* Skeleton while loading */}
-              {categories.length === 0 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {[1,2,3,4,5,6].map((i) => (
-                    <div key={i} className="h-20 rounded-2xl bg-gray-100 animate-pulse" />
-                  ))}
-                </div>
+          <div className="md:hidden border-t border-gray-100 bg-white shadow-xl animate-fade-up">
+            <div className="px-4 py-4 space-y-0.5">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">
+                Account
+              </p>
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3 px-3 py-3 mb-1 bg-brand-green-pale rounded-2xl">
+                    <div className="w-9 h-9 rounded-full bg-brand-green text-white flex items-center justify-center font-black text-sm shrink-0">
+                      {(user.name || "U")[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-800">{user.name}</p>
+                      <p className="text-xs text-gray-400">{user.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { logout(); setMobileOpen(false); }}
+                    className="flex items-center gap-3 w-full px-3 py-3 text-[14px] font-semibold text-red-500 hover:bg-red-50 rounded-xl transition"
+                  >
+                    <FaSignOutAlt size={14} /> Sign Out
+                  </button>
+                </>
+              ) : (
+                [
+                  { href: "/customerLogin/login", label: "👤 Customer Login" },
+                  { href: "/adminlogin", label: "🔐 Admin Login" },
+                  { href: "/vendorLogin/login", label: "🏪 Vendor Login" },
+                ].map(({ href, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-3 py-3 text-[14px] font-semibold text-gray-700 hover:text-brand-green hover:bg-brand-green-pale rounded-xl transition"
+                  >
+                    {label}
+                  </Link>
+                ))
               )}
 
-              <div className="grid grid-cols-3 gap-2">
-                {/* Fixed About tile */}
+              <div className="pt-2 border-t border-gray-100 mt-2">
                 <Link
                   href="/about"
                   onClick={() => setMobileOpen(false)}
-                  className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl bg-brand-bg border border-brand-green-pale hover:border-brand-green hover:bg-brand-green-pale transition text-center"
+                  className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-linear-to-r from-brand-green-pale to-white border border-brand-green/15 hover:border-brand-green/40 hover:bg-brand-green-pale transition group"
                 >
-                  <span className="text-2xl">📖</span>
-                  <span className="text-[11px] font-semibold text-brand-text">About</span>
+                  <div className="w-9 h-9 rounded-xl bg-brand-green flex items-center justify-center text-white text-base shrink-0 group-hover:scale-110 transition-transform">
+                    🍲
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-bold text-gray-800 group-hover:text-brand-green transition">About OJAIN</p>
+                    <p className="text-[10px] text-gray-400 font-medium">Our story, mission & values</p>
+                  </div>
                 </Link>
-
-                {/* Dynamic category tiles */}
-                {categories.map((cat) => (
-                  <Link
-                    key={cat._id}
-                    href={`/category/${toSlug(cat.name)}`}
-                    onClick={() => setMobileOpen(false)}
-                    className="relative flex flex-col items-end justify-end overflow-hidden rounded-2xl border border-brand-green-pale hover:border-brand-green transition text-center h-20"
-                  >
-                    {/* Category image background */}
-                    {cat.image && (
-                      <img
-                        src={getImageUrl(cat.image)}
-                        alt={cat.name}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    )}
-                    {/* Dark overlay */}
-                    <div className="absolute inset-0 bg-black/40" />
-                    {/* Name */}
-                    <span className="relative z-10 w-full text-center text-[11px] font-bold text-white pb-2 px-1 leading-tight drop-shadow">
-                      {cat.name}
-                    </span>
-                  </Link>
-                ))}
               </div>
-            </div>
-
-            {/* Mobile CTA */}
-            <div className="px-4 pb-5">
-              <Link
-                href="/menu"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center gap-2 bg-brand-orange hover:bg-[#E65100] text-white text-[15px] font-bold py-3.5 rounded-full shadow-md transition-all w-full"
-              >
-                🍽️ Order Now
-              </Link>
             </div>
           </div>
         )}

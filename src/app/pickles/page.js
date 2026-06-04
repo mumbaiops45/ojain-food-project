@@ -27,7 +27,7 @@ const pickles = [
     price: "₹250",
     rating: "4.7",
     image: "/pickle3.jpg",
-    type: "Homemade",
+    type: "Traditional",
   },
   {
     name: "Garlic Pickle",
@@ -79,19 +79,19 @@ function PicklesSection() {
 
             <span className="w-2 h-2 rounded-full bg-orange-500"></span>
 
-            Traditional Homemade Pickles
+            Traditional Pickles
 
           </span>
 
           <h2 className="mt-5 text-[46px] leading-[1.05] font-extrabold tracking-[-2px] text-[#0f172a]">
 
-            Homemade Pickles
+            Pickles
 
           </h2>
 
           <p className="mt-4 text-[16px] leading-7 text-slate-500">
 
-            Explore authentic Indian homemade pickles prepared
+            Explore authentic Indian pickles prepared
             with traditional recipes and natural ingredients.
 
           </p>

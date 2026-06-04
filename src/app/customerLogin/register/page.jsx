@@ -57,16 +57,16 @@ export default function CustomerRegisterPage() {
 
           <div className="relative z-10">
             <div className="inline-block bg-white/20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-md mb-6">
-              🍲 Homemade Food Delivery
+              🍲 Food Delivery
             </div>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">
               Taste The <br /> Love Of <br /> Home Cooking
             </h1>
             <p className="text-lg text-white/80 leading-8 max-w-md">
-              Fresh homemade meals prepared with care by local home chefs. Healthy, hygienic, and delivered straight to your doorstep.
+              Fresh meals prepared with care by local chefs. Healthy, hygienic, and delivered straight to your doorstep.
             </p>
             <div className="mt-10 space-y-4">
-              {[["🥘","Fresh Homemade Meals"],["🚚","Fast Delivery"],["❤️","Healthy & Hygienic Food"]].map(([emoji, label]) => (
+              {[["🥘","Fresh Daily Meals"],["🚚","Fast Delivery"],["❤️","Healthy & Hygienic Food"]].map(([emoji, label]) => (
                 <div key={label} className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">{emoji}</div>
                   <span className="text-lg">{label}</span>
@@ -80,11 +80,11 @@ export default function CustomerRegisterPage() {
               <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/20">
                 <div className="text-4xl mb-3">🥗</div>
                 <h3 className="font-semibold text-lg">Healthy Meals</h3>
-                <p className="text-sm text-white/70 mt-2 leading-6">Fresh vegetables and homemade recipes prepared daily.</p>
+                <p className="text-sm text-white/70 mt-2 leading-6">Fresh vegetables and authentic recipes prepared daily.</p>
               </div>
               <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/20">
                 <div className="text-4xl mb-3">🍱</div>
-                <h3 className="font-semibold text-lg">Homemade Taste</h3>
+                <h3 className="font-semibold text-lg">Authentic Taste</h3>
                 <p className="text-sm text-white/70 mt-2 leading-6">Enjoy authentic home-style food with traditional flavors.</p>
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function CustomerRegisterPage() {
             <h2 className="text-4xl font-black text-gray-900 leading-tight">
               <span className="text-brand-green">Create</span> Account
             </h2>
-            <p className="text-gray-500 mt-2 text-lg">Join now and enjoy delicious homemade food.</p>
+            <p className="text-gray-500 mt-2 text-lg">Join now and enjoy delicious food.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

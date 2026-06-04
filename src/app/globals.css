@@ -2,14 +2,23 @@
 
 /* ── Category marquee (infinite auto-scroll) ── */
 @keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 .animate-marquee {
-  animation: marquee 28s linear infinite;
+  animation: marquee 40s linear infinite;
   will-change: transform;
+  backface-visibility: hidden;
 }
 .animate-marquee:hover {
+  animation-play-state: paused;
+}
+.animate-marquee-mobile {
+  animation: marquee 35s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.animate-marquee-mobile:hover {
   animation-play-state: paused;
 }
 
@@ -64,21 +73,27 @@
   --color-brand-text:        #333333;
 }
 
-/* Scroll reveal — triggered by JS adding .revealed */
-/* [data-reveal] {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-[data-reveal].revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-[data-reveal][data-delay="1"] { transition-delay: 0.05s; }
-[data-reveal][data-delay="2"] { transition-delay: 0.1s; }
-[data-reveal][data-delay="3"] { transition-delay: 0.15s; }
-[data-reveal][data-delay="4"] { transition-delay: 0.2s; }
-[data-reveal][data-delay="5"] { transition-delay: 0.25s; } */
+/* ── Scroll Reveal — keyframe animations triggered by .sr-visible ── */
+@keyframes srFadeUp    { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+@keyframes srFadeLeft  { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+@keyframes srFadeRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@keyframes srScaleUp   { from { opacity: 0; transform: scale(0.88) translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes srFadeIn    { from { opacity: 0; } to { opacity: 1; } }
+
+/* Hidden by default */
+.sr-fade-up,
+.sr-fade-left,
+.sr-fade-right,
+.sr-scale-up,
+.sr-fade-in { opacity: 0; }
+
+/* When .sr-visible is added, trigger the matching animation */
+/* animation-fill-mode: both → applies 'from' during delay, stays at 'to' after */
+.sr-fade-up.sr-visible    { animation: srFadeUp    0.7s ease-out both; }
+.sr-fade-left.sr-visible  { animation: srFadeLeft  0.7s ease-out both; }
+.sr-fade-right.sr-visible { animation: srFadeRight 0.7s ease-out both; }
+.sr-scale-up.sr-visible   { animation: srScaleUp   0.7s ease-out both; }
+.sr-fade-in.sr-visible    { animation: srFadeIn    0.7s ease-out both; }
 
 :root {
   --background: #F9FFF6;

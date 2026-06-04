@@ -37,7 +37,7 @@ function TopVendors() {
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-slate-500">
-            Passionate Indian home chefs serving fresh homemade meals prepared
+            Passionate Indian chefs serving fresh meals prepared
             with hygiene, authentic recipes, and traditional flavors.
           </p>
         </div>

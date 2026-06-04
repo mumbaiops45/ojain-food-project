@@ -20,11 +20,11 @@ import toast from "react-hot-toast";
    Helpers
 ──────────────────────────────────────────────────────────── */
 const getImageUrl = (imagePath) => {
-  if (!imagePath) return "/fallback-category.jpg";
+  if (!imagePath) return "/category1.jpg";
   if (imagePath.startsWith("http") || imagePath.startsWith("blob:")) return imagePath;
   let p = imagePath.replace(/\\/g, "/");
   if (p.startsWith("/")) p = p.slice(1);
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "https://ojain-backend-2.onrender.com";
   return `${BASE}/${p}`;
 };
 const toSlug = (name) => name?.toLowerCase().replace(/\s+/g, "-") ?? "";
@@ -334,7 +334,7 @@ export default function VendorCategoryProducts() {
             alt={category.name}
             className="w-full h-full object-cover scale-105"
             style={{ filter: "brightness(0.88)" }}
-            onError={(e) => (e.target.src = "/fallback-category.jpg")}
+            onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 

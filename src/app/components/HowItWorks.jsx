@@ -1,24 +1,25 @@
 "use client";
 
 import { FaStore, FaShoppingBag, FaMotorcycle, FaArrowRight } from "react-icons/fa";
+import ScrollReveal from "./ScrollReveal";
 
 const steps = [
   {
     icon: <FaStore size={30} />,
-    title: "Vendors List Food",
-    text: "Home chefs upload freshly prepared homemade meals with quality ingredients and hygienic cooking.",
+    title: "Sellers List Products",
+    text: "Verified sellers list their O-Jain premix products with quality details, flavour range and pricing.",
     color: "from-[#2E7D32] to-[#66BB6A]",
   },
   {
     icon: <FaShoppingBag size={30} />,
-    title: "Customers Order",
-    text: "Browse authentic homemade dishes, explore categories, and place orders in seconds.",
+    title: "Customers Browse & Order",
+    text: "Explore our wide range of pure Jain & Satvik premix products and place your order in seconds.",
     color: "from-[#43A047] to-[#FF8F00]",
   },
   {
     icon: <FaMotorcycle size={30} />,
-    title: "Fast Delivery",
-    text: "Fresh meals are packed carefully and delivered quickly to your doorstep while still hot.",
+    title: "Order Dispatched",
+    text: "Your O-Jain premix products are packed carefully and dispatched quickly to your address.",
     color: "from-[#1B5E20] to-[#2E7D32]",
   },
 ];
@@ -34,7 +35,7 @@ function HowItWorks() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
 
         {/* Heading */}
-        <div className="text-center max-w-3xl mx-auto">
+        <ScrollReveal animation="fade-up" className="text-center max-w-3xl mx-auto">
           <span className="inline-flex items-center gap-2 bg-brand-orange/10 text-brand-orange px-5 py-2 rounded-full text-sm font-semibold shadow-sm">
             <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></span>
             Fast & Simple Process
@@ -46,9 +47,9 @@ function HowItWorks() {
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-slate-500">
-            Enjoy fresh homemade food from trusted local chefs in just a few simple steps.
+            Order pure Jain &amp; Satvik O-Jain premix products in just a few simple steps.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Steps */}
         <div className="relative mt-10 md:mt-20 grid md:grid-cols-3 gap-6 md:gap-8">
@@ -57,8 +58,8 @@ function HowItWorks() {
           <div className="hidden md:block absolute top-28 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-green-pale via-brand-green-mid to-brand-green-pale"></div>
 
           {steps.map((step, index) => (
+            <ScrollReveal key={index} animation="fade-up" delay={index * 150}>
             <div
-              key={index}
               className="group relative bg-white rounded-[32px] p-6 md:p-10 border border-brand-green-pale shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden"
             >
               {/* Gradient Glow */}
@@ -90,6 +91,7 @@ function HowItWorks() {
                 <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-all duration-300" />
               </button>
             </div>
+            </ScrollReveal>
           ))}
 
         </div>

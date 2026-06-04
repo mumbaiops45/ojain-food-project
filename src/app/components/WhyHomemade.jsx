@@ -1,25 +1,27 @@
 "use client";
 
+import ScrollReveal from "./ScrollReveal";
+
 const points = [
   {
     image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80",
     title: "No Preservatives",
-    text: "Fresh homemade meals prepared using healthy natural ingredients only.",
+    text: "Every O-Jain premix uses only the best natural ingredients — zero artificial preservatives.",
   },
   {
     image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80",
-    title: "Cooked Fresh Daily",
-    text: "Every dish is freshly prepared with hygiene, care and homemade love.",
+    title: "Quick & Easy Premix",
+    text: "Restaurant style taste ready in minutes — just mix, cook and serve. Pocket saving too.",
   },
   {
     image: "https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=600&q=80",
-    title: "Support Home Chefs",
-    text: "Helping women entrepreneurs and local home kitchens grow daily.",
+    title: "Empowering Women",
+    text: "O-Jain is a network for ordinary women to become independent entrepreneurs.",
   },
   {
     image:"https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80",
-    title: "Authentic Indian Taste",
-    text: "Traditional recipes crafted with authentic homemade flavors.",
+    title: "Authentic Jain Taste",
+    text: "Pure Jain & Satvik recipes crafted for families who believe in healthy, graceful living.",
   },
 ];
 
@@ -34,7 +36,7 @@ function WhyHomemade() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Heading */}
-        <div className="text-center max-w-3xl mx-auto">
+        <ScrollReveal animation="fade-up" className="text-center max-w-3xl mx-auto">
           {/* Badge */}
           <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-brand-orange/20 text-brand-orange px-5 py-2 rounded-full text-sm font-semibold shadow-lg">
             <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
@@ -42,22 +44,22 @@ function WhyHomemade() {
           </span>
 
           <h2 className="mt-5 text-4xl sm:text-5xl md:text-6xl leading-tight font-black tracking-tight text-slate-900">
-            Homemade Food{" "}
+            Pure O-Jain Products{" "}
             <span className="text-brand-green">You Can Trust</span>
           </h2>
 
           <p className="mt-5 text-[17px] leading-8 text-slate-600">
-            Freshly prepared homemade meals with authentic taste,
-            hygiene and love from trusted home chefs.
+            Instant &amp; quick premix with authentic Jain taste, zero preservatives
+            and multiple flavour range — easy to make, pocket saving.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Cards */}
         <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {points.map((point, index) => (
+            <ScrollReveal key={index} animation="scale-up" delay={index * 100}>
             <div
-              key={index}
-              className="group relative overflow-hidden rounded-[30px] bg-white/80 backdrop-blur-xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3"
+              className="group relative overflow-hidden rounded-[30px] bg-white/80 backdrop-blur-xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 h-full"
             >
               {/* Hover Glow */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500 bg-linear-to-b from-brand-green/0 via-brand-green/0 to-brand-green-pale/40"></div>
@@ -95,6 +97,7 @@ function WhyHomemade() {
               {/* Bottom Glow */}
               <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 w-44 h-24 bg-brand-green-mid/30 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
             </div>
+            </ScrollReveal>
           ))}
         </div>
 
