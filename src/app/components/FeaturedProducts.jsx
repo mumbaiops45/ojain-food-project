@@ -9,23 +9,100 @@ import {
   FaShoppingCart, FaFireAlt, FaLeaf, FaSpinner,
 } from "react-icons/fa";
 import ScrollReveal from "./ScrollReveal";
-import { useCart }    from "../../../hooks/useCart";
-import { useAuth }    from "../../contexts/AuthContext";
+import { useCart } from "../../../hooks/useCart";
+import { useAuth } from "../../contexts/AuthContext";
 import { useProduct } from "../../../hooks/useProduct";
-import getImageUrl    from "../../../utils/getImageUrl";
+import getImageUrl from "../../../utils/getImageUrl";
 
 /* ─────────────────────────────────────────────────────────
    Quick-view modal — uses real product data from backend
 ───────────────────────────────────────────────────────── */
 function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease }) {
-  const qty     = cartQty(product._id);
+  const qty = cartQty(product._id);
+
   const [adding, setAdding] = useState(false);
+
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  useEffect(() => {
+    if (!product?._id) return;
+
+    const loadReviews = async () => {
+      try {
+        setReviewsLoading(true);
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${product._id}`
+        );
+
+        const data = await res.json();
+
+        setReviews(data.reviews || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    loadReviews();
+  }, [product]);
 
   const handleAdd = async () => {
     setAdding(true);
     await onAdd(product);
     setAdding(false);
     onClose();
+  };
+  const submitReview = async () => {
+    try {
+      setSubmittingReview(true);
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            vendorId: product.vendor?._id || product.vendor,
+            rating,
+            comment,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
+
+      setComment("");
+      setRating(5);
+
+      toast.success("Review submitted");
+
+      const reviewsRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${product._id}`
+      );
+
+      const reviewsData = await reviewsRes.json();
+      setReviews(reviewsData.reviews || []);
+
+    } catch (err) {
+      toast.error(err.message || "Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   return (
@@ -62,8 +139,12 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
           )}
 
           {/* Rating */}
-          <div className="absolute top-4 right-14 flex items-center gap-1 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-brand-green shadow">
-            <FaStar size={9} /> {product.avgRating || "4.5"}
+          <div className="absolute bottom-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-brand-green shadow">
+            <FaStar size={9} />
+            {product.avgRating || 0}
+            <span className="text-gray-500">
+              ({product.reviewCount || 0})
+            </span>
           </div>
 
           {/* Name overlay */}
@@ -73,7 +154,7 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
         </div>
 
         {/* Body */}
-        <div className="p-5 sm:p-6 pb-28">
+        <div className="p-5 sm:p-6 pb-48">
           {product.description && (
             <p className="text-gray-500 text-sm leading-7">{product.description}</p>
           )}
@@ -93,10 +174,92 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
               FREE DELIVERY
             </div>
           </div>
+          {/* Write Review */}
+          <div className="mt-8 border rounded-xl p-4">
+            <h3 className="font-bold text-lg mb-3">
+              Write a Review
+            </h3>
+
+            <select
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="w-full border rounded-lg p-3 mb-3"
+            >
+              <option value={5}>⭐⭐⭐⭐⭐</option>
+              <option value={4}>⭐⭐⭐⭐</option>
+              <option value={3}>⭐⭐⭐</option>
+              <option value={2}>⭐⭐</option>
+              <option value={1}>⭐</option>
+            </select>
+
+            <textarea
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your review..."
+              className="w-full border rounded-lg p-3 mb-3"
+            />
+
+            <button
+              onClick={submitReview}
+              disabled={submittingReview || !comment.trim()}
+              className="bg-brand-green text-white px-5 py-3 rounded-xl font-bold"
+            >
+              {submittingReview ? "Submitting..." : "Submit Review"}
+            </button>
+          </div>
+
+          {/* Customer Reviews */}
+          <div className="mt-8">
+            <h3 className="font-bold text-lg mb-4">
+              Customer Reviews
+            </h3>
+
+            {reviewsLoading ? (
+              <div className="flex items-center gap-2 text-gray-500">
+                <FaSpinner className="animate-spin" />
+                Loading reviews...
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-gray-400 text-sm">
+                No reviews yet.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div
+                    key={review._id}
+                    className="border-b border-gray-100 pb-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-sm">
+                        {review.customerId?.name}
+                      </span>
+
+                      <span className="text-yellow-500 text-sm">
+                        {"⭐".repeat(review.rating)}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mt-2">
+                      {review.comment}
+                    </p>
+
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(
+                        review.createdAt
+                      ).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Sticky CTA */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+        {/* <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4"> */}
+        <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
           {qty > 0 ? (
             <div className="flex items-center justify-between bg-brand-green-pale rounded-2xl px-5 py-3">
               <button
@@ -152,13 +315,14 @@ function SkeletonCard() {
 ───────────────────────────────────────────────────────── */
 function FeaturedProducts() {
   const router = useRouter();
-  const { user }                               = useAuth();
+  const { user } = useAuth();
   const { cart, addItem, updateItem, removeItem } = useCart();
-  const { products, loading, fetchProducts }   = useProduct();
+  const { products, loading, fetchProducts } = useProduct();
 
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [wishlist, setWishlist]               = useState([]);
-  const [addingId, setAddingId]               = useState(null);
+  const [wishlist, setWishlist] = useState([]);
+  const [addingId, setAddingId] = useState(null);
+
 
   // Fetch products on mount
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
@@ -197,11 +361,12 @@ function FeaturedProducts() {
     }
   };
 
+
   const handleDecrease = async (product) => {
     const qty = cartQty(product._id);
     try {
       if (qty <= 1) await removeItem(product._id);
-      else          await updateItem(product._id, qty - 1);
+      else await updateItem(product._id, qty - 1);
     } catch {
       toast.error("Failed to update cart");
     }
@@ -252,7 +417,7 @@ function FeaturedProducts() {
 
             {/* Loading skeletons */}
             {loading && featured.length === 0 &&
-              [0,1,2,3].map((i) => <SkeletonCard key={i} />)
+              [0, 1, 2, 3].map((i) => <SkeletonCard key={i} />)
             }
 
             {/* Empty state */}
@@ -264,107 +429,112 @@ function FeaturedProducts() {
 
             {/* Real product cards */}
             {featured.map((product, i) => {
-              const qty      = cartQty(product._id);
+              const qty = cartQty(product._id);
               const isAdding = addingId === product._id;
 
               return (
                 <ScrollReveal key={product._id} animation="scale-up" delay={i * 100}>
-                <div
-                  className="group bg-white rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full"
-                >
-                  {/* ── Image ── */}
                   <div
-                    className="relative overflow-hidden cursor-pointer"
-                    onClick={() => setSelectedProduct(product)}
+                    className="group bg-white rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full"
                   >
-                    <div className="relative h-56 w-full">
-                      <Image
-                        src={getImageUrl(product.images?.[0])}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-110 transition duration-700"
-                        unoptimized
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-transparent" />
-
-                    {/* Veg badge */}
-                    {product.isVeg && (
-                      <div className="absolute top-4 left-4 bg-brand-green text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow">
-                        <FaLeaf size={9} /> Pure Veg
-                      </div>
-                    )}
-
-                    {/* Rating */}
-                    <div className="absolute bottom-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-brand-green shadow">
-                      <FaStar size={9} /> {product.avgRating || "4.5"}
-                    </div>
-
-                    {/* Wishlist */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleWishlist(product._id); }}
-                      className={`absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition-all ${
-                        wishlist.includes(product._id) ? "text-red-500" : "text-gray-400"
-                      }`}
-                    >
-                      <FaHeart size={13} />
-                    </button>
-                  </div>
-
-                  {/* ── Content ── */}
-                  <div className="p-5 flex flex-col flex-1">
-                    <h3
-                      className="text-xl font-black text-gray-900 leading-tight truncate cursor-pointer hover:text-brand-green transition"
+                    {/* ── Image ── */}
+                    <div
+                      className="relative overflow-hidden cursor-pointer"
                       onClick={() => setSelectedProduct(product)}
                     >
-                      {product.name}
-                    </h3>
+                      <div className="relative h-56 w-full">
+                        <Image
+                          src={getImageUrl(product.images?.[0])}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition duration-700"
+                          unoptimized
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-transparent" />
 
-                    {product.description && (
-                      <p className="text-gray-400 text-xs mt-1.5 line-clamp-2 leading-5 flex-1">
-                        {product.description}
-                      </p>
-                    )}
-
-                    {/* Price + Cart controls */}
-                    <div className="mt-4 flex items-center justify-between gap-2">
-                      <p className="text-2xl font-black text-brand-orange">₹{product.price}</p>
-
-                      {qty > 0 ? (
-                        /* ── In-cart: show +/− ── */
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleDecrease(product)}
-                            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
-                          >
-                            <FaMinus size={10} />
-                          </button>
-                          <span className="font-black text-brand-green min-w-5 text-center text-base">
-                            {qty}
-                          </span>
-                          <button
-                            onClick={() => handleIncrease(product)}
-                            className="w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center hover:bg-[#E65100] transition"
-                          >
-                            <FaPlus size={10} />
-                          </button>
+                      {/* Veg badge */}
+                      {product.isVeg && (
+                        <div className="absolute top-4 left-4 bg-brand-green text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow">
+                          <FaLeaf size={9} /> Pure Veg
                         </div>
-                      ) : (
-                        /* ── Not in cart: Add button ── */
-                        <button
-                          onClick={() => handleAddToCart(product)}
-                          disabled={isAdding}
-                          className="flex items-center gap-2 bg-brand-orange hover:bg-[#E65100] text-white px-4 py-2 rounded-2xl font-bold text-sm shadow-lg hover:scale-105 transition-all disabled:opacity-70 whitespace-nowrap"
-                        >
-                          {isAdding
-                            ? <FaSpinner className="animate-spin" />
-                            : <FaShoppingCart size={12} />}
-                          {isAdding ? "Adding…" : "Add"}
-                        </button>
                       )}
+
+                      {/* Rating */}
+                      <div className="absolute bottom-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-brand-green shadow">
+                        <>
+                          <FaStar size={9} />
+                          {product.avgRating || 0}
+                          <span className="text-gray-500">
+                            ({product.reviewCount || 0})
+                          </span>
+                        </>
+                      </div>
+
+                      {/* Wishlist */}
+                      {/* <button
+                        onClick={(e) => { e.stopPropagation(); toggleWishlist(product._id); }}
+                        className={`absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition-all ${wishlist.includes(product._id) ? "text-red-500" : "text-gray-400"
+                          }`}
+                      >
+                        <FaHeart size={13} />
+                      </button> */}
+                    </div>
+
+                    {/* ── Content ── */}
+                    <div className="p-5 flex flex-col flex-1">
+                      <h3
+                        className="text-xl font-black text-gray-900 leading-tight truncate cursor-pointer hover:text-brand-green transition"
+                        onClick={() => setSelectedProduct(product)}
+                      >
+                        {product.name}
+                      </h3>
+
+                      {product.description && (
+                        <p className="text-gray-400 text-xs mt-1.5 line-clamp-2 leading-5 flex-1">
+                          {product.description}
+                        </p>
+                      )}
+
+                      {/* Price + Cart controls */}
+                      <div className="mt-4 flex items-center justify-between gap-2">
+                        <p className="text-2xl font-black text-brand-orange">₹{product.price}</p>
+
+                        {qty > 0 ? (
+                          /* ── In-cart: show +/− ── */
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleDecrease(product)}
+                              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
+                            >
+                              <FaMinus size={10} />
+                            </button>
+                            <span className="font-black text-brand-green min-w-5 text-center text-base">
+                              {qty}
+                            </span>
+                            <button
+                              onClick={() => handleIncrease(product)}
+                              className="w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center hover:bg-[#E65100] transition"
+                            >
+                              <FaPlus size={10} />
+                            </button>
+                          </div>
+                        ) : (
+                          /* ── Not in cart: Add button ── */
+                          <button
+                            onClick={() => handleAddToCart(product)}
+                            disabled={isAdding}
+                            className="flex items-center gap-2 bg-brand-orange hover:bg-[#E65100] text-white px-4 py-2 rounded-2xl font-bold text-sm shadow-lg hover:scale-105 transition-all disabled:opacity-70 whitespace-nowrap"
+                          >
+                            {isAdding
+                              ? <FaSpinner className="animate-spin" />
+                              : <FaShoppingCart size={12} />}
+                            {isAdding ? "Adding…" : "Add"}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
                 </ScrollReveal>
               );
             })}

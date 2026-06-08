@@ -19,7 +19,8 @@ api.interceptors.request.use(
     if (typeof window !== "undefined") {
       const adminToken = localStorage.getItem("adminToken");
       const token = localStorage.getItem("token");
-      const finalToken = adminToken || token;
+      // const finalToken = adminToken || token;
+      const finalToken = token || adminToken;
       if (finalToken) {
         config.headers.Authorization = `Bearer ${finalToken}`;
       }
@@ -59,18 +60,42 @@ api.interceptors.response.use(
       toast.error("Cannot reach server. Please check your internet connection.", {
         duration: 5000,
       });
-    } else if (status === 401) {
-      // Token expired or invalid — clear credentials and redirect
+    }
+    // else if (status === 401) {
+    //   // Token expired or invalid — clear credentials and redirect
+    //   localStorage.removeItem("token");
+    //   localStorage.removeItem("adminToken");
+    //   const path = window.location.pathname;
+    //   const isLoginPage =
+    //     path.includes("login") || path.includes("Login") || path === "/adminlogin";
+    //   if (!isLoginPage) {
+    //     toast.error("Session expired. Please log in again.");
+    //     // window.location.href = "/customerLogin/login";
+    //     window.location.href = "/";
+    //   }
+    // } 
+    else if (status === 401) {
+      const adminToken =
+        localStorage.getItem(
+          "adminToken"
+        );
+
       localStorage.removeItem("token");
       localStorage.removeItem("adminToken");
-      const path = window.location.pathname;
-      const isLoginPage =
-        path.includes("login") || path.includes("Login") || path === "/adminlogin";
-      if (!isLoginPage) {
-        toast.error("Session expired. Please log in again.");
-        window.location.href = "/customerLogin/login";
+
+      toast.error(
+        "Session expired. Please login again."
+      );
+
+      if (adminToken) {
+        window.location.href =
+          "/adminlogin";
+      } else {
+        window.location.href =
+          "/";
       }
-    } else if (status >= 500) {
+    }
+    else if (status >= 500) {
       toast.error("Server error. Please try again later.", { duration: 4000 });
     }
 

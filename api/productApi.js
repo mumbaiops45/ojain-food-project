@@ -88,7 +88,7 @@ export const approveProduct =
     return response.data;
   };
 
-  // GET PRODUCTS BY CATEGORY
+// GET PRODUCTS BY CATEGORY
 export const getProductsByCategory =
   async (categoryId) => {
 

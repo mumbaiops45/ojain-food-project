@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { useProduct }  from "../../../../hooks/useProduct";
+import { useProduct } from "../../../../hooks/useProduct";
 import { useCategory } from "../../../../hooks/useCategories";
 import toast from "react-hot-toast";
 import {
@@ -46,7 +46,7 @@ const inputStyle = { background: "#F9FFF6", borderColor: "#C8E6C9", color: "#333
 function useInputFocus() {
   return {
     onFocus: (e) => { e.currentTarget.style.borderColor = "#2E7D32"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(46,125,50,0.12)"; },
-    onBlur:  (e) => { e.currentTarget.style.borderColor = "#C8E6C9"; e.currentTarget.style.boxShadow = "none"; },
+    onBlur: (e) => { e.currentTarget.style.borderColor = "#C8E6C9"; e.currentTarget.style.boxShadow = "none"; },
   };
 }
 
@@ -115,17 +115,17 @@ export default function ProductManager() {
   const { products, loading, fetchProducts, createProduct, updateProduct, deleteProduct } = useProduct();
   const { categories, fetchCategories } = useCategory();
 
-  const formRef     = useRef(null);
+  const formRef = useRef(null);
   const fileInputRef = useRef(null);
-  const focus       = useInputFocus();
+  const focus = useInputFocus();
 
-  const [editId,       setEditId]       = useState(null);
-  const [saving,       setSaving]       = useState(false);
-  const [deleting,     setDeleting]     = useState(null);
-  const [search,       setSearch]       = useState("");
-  const [imageFiles,   setImageFiles]   = useState([]);
+  const [editId, setEditId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(null);
+  const [search, setSearch] = useState("");
+  const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-
+  const [existingImages, setExistingImages] = useState([]);
   const [form, setForm] = useState({
     name: "", description: "", category: "",
     price: "", images: "", isVeg: true,
@@ -174,25 +174,43 @@ export default function ProductManager() {
       let payload;
       if (imageFiles.length > 0) {
         payload = new FormData();
-        payload.append("name",        form.name.trim());
+
+        payload.append("name", form.name.trim());
         payload.append("description", form.description);
-        payload.append("category",    form.category);
-        payload.append("price",       Number(form.price));
-        payload.append("stock",       Number(form.stock) || 0);
-        payload.append("isVeg",       form.isVeg);
+        payload.append("category", form.category);
+        payload.append("price", Number(form.price));
+        payload.append("stock", Number(form.stock) || 0);
+        payload.append("isVeg", form.isVeg);
         payload.append("isAvailable", form.isAvailable);
-        payload.append("status",      form.status);
+        payload.append("status", form.status);
         payload.append("servingSize", form.servingSize);
-        form.tags.split(",").map((s) => s.trim()).filter(Boolean)
+
+        form.tags
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
           .forEach((t) => payload.append("tags", t));
-        imageFiles.forEach((f) => payload.append("images", f));
-      } else {
+
+        // Upload only files
+        imageFiles.forEach((file) => {
+          payload.append("images", file);
+        });
+
+        // Debug
+        for (const pair of payload.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+      }
+
+
+
+      else {
         payload = {
           ...form,
-          price:  Number(form.price),
-          stock:  Number(form.stock) || 0,
+          price: Number(form.price),
+          stock: Number(form.stock) || 0,
           images: form.images.split(",").map((s) => s.trim()).filter(Boolean),
-          tags:   form.tags.split(",").map((s) => s.trim()).filter(Boolean),
+          tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
         };
       }
 
@@ -204,7 +222,7 @@ export default function ProductManager() {
         toast.success("Product created successfully! 🎉");
       }
       resetForm();
-      fetchProducts();
+      fetchProducts(true);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
@@ -214,6 +232,10 @@ export default function ProductManager() {
 
   /* ── edit ── */
   const handleEdit = (p) => {
+
+    setExistingImages(
+      p.images || []
+    );
     setEditId(p._id);
     setForm({
       name: p.name, description: p.description,

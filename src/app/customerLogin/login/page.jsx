@@ -12,8 +12,8 @@ export default function CustomerLoginPage() {
   const { loginCustomer, loading, error } = useCustomer();
 
   const [loginType, setLoginType] = useState("email");
-  const [otpSent, setOtpSent]     = useState(false);
-  const [formData, setFormData]   = useState({ email: "", mobile: "", password: "", otp: "" });
+  const [otpSent, setOtpSent] = useState(false);
+  const [formData, setFormData] = useState({ email: "", mobile: "", password: "", otp: "" });
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -29,9 +29,22 @@ export default function CustomerLoginPage() {
       const payload = loginType === "email"
         ? { email: formData.email, password: formData.password }
         : { mobile: formData.mobile, otp: formData.otp };
-      await loginCustomer(payload);
-      toast.success("Login Successful");
-      router.push("/");
+      const res = await loginCustomer(payload);
+
+      // toast.success("Login Successful");
+
+      // if (res?.user?.role === "admin") {
+      //   router.push("/admin/dashboard");
+      // } else {
+      //   router.push("/");
+      // }
+      if (res?.user?.role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (res?.user?.role === "customer") {
+        router.push("/");
+      } else {
+        toast.error("Unauthorized User");
+      }
     } catch (err) {
       toast.error(err?.response?.data?.message || "Login Failed");
     }
@@ -62,7 +75,7 @@ export default function CustomerLoginPage() {
               Login to explore healthy meals prepared with love by trusted chefs near you.
             </p>
             <div className="mt-10 space-y-4">
-              {[["🥘","Fresh Daily Meals"],["🚚","Fast & Safe Delivery"],["❤️","Healthy & Fresh Food"]].map(([emoji, label]) => (
+              {[["🥘", "Fresh Daily Meals"], ["🚚", "Fast & Safe Delivery"], ["❤️", "Healthy & Fresh Food"]].map(([emoji, label]) => (
                 <div key={label} className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">{emoji}</div>
                   <span className="text-lg">{label}</span>
@@ -107,7 +120,7 @@ export default function CustomerLoginPage() {
 
             {/* TABS */}
             <div className="grid grid-cols-2 bg-brand-green-pale p-1 rounded-2xl">
-              {[["email","Email Login"],["mobile","Mobile Login"]].map(([type, label]) => (
+              {[["email", "Email Login"], ["mobile", "Mobile Login"]].map(([type, label]) => (
                 <button key={type} type="button" onClick={() => setLoginType(type)}
                   className={`h-12 rounded-xl font-semibold transition ${loginType === type ? "bg-brand-green text-white shadow-lg" : "text-gray-600"}`}>
                   {label}

@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import useCartStore from "../../../store/cartStore";
 import { useCategoryStore } from "../../../store/categoryStore";
-import {useAuth} from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import getImageUrl from "../../../utils/getImageUrl";
 
 const toSlug = (name) => name?.toLowerCase().replace(/\s+/g, "-") ?? "";
@@ -42,11 +42,12 @@ function Navbar() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [loginMenuOpen, setLoginMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  // const [loginMenuOpen, setLoginMenuOpen] = useState(false);
 
   const locRef = useRef(null);
   const userRef = useRef(null);
-  const loginRef = useRef(null);
+  // const loginRef = useRef(null);
 
   const totalItems = useCartStore((s) => s.totalItems());
   const categories = useCategoryStore((s) => s.categories);
@@ -59,6 +60,9 @@ function Navbar() {
   useEffect(() => {
     const saved = localStorage.getItem("userLocation");
     if (saved) setLocation(saved);
+  }, []);
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   const detectLocation = () => {
@@ -75,9 +79,9 @@ function Navbar() {
           setLocation(name);
           localStorage.setItem("userLocation", name);
           setLocOpen(false);
-        } catch {}
+        } catch { }
       },
-      () => {}
+      () => { }
     );
   };
 
@@ -99,7 +103,7 @@ function Navbar() {
     const handler = (e) => {
       if (locRef.current && !locRef.current.contains(e.target)) setLocOpen(false);
       if (userRef.current && !userRef.current.contains(e.target)) setUserMenuOpen(false);
-      if (loginRef.current && !loginRef.current.contains(e.target)) setLoginMenuOpen(false);
+      // if (loginRef.current && !loginRef.current.contains(e.target)) setLoginMenuOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -239,7 +243,7 @@ function Navbar() {
               </Link>
 
               {/* USER / LOGIN */}
-              <div className="hidden md:block relative" ref={userRef}>
+              {/* <div className="hidden md:block">
                 {user ? (
                   <>
                     <button
@@ -252,69 +256,27 @@ function Navbar() {
                       <span className="text-[13px] font-bold max-w-[80px] truncate">
                         {user.name?.split(" ")[0] || "Account"}
                       </span>
-                      <FaChevronDown
-                        size={9}
-                        className={`text-brand-green/60 transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
-                      />
                     </button>
-
-                    {userMenuOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl z-[9999] py-2 overflow-hidden">
-                        <div className="px-4 py-2 border-b border-gray-100 mb-1">
-                          <p className="text-xs text-gray-400">Signed in as</p>
-                          <p className="text-sm font-bold text-gray-800 truncate">{user.name}</p>
-                        </div>
-                        <Link
-                          href="/profile"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
-                        >
-                          <FaUserCircle className="text-brand-green" size={14} /> My Profile
-                        </Link>
-                        <button
-                          onClick={() => { logout(); setUserMenuOpen(false); }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
-                        >
-                          <FaSignOutAlt size={13} /> Sign Out
-                        </button>
-                      </div>
-                    )}
                   </>
                 ) : (
-                  <div className="relative" ref={loginRef}>
-                    <button
-                      onClick={() => setLoginMenuOpen(!loginMenuOpen)}
-                      className="flex items-center gap-2 bg-brand-green hover:bg-[#1B5E20] text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition shadow-sm"
-                    >
-                      <FaUserCircle size={14} />
-                      Login
-                      <FaChevronDown size={9} className={`transition-transform ${loginMenuOpen ? "rotate-180" : ""}`} />
-                    </button>
-
-                    {loginMenuOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl z-[9999] py-2 overflow-hidden">
-                        <Link
-                          href="/customerLogin/login"
-                          onClick={() => setLoginMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-green-pale hover:text-brand-green transition"
-                        >
-                          <FaUserCircle size={14} className="text-brand-green" />
-                          Customer Login
-                        </Link>
-                        <Link
-                          href="/adminlogin"
-                          onClick={() => setLoginMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-green-pale hover:text-brand-green transition"
-                        >
-                          <FaUserCircle size={14} className="text-brand-orange" />
-                          Admin Login
-                        </Link>
-                      </div>
-                    )}
-                  </div>
+                  <Link
+                    href="/customerLogin/login"
+                    className="flex items-center gap-2 bg-brand-green hover:bg-[#1B5E20] text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition shadow-sm"
+                  >
+                    <FaUserCircle size={14} />
+                    Login
+                  </Link>
                 )}
+              </div> */}
+              <div className="hidden md:block">
+                <Link
+                  href="/customerLogin/login"
+                  className="flex items-center gap-2 bg-brand-green hover:bg-[#1B5E20] text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition shadow-sm"
+                >
+                  <FaUserCircle size={14} />
+                  Login
+                </Link>
               </div>
-
               {/* CART */}
               <button
                 onClick={() => router.push("/cart")}
@@ -322,7 +284,7 @@ function Navbar() {
                 aria-label="View cart"
               >
                 <FaShoppingCart size={16} />
-                {totalItems > 0 && (
+                {mounted && totalItems > 0 && (
                   <span className="text-[12px] font-black leading-none">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>

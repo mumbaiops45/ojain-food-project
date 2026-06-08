@@ -1,1051 +1,3 @@
-// // // app/cart/page.js
-// // "use client";
-// // import { useState, useEffect } from "react";
-// // import { useCart } from "../../../hooks/useCart";
-// // import { useAuth } from "../../contexts/AuthContext";
-// // import { useRouter } from "next/navigation";
-// // import Image from "next/image";
-// // import { addressAPI, orderAPI } from "../../../services/api";
-// // import getImageUrl from "../../../utils/getImageUrl";
-
-// // export default function CartPage() {
-// //   const { cart, updateItem, removeItem, totalPrice, fetchCart } = useCart();
-// //   const { user } = useAuth();
-// //   const router = useRouter();
-
-// //   const [step, setStep] = useState(1); // 1=cart, 2=address, 3=payment
-// //   const [addresses, setAddresses] = useState([]);
-// //   const [selectedAddressId, setSelectedAddressId] = useState("");
-// //   const [newAddress, setNewAddress] = useState({
-// //     label: "Home",
-// //     street: "",
-// //     city: "",
-// //     state: "",
-// //     zipCode: "",
-// //     phone: "",
-// //   });
-// //   const [showAddressForm, setShowAddressForm] = useState(false);
-// //   const [paymentMethod, setPaymentMethod] = useState("COD");
-// //   const [loading, setLoading] = useState(false);
-
-// //   // Redirect if not logged in
-// //   useEffect(() => {
-// //     if (!user) router.push("/");
-// //   }, [user, router]);
-
-// //   // Load addresses when entering step 2
-// //   useEffect(() => {
-// //     if (step === 2 && user) {
-// //       fetchAddresses();
-// //     }
-// //   }, [step, user]);
-
-// //   const fetchAddresses = async () => {
-// //     const { data } = await addressAPI.getAll();
-// //     setAddresses(data);
-// //     const defaultAddr = data.find((a) => a.isDefault);
-// //     if (defaultAddr) setSelectedAddressId(defaultAddr._id);
-// //   };
-
-// //   const handleSaveAddress = async () => {
-// //     const { data } = await addressAPI.create(newAddress);
-// //     setAddresses((prev) => [...prev, data]);
-// //     setSelectedAddressId(data._id);
-// //     setShowAddressForm(false);
-// //     setNewAddress({
-// //       label: "Home",
-// //       street: "",
-// //       city: "",
-// //       state: "",
-// //       zipCode: "",
-// //       phone: "",
-// //     });
-// //   };
-
-// //   const placeOrder = async () => {
-// //     if (!selectedAddressId) {
-// //       alert("Please select an address");
-// //       return;
-// //     }
-// //     setLoading(true);
-// //     try {
-// //       await orderAPI.create({
-// //         addressId: selectedAddressId,
-// //         paymentMethod,
-// //       });
-// //       await fetchCart(); // refresh cart (should be empty after order)
-// //       router.push("/order-confirmation");
-// //     } catch (err) {
-// //       alert(err.response?.data?.message || "Order failed");
-// //     } finally {
-// //       setLoading(false);
-// //     }
-// //   };
-
-// //   if (cart.items.length === 0 && step === 1) {
-// //     return (
-// //       <div className="p-10 text-center">
-// //         <p className="text-gray-500 text-lg">Your cart is empty</p>
-// //         <button
-// //           onClick={() => router.push("/")}
-// //           className="mt-4 bg-orange-500 text-white px-6 py-2 rounded-full"
-// //         >
-// //           Continue Shopping
-// //         </button>
-// //       </div>
-// //     );
-// //   }
-
-// //   return (
-// //     <div className="max-w-4xl mx-auto p-5">
-// //       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
-
-// //       {/* Step indicators */}
-// //       <div className="flex mb-8 border-b pb-2">
-// //         {["Cart", "Address", "Payment"].map((label, i) => (
-// //           <div
-// //             key={label}
-// //             className={`flex-1 text-center py-2 ${
-// //               step === i + 1
-// //                 ? "border-b-2 border-orange-500 text-orange-500 font-bold"
-// //                 : "text-gray-400"
-// //             }`}
-// //           >
-// //             {label}
-// //           </div>
-// //         ))}
-// //       </div>
-
-// //       {/* Step 1: Cart Items */}
-// //       {step === 1 && (
-// //         <>
-// //           {cart.items.map((item) => (
-// //             <div
-// //               key={item.product._id}
-// //               className="flex gap-4 bg-white p-4 rounded-xl shadow mb-4 items-center"
-// //             >
-// //               <div className="relative h-20 w-20">
-// //                 <Image
-// //                   src={getImageUrl(item.product.images?.[0])}
-// //                   alt={item.product.name}
-// //                   fill
-// //                   className="object-cover rounded"
-// //                   unoptimized
-// //                 />
-// //               </div>
-// //               <div className="flex-1">
-// //                 <h3 className="font-bold">{item.product.name}</h3>
-// //                 <p className="text-orange-500">₹{item.product.price}</p>
-// //               </div>
-// //               <div className="flex items-center gap-2">
-// //                 <button
-// //                   onClick={() => updateItem(item.product._id, item.quantity - 1)}
-// //                   className="bg-gray-200 px-3 py-1 rounded-full"
-// //                 >
-// //                   -
-// //                 </button>
-// //                 <span>{item.quantity}</span>
-// //                 <button
-// //                   onClick={() => updateItem(item.product._id, item.quantity + 1)}
-// //                   className="bg-gray-200 px-3 py-1 rounded-full"
-// //                 >
-// //                   +
-// //                 </button>
-// //                 <button
-// //                   onClick={() => removeItem(item.product._id)}
-// //                   className="bg-red-500 text-white px-4 py-1 rounded-full ml-4"
-// //                 >
-// //                   Remove
-// //                 </button>
-// //               </div>
-// //             </div>
-// //           ))}
-// //           <div className="text-right text-2xl font-bold mt-4">
-// //             Total: ₹{totalPrice}
-// //           </div>
-// //           <button
-// //             onClick={() => setStep(2)}
-// //             className="mt-6 w-full bg-orange-500 text-white py-3 rounded-xl font-bold"
-// //           >
-// //             Proceed to Address
-// //           </button>
-// //         </>
-// //       )}
-
-// //       {/* Step 2: Address Selection */}
-// //       {step === 2 && (
-// //         <>
-// //           <h2 className="text-xl font-semibold mb-4">Delivery Address</h2>
-// //           {addresses.map((addr) => (
-// //             <div
-// //               key={addr._id}
-// //               className={`border p-4 rounded-xl mb-3 cursor-pointer ${
-// //                 selectedAddressId === addr._id
-// //                   ? "border-orange-500 bg-orange-50"
-// //                   : "border-gray-200"
-// //               }`}
-// //               onClick={() => setSelectedAddressId(addr._id)}
-// //             >
-// //               <p className="font-semibold">{addr.label}</p>
-// //               <p>
-// //                 {addr.street}, {addr.city}, {addr.state} - {addr.zipCode}
-// //               </p>
-// //               <p>Phone: {addr.phone}</p>
-// //             </div>
-// //           ))}
-// //           {showAddressForm ? (
-// //             <div className="border p-4 rounded-xl mt-4">
-// //               <input
-// //                 placeholder="Label (Home/Work)"
-// //                 value={newAddress.label}
-// //                 onChange={(e) =>
-// //                   setNewAddress({ ...newAddress, label: e.target.value })
-// //                 }
-// //                 className="w-full border p-2 mb-2 rounded"
-// //               />
-// //               <input
-// //                 placeholder="Street"
-// //                 value={newAddress.street}
-// //                 onChange={(e) =>
-// //                   setNewAddress({ ...newAddress, street: e.target.value })
-// //                 }
-// //                 className="w-full border p-2 mb-2 rounded"
-// //               />
-// //               <input
-// //                 placeholder="City"
-// //                 value={newAddress.city}
-// //                 onChange={(e) =>
-// //                   setNewAddress({ ...newAddress, city: e.target.value })
-// //                 }
-// //                 className="w-full border p-2 mb-2 rounded"
-// //               />
-// //               <input
-// //                 placeholder="State"
-// //                 value={newAddress.state}
-// //                 onChange={(e) =>
-// //                   setNewAddress({ ...newAddress, state: e.target.value })
-// //                 }
-// //                 className="w-full border p-2 mb-2 rounded"
-// //               />
-// //               <input
-// //                 placeholder="Zip Code"
-// //                 value={newAddress.zipCode}
-// //                 onChange={(e) =>
-// //                   setNewAddress({ ...newAddress, zipCode: e.target.value })
-// //                 }
-// //                 className="w-full border p-2 mb-2 rounded"
-// //               />
-// //               <input
-// //                 placeholder="Phone"
-// //                 value={newAddress.phone}
-// //                 onChange={(e) =>
-// //                   setNewAddress({ ...newAddress, phone: e.target.value })
-// //                 }
-// //                 className="w-full border p-2 mb-2 rounded"
-// //               />
-// //               <button
-// //                 onClick={handleSaveAddress}
-// //                 className="bg-orange-500 text-white px-4 py-2 rounded-xl mt-2"
-// //               >
-// //                 Save Address
-// //               </button>
-// //               <button
-// //                 onClick={() => setShowAddressForm(false)}
-// //                 className="ml-2 bg-gray-300 px-4 py-2 rounded-xl mt-2"
-// //               >
-// //                 Cancel
-// //               </button>
-// //             </div>
-// //           ) : (
-// //             <button
-// //               onClick={() => setShowAddressForm(true)}
-// //               className="mt-4 bg-gray-200 px-4 py-2 rounded-xl"
-// //             >
-// //               + Add New Address
-// //             </button>
-// //           )}
-// //           <div className="flex gap-3 mt-6">
-// //             <button
-// //               onClick={() => setStep(1)}
-// //               className="flex-1 bg-gray-200 py-3 rounded-xl font-bold"
-// //             >
-// //               Back to Cart
-// //             </button>
-// //             <button
-// //               onClick={() => setStep(3)}
-// //               disabled={!selectedAddressId}
-// //               className={`flex-1 py-3 rounded-xl font-bold ${
-// //                 selectedAddressId
-// //                   ? "bg-orange-500 text-white"
-// //                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-// //               }`}
-// //             >
-// //               Proceed to Payment
-// //             </button>
-// //           </div>
-// //         </>
-// //       )}
-
-// //       {/* Step 3: Payment */}
-// //       {step === 3 && (
-// //         <>
-// //           <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-// //           <div className="space-y-3">
-// //             <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer">
-// //               <input
-// //                 type="radio"
-// //                 value="COD"
-// //                 checked={paymentMethod === "COD"}
-// //                 onChange={() => setPaymentMethod("COD")}
-// //               />
-// //               Cash on Delivery
-// //             </label>
-// //             <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer">
-// //               <input
-// //                 type="radio"
-// //                 value="Card"
-// //                 checked={paymentMethod === "Card"}
-// //                 onChange={() => setPaymentMethod("Card")}
-// //               />
-// //               Credit/Debit Card (Demo)
-// //             </label>
-// //           </div>
-// //           <div className="flex gap-3 mt-6">
-// //             <button
-// //               onClick={() => setStep(2)}
-// //               className="flex-1 bg-gray-200 py-3 rounded-xl font-bold"
-// //             >
-// //               Back to Address
-// //             </button>
-// //             <button
-// //               onClick={placeOrder}
-// //               disabled={loading}
-// //               className="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold"
-// //             >
-// //               {loading ? "Placing Order..." : "Place Order"}
-// //             </button>
-// //           </div>
-// //         </>
-// //       )}
-// //     </div>
-// //   );
-// // }
-
-
-
-
-
-
-
-// "use client";
-
-// import { useState, useEffect } from "react";
-
-// import { useCart } from "../../../hooks/useCart";
-
-// import { useAuth } from "../../contexts/AuthContext";
-
-// import { useRouter } from "next/navigation";
-
-// import Image from "next/image";
-
-// import {
-//   addressAPI,
-//   orderAPI,
-// } from "../../../services/api";
-
-// import getImageUrl from "../../../utils/getImageUrl";
-
-// export default function CartPage() {
-
-//   const {
-//     cart,
-//     updateItem,
-//     removeItem,
-//     totalPrice,
-//     fetchCart,
-//   } = useCart();
-
-//   const { user } = useAuth();
-
-//   const router = useRouter();
-
-//   const [step, setStep] =
-//     useState(1);
-
-//   const [addresses, setAddresses] =
-//     useState([]);
-
-//   const [
-//     selectedAddressId,
-//     setSelectedAddressId,
-//   ] = useState("");
-
-//   const [newAddress, setNewAddress] =
-//     useState({
-//       label: "Home",
-//       fullName: "",
-//       street: "",
-//       landmark: "",
-//       city: "",
-//       state: "",
-//       zipCode: "",
-//       phone: "",
-//     });
-
-//   const [
-//     showAddressForm,
-//     setShowAddressForm,
-//   ] = useState(false);
-
-//   const [
-//     paymentMethod,
-//     setPaymentMethod,
-//   ] = useState("COD");
-
-//   const [loading, setLoading] =
-//     useState(false);
-
-//   // LOGIN CHECK
-//   useEffect(() => {
-
-//     if (!user) {
-
-//       router.push(
-//         "/customerLogin/login"
-//       );
-//     }
-
-//   }, [user, router]);
-
-//   // FETCH ADDRESSES
-//   useEffect(() => {
-
-//     if (step === 2 && user) {
-
-//       fetchAddresses();
-//     }
-
-//   }, [step, user]);
-
-//   const fetchAddresses =
-//     async () => {
-
-//       try {
-
-//         const { data } =
-//           await addressAPI.getAll();
-
-//         const addressList =
-//           data.addresses || [];
-
-//         setAddresses(addressList);
-
-//         const defaultAddr =
-//           addressList.find(
-//             (a) => a.isDefault
-//           );
-
-//         if (defaultAddr) {
-
-//           setSelectedAddressId(
-//             defaultAddr._id
-//           );
-//         }
-
-//       } catch (err) {
-
-//         console.log(err);
-//       }
-//     };
-
-//   // SAVE ADDRESS
-//   const handleSaveAddress =
-//     async () => {
-
-//       try {
-
-//         const { data } =
-//           await addressAPI.create(
-//             newAddress
-//           );
-
-//         setAddresses((prev) => [
-//           ...prev,
-//           data.address,
-//         ]);
-
-//         setSelectedAddressId(
-//           data.address._id
-//         );
-
-//         setShowAddressForm(false);
-
-//         setNewAddress({
-//           label: "Home",
-//           fullName: "",
-//           street: "",
-//           landmark: "",
-//           city: "",
-//           state: "",
-//           zipCode: "",
-//           phone: "",
-//         });
-
-//       } catch (err) {
-
-//         alert(
-//           err?.response?.data
-//             ?.message ||
-//             "Failed to save address"
-//         );
-//       }
-//     };
-
-//   // PLACE ORDER
-//   const placeOrder =
-//     async () => {
-
-//       if (!selectedAddressId) {
-
-//         alert(
-//           "Please select address"
-//         );
-
-//         return;
-//       }
-
-//       setLoading(true);
-
-//       try {
-
-//         await orderAPI.create({
-//           addressId:
-//             selectedAddressId,
-//           paymentMethod,
-//         });
-
-//         await fetchCart();
-
-//         router.push(
-//           "/order-confirmation"
-//         );
-
-//       } catch (err) {
-
-//         alert(
-//           err?.response?.data
-//             ?.message ||
-//             "Order failed"
-//         );
-
-//       } finally {
-
-//         setLoading(false);
-//       }
-//     };
-
-//   // EMPTY CART
-//   if (
-//     cart.items.length === 0 &&
-//     step === 1
-//   ) {
-
-//     return (
-//       <div className="p-10 text-center">
-
-//         <p className="text-gray-500 text-lg">
-//           Your cart is empty
-//         </p>
-
-//         <button
-//           onClick={() =>
-//             router.push("/")
-//           }
-//           className="mt-4 bg-orange-500 text-white px-6 py-2 rounded-full"
-//         >
-//           Continue Shopping
-//         </button>
-
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="max-w-4xl mx-auto p-5">
-
-//       <h1 className="text-3xl font-bold mb-6">
-//         Checkout
-//       </h1>
-
-//       {/* STEPS */}
-//       <div className="flex mb-8 border-b pb-2">
-
-//         {[
-//           "Cart",
-//           "Address",
-//           "Payment",
-//         ].map((label, i) => (
-
-//           <div
-//             key={label}
-//             className={`flex-1 text-center py-2 ${
-//               step === i + 1
-//                 ? "border-b-2 border-orange-500 text-orange-500 font-bold"
-//                 : "text-gray-400"
-//             }`}
-//           >
-//             {label}
-//           </div>
-
-//         ))}
-
-//       </div>
-
-//       {/* STEP 1 */}
-//       {step === 1 && (
-
-//         <>
-//           {cart.items.map((item) => (
-
-//             <div
-//               key={item.product._id}
-//               className="flex gap-4 bg-white p-4 rounded-xl shadow mb-4 items-center"
-//             >
-
-//               <div className="relative h-20 w-20">
-
-//                 <Image
-//                   src={getImageUrl(
-//                     item.product.images?.[0]
-//                   )}
-//                   alt={
-//                     item.product.name
-//                   }
-//                   fill
-//                   className="object-cover rounded"
-//                   unoptimized
-//                 />
-
-//               </div>
-
-//               <div className="flex-1">
-
-//                 <h3 className="font-bold">
-//                   {item.product.name}
-//                 </h3>
-
-//                 <p className="text-orange-500">
-//                   ₹
-//                   {
-//                     item.product.price
-//                   }
-//                 </p>
-
-//               </div>
-
-//               <div className="flex items-center gap-2">
-
-//                 <button
-//                   onClick={() =>
-//                     updateItem(
-//                       item.product._id,
-//                       item.quantity - 1
-//                     )
-//                   }
-//                   className="bg-gray-200 px-3 py-1 rounded-full"
-//                 >
-//                   -
-//                 </button>
-
-//                 <span>
-//                   {item.quantity}
-//                 </span>
-
-//                 <button
-//                   onClick={() =>
-//                     updateItem(
-//                       item.product._id,
-//                       item.quantity + 1
-//                     )
-//                   }
-//                   className="bg-gray-200 px-3 py-1 rounded-full"
-//                 >
-//                   +
-//                 </button>
-
-//                 <button
-//                   onClick={() =>
-//                     removeItem(
-//                       item.product._id
-//                     )
-//                   }
-//                   className="bg-red-500 text-white px-4 py-1 rounded-full ml-4"
-//                 >
-//                   Remove
-//                 </button>
-
-//               </div>
-//             </div>
-
-//           ))}
-
-//           <div className="text-right text-2xl font-bold mt-4">
-
-//             Total: ₹{totalPrice}
-
-//           </div>
-
-//           <button
-//             onClick={() =>
-//               setStep(2)
-//             }
-//             className="mt-6 w-full bg-orange-500 text-white py-3 rounded-xl font-bold"
-//           >
-//             Proceed to Address
-//           </button>
-//         </>
-//       )}
-
-//       {/* STEP 2 */}
-//       {step === 2 && (
-
-//         <>
-//           <h2 className="text-xl font-semibold mb-4">
-//             Delivery Address
-//           </h2>
-
-//           {addresses.map((addr) => (
-
-//             <div
-//               key={addr._id}
-//               className={`border p-4 rounded-xl mb-3 cursor-pointer ${
-//                 selectedAddressId ===
-//                 addr._id
-//                   ? "border-orange-500 bg-orange-50"
-//                   : "border-gray-200"
-//               }`}
-//               onClick={() =>
-//                 setSelectedAddressId(
-//                   addr._id
-//                 )
-//               }
-//             >
-
-//               <p className="font-semibold">
-//                 {addr.label}
-//               </p>
-
-//               <p>
-//                 {addr.fullName}
-//               </p>
-
-//               <p>
-//                 {addr.street},
-//                 {" "}
-//                 {addr.city},
-//                 {" "}
-//                 {addr.state}
-//                 {" - "}
-//                 {addr.zipCode}
-//               </p>
-
-//               <p>
-//                 Phone:
-//                 {" "}
-//                 {addr.phone}
-//               </p>
-
-//             </div>
-
-//           ))}
-
-//           {/* ADDRESS FORM */}
-//           {showAddressForm ? (
-
-//             <div className="border p-4 rounded-xl mt-4">
-
-//               <select
-//                 value={
-//                   newAddress.label
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     label:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               >
-
-//                 <option value="Home">
-//                   Home
-//                 </option>
-
-//                 <option value="Work">
-//                   Work
-//                 </option>
-
-//                 <option value="Other">
-//                   Other
-//                 </option>
-
-//               </select>
-
-//               <input
-//                 placeholder="Full Name"
-//                 value={
-//                   newAddress.fullName
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     fullName:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <input
-//                 placeholder="Street"
-//                 value={
-//                   newAddress.street
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     street:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <input
-//                 placeholder="Landmark"
-//                 value={
-//                   newAddress.landmark
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     landmark:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <input
-//                 placeholder="City"
-//                 value={
-//                   newAddress.city
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     city:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <input
-//                 placeholder="State"
-//                 value={
-//                   newAddress.state
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     state:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <input
-//                 placeholder="Zip Code"
-//                 value={
-//                   newAddress.zipCode
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     zipCode:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <input
-//                 placeholder="Phone"
-//                 value={
-//                   newAddress.phone
-//                 }
-//                 onChange={(e) =>
-//                   setNewAddress({
-//                     ...newAddress,
-//                     phone:
-//                       e.target.value,
-//                   })
-//                 }
-//                 className="w-full border p-2 mb-2 rounded"
-//               />
-
-//               <button
-//                 onClick={
-//                   handleSaveAddress
-//                 }
-//                 className="bg-orange-500 text-white px-4 py-2 rounded-xl mt-2"
-//               >
-//                 Save Address
-//               </button>
-
-//               <button
-//                 onClick={() =>
-//                   setShowAddressForm(
-//                     false
-//                   )
-//                 }
-//                 className="ml-2 bg-gray-300 px-4 py-2 rounded-xl mt-2"
-//               >
-//                 Cancel
-//               </button>
-
-//             </div>
-
-//           ) : (
-
-//             <button
-//               onClick={() =>
-//                 setShowAddressForm(
-//                   true
-//                 )
-//               }
-//               className="mt-4 bg-gray-200 px-4 py-2 rounded-xl"
-//             >
-//               + Add New Address
-//             </button>
-
-//           )}
-
-//           <div className="flex gap-3 mt-6">
-
-//             <button
-//               onClick={() =>
-//                 setStep(1)
-//               }
-//               className="flex-1 bg-gray-200 py-3 rounded-xl font-bold"
-//             >
-//               Back to Cart
-//             </button>
-
-//             <button
-//               onClick={() =>
-//                 setStep(3)
-//               }
-//               disabled={
-//                 !selectedAddressId
-//               }
-//               className={`flex-1 py-3 rounded-xl font-bold ${
-//                 selectedAddressId
-//                   ? "bg-orange-500 text-white"
-//                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-//               }`}
-//             >
-//               Proceed to Payment
-//             </button>
-
-//           </div>
-//         </>
-//       )}
-
-//       {/* STEP 3 */}
-//       {step === 3 && (
-
-//         <>
-//           <h2 className="text-xl font-semibold mb-4">
-//             Payment Method
-//           </h2>
-
-//           <div className="space-y-3">
-
-//             <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer">
-
-//               <input
-//                 type="radio"
-//                 value="COD"
-//                 checked={
-//                   paymentMethod ===
-//                   "COD"
-//                 }
-//                 onChange={() =>
-//                   setPaymentMethod(
-//                     "COD"
-//                   )
-//                 }
-//               />
-
-//               Cash on Delivery
-
-//             </label>
-
-//             <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer">
-
-//               <input
-//                 type="radio"
-//                 value="Card"
-//                 checked={
-//                   paymentMethod ===
-//                   "Card"
-//                 }
-//                 onChange={() =>
-//                   setPaymentMethod(
-//                     "Card"
-//                   )
-//                 }
-//               />
-
-//               Credit/Debit Card
-
-//             </label>
-
-//           </div>
-
-//           <div className="flex gap-3 mt-6">
-
-//             <button
-//               onClick={() =>
-//                 setStep(2)
-//               }
-//               className="flex-1 bg-gray-200 py-3 rounded-xl font-bold"
-//             >
-//               Back to Address
-//             </button>
-
-//             <button
-//               onClick={placeOrder}
-//               disabled={loading}
-//               className="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold"
-//             >
-//               {loading
-//                 ? "Placing Order..."
-//                 : "Place Order"}
-//             </button>
-
-//           </div>
-//         </>
-//       )}
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -1063,29 +15,32 @@ function loadRazorpayScript() {
     if (typeof window !== "undefined" && window.Razorpay) { resolve(true); return; }
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload  = () => resolve(true);
+    script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 }
 
 const STEPS = ["🛒 Cart", "📍 Address", "💳 Payment"];
-
 const EMPTY_ADDR = { label: "Home", fullName: "", street: "", landmark: "", city: "", state: "", zipCode: "", phone: "", isDefault: false };
 
 export default function CartPage() {
   const { cart, updateItem, removeItem, totalItems, totalPrice, fetchCart } = useCart();
   const { user } = useAuth();
-  const router   = useRouter();
+  const router = useRouter();
 
-  const [step, setStep]                     = useState(1);
-  const [addresses, setAddresses]           = useState([]);
+  const [step, setStep] = useState(1);
+  const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
-  const [newAddress, setNewAddress]         = useState(EMPTY_ADDR);
+  const [newAddress, setNewAddress] = useState(EMPTY_ADDR);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [paymentMethod, setPaymentMethod]   = useState("COD");
-  const [loading, setLoading]               = useState(false);
-  const [addrLoading, setAddrLoading]       = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [loading, setLoading] = useState(false);
+  const [addrLoading, setAddrLoading] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const deliveryCharge = totalPrice >= 199 ? 0 : 40;
+  const finalTotal = totalPrice + deliveryCharge;
+
 
   // Redirect if not logged in
   useEffect(() => {
@@ -1101,6 +56,15 @@ export default function CartPage() {
   useEffect(() => {
     if (step === 2 && user) loadAddresses();
   }, [step, user]);
+  useEffect(() => {
+    if (user) {
+      setNewAddress((prev) => ({
+        ...prev,
+        fullName: user.name || "",
+        phone: user.phone || "",
+      }));
+    }
+  }, [user]);
 
   const loadAddresses = async () => {
     setAddrLoading(true);
@@ -1115,7 +79,48 @@ export default function CartPage() {
     } catch { /* silent */ }
     finally { setAddrLoading(false); }
   };
+  const detectCurrentAddress = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
 
+    setDetectingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${coords.latitude}&lon=${coords.longitude}`
+          );
+
+          const data = await res.json();
+
+          setNewAddress({
+            label: "Home",
+            fullName: user?.name || "",
+            phone: user?.phone || "",
+            street: data.address?.road || "",
+            landmark: "",
+            city: data.address?.city || data.address?.town || "",
+            state: data.address?.state || "",
+            zipCode: data.address?.postcode || "",
+            isDefault: true,
+          });
+
+          setShowAddressForm(true);
+        } catch {
+          alert("Unable to fetch address");
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      () => {
+        setDetectingLocation(false);
+        alert("Location permission denied");
+      }
+    );
+  };
   const handleSaveAddress = async () => {
     try {
       const { data } = await addressAPI.create(newAddress);
@@ -1159,21 +164,21 @@ export default function CartPage() {
       if (!ok) { alert("Could not load Razorpay. Check your internet connection."); setLoading(false); return; }
 
       // 2. Create order on server (secret key stays server-side)
-      const orderData = await paymentAPI.createOrder(totalPrice);
+      const orderData = await paymentAPI.createOrder(finalTotal);
       if (orderData.error) { alert(orderData.error); setLoading(false); return; }
 
       // 3. Open Razorpay checkout popup
       const options = {
-        key:         process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount:      orderData.amount,    // paise, returned by create-order
-        currency:    orderData.currency,
-        name:        "Ojain Pure Veg",
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: orderData.amount,    // paise, returned by create-order
+        currency: orderData.currency,
+        name: "Ojain Pure Veg",
         description: "Food Delivery",
-        image:       "/logo.png",
-        order_id:    orderData.orderId,
+        image: "/logo.png",
+        order_id: orderData.orderId,
         prefill: {
-          name:    user?.name  || "",
-          email:   user?.email || "",
+          name: user?.name || "",
+          email: user?.email || "",
           contact: user?.phone || "",
         },
         theme: { color: "#2E7D32" },
@@ -1181,9 +186,9 @@ export default function CartPage() {
         handler: async (response) => {
           // 4. Verify signature server-side
           const verified = await paymentAPI.verifyPayment({
-            razorpay_order_id:   response.razorpay_order_id,
+            razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature:  response.razorpay_signature,
+            razorpay_signature: response.razorpay_signature,
           });
 
           if (!verified.success) {
@@ -1195,9 +200,9 @@ export default function CartPage() {
           // 5. Save order in your backend
           try {
             await orderAPI.create({
-              addressId:     selectedAddressId,
+              addressId: selectedAddressId,
               paymentMethod: "Razorpay",
-              paymentId:     response.razorpay_payment_id,
+              paymentId: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
             });
             await fetchCart();
@@ -1227,7 +232,7 @@ export default function CartPage() {
   // ── Master handler ─────────────────────────────────────────────────────────
   const placeOrder = () => {
     if (!selectedAddressId) { alert("Please select a delivery address"); return; }
-    if (paymentMethod === "COD")      return placeCODOrder();
+    if (paymentMethod === "COD") return placeCODOrder();
     if (paymentMethod === "Razorpay") return placeRazorpayOrder();
   };
 
@@ -1251,6 +256,9 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       <div className="max-w-3xl mx-auto px-4 py-8">
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-5 font-semibold text-sm">
+          🚚 Free Delivery on Orders Above ₹199
+        </div>
 
         {/* ── PAGE TITLE ── */}
         <div className="flex items-center gap-3 mb-8">
@@ -1264,15 +272,15 @@ export default function CartPage() {
         <div className="flex items-center mb-10">
           {STEPS.map((label, i) => {
             const idx = i + 1;
-            const active  = step === idx;
-            const done    = step > idx;
+            const active = step === idx;
+            const done = step > idx;
             return (
               <div key={label} className="flex-1 flex items-center">
                 <div className="flex flex-col items-center gap-1 w-full">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-black transition-all
-                    ${done   ? "bg-brand-green text-white" :
+                    ${done ? "bg-brand-green text-white" :
                       active ? "bg-brand-orange text-white shadow-lg scale-110" :
-                               "bg-gray-200 text-gray-400"}`}>
+                        "bg-gray-200 text-gray-400"}`}>
                     {done ? "✓" : idx}
                   </div>
                   <span className={`text-xs font-semibold whitespace-nowrap ${active ? "text-brand-orange" : done ? "text-brand-green" : "text-gray-400"}`}>
@@ -1346,13 +354,31 @@ export default function CartPage() {
                 <span>Items ({totalItems})</span>
                 <span>₹{totalPrice}</span>
               </div>
-              <div className="flex justify-between text-gray-600 mb-3">
+              <div className="flex justify-between text-gray-600 mb-2">
                 <span>Delivery</span>
-                <span className="text-brand-green font-semibold">FREE</span>
+
+                {deliveryCharge === 0 ? (
+                  <span className="text-brand-green font-semibold">FREE</span>
+                ) : (
+                  <span className="text-red-500 font-semibold">₹{deliveryCharge}</span>
+                )}
+              </div>
+
+              <div className="mb-3 text-xs">
+                {totalPrice < 199 ? (
+                  <span className="text-orange-500">
+                    Add ₹{199 - totalPrice} more for FREE Delivery 🚚
+                  </span>
+                ) : (
+                  <span className="text-green-600 font-semibold">
+                    🎉 You got FREE Delivery
+                  </span>
+                )}
               </div>
               <div className="border-t pt-3 flex justify-between font-black text-xl text-gray-800">
                 <span>Total</span>
-                <span className="text-brand-orange">₹{totalPrice}</span>
+                {/* <span className="text-brand-orange">₹{totalPrice}</span> */}
+                <span className="text-brand-orange">₹{finalTotal}</span>
               </div>
             </div>
 
@@ -1393,18 +419,16 @@ export default function CartPage() {
                     <div
                       key={addr._id}
                       onClick={() => setSelectedAddressId(addr._id)}
-                      className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${
-                        selectedAddressId === addr._id
-                          ? "border-brand-green bg-green-50"
-                          : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
+                      className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${selectedAddressId === addr._id
+                        ? "border-brand-green bg-green-50"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                        }`}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                              selectedAddressId === addr._id ? "border-brand-green bg-brand-green" : "border-gray-300"
-                            }`}>
+                            <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedAddressId === addr._id ? "border-brand-green bg-brand-green" : "border-gray-300"
+                              }`}>
                               {selectedAddressId === addr._id && <span className="w-2 h-2 rounded-full bg-white block" />}
                             </span>
                             <span className="font-bold text-gray-800">{addr.label}</span>
@@ -1433,9 +457,16 @@ export default function CartPage() {
 
                 {/* ADD ADDRESS FORM */}
                 {showAddressForm ? (
+
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-5">
                     <h3 className="font-bold text-gray-800 mb-4">Add New Address</h3>
                     <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={detectCurrentAddress}
+                        className="w-full mb-4 bg-brand-green text-white py-3 rounded-xl font-bold hover:bg-[#1B5E20]"
+                      >
+                        📍 {detectingLocation ? "Detecting..." : "Use Current Location"}
+                      </button>
                       <select
                         value={newAddress.label}
                         onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
@@ -1484,6 +515,7 @@ export default function CartPage() {
                       </button>
                     </div>
                   </div>
+
                 ) : (
                   <button
                     onClick={() => setShowAddressForm(true)}
@@ -1502,11 +534,10 @@ export default function CartPage() {
               <button
                 onClick={() => setStep(3)}
                 disabled={!selectedAddressId}
-                className={`flex-1 py-4 rounded-2xl font-bold transition ${
-                  selectedAddressId
-                    ? "bg-brand-green text-white hover:bg-[#1B5E20] shadow-lg"
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
+                className={`flex-1 py-4 rounded-2xl font-bold transition ${selectedAddressId
+                  ? "bg-brand-green text-white hover:bg-[#1B5E20] shadow-lg"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }`}
               >
                 Proceed to Payment →
               </button>
@@ -1525,16 +556,16 @@ export default function CartPage() {
               {[
                 {
                   value: "COD",
-                  icon:  <FaMoneyBillWave className="text-brand-green text-xl" />,
+                  icon: <FaMoneyBillWave className="text-brand-green text-xl" />,
                   label: "Cash on Delivery",
-                  desc:  "Pay with cash when your order arrives",
+                  desc: "Pay with cash when your order arrives",
                   badge: null,
                 },
                 {
                   value: "Razorpay",
-                  icon:  <FaCreditCard className="text-blue-500 text-xl" />,
+                  icon: <FaCreditCard className="text-blue-500 text-xl" />,
                   label: "Pay Online",
-                  desc:  "UPI · Cards · Net Banking · Wallets — powered by Razorpay",
+                  desc: "UPI · Cards · Net Banking · Wallets — powered by Razorpay",
                   badge: (
                     <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
                       <FaLock size={8} /> Secure
@@ -1544,9 +575,8 @@ export default function CartPage() {
               ].map(({ value, icon, label, desc, badge }) => (
                 <label
                   key={value}
-                  className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                    paymentMethod === value ? "border-brand-green bg-green-50" : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
+                  className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === value ? "border-brand-green bg-green-50" : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
                 >
                   <input type="radio" value={value} checked={paymentMethod === value}
                     onChange={() => setPaymentMethod(value)} className="sr-only" />
@@ -1558,9 +588,8 @@ export default function CartPage() {
                     </div>
                     <p className="text-sm text-gray-400 mt-0.5">{desc}</p>
                   </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    paymentMethod === value ? "border-brand-green bg-brand-green" : "border-gray-300"
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === value ? "border-brand-green bg-brand-green" : "border-gray-300"
+                    }`}>
                     {paymentMethod === value && <span className="w-2 h-2 rounded-full bg-white block" />}
                   </div>
                 </label>
@@ -1574,7 +603,16 @@ export default function CartPage() {
                 <span className="font-black text-brand-orange text-lg">₹{totalPrice}</span>
               </div>
               <div className="flex items-center gap-2 text-brand-green text-sm font-semibold mt-2">
-                <FaMotorcycle /> Free delivery included
+                {/* <FaMotorcycle /> Free delivery included */}
+                {deliveryCharge === 0 ? (
+                  <span className="flex items-center gap-2 text-brand-green">
+                    <FaMotorcycle /> Free delivery included 🎉
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2 text-red-500">
+                    <FaMotorcycle /> Delivery Charge ₹{deliveryCharge}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -1585,16 +623,15 @@ export default function CartPage() {
               <button
                 onClick={placeOrder}
                 disabled={loading}
-                className={`flex-1 disabled:opacity-70 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition flex items-center justify-center gap-2 ${
-                  paymentMethod === "Razorpay"
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-brand-orange hover:bg-[#E65100]"
-                }`}
+                className={`flex-1 disabled:opacity-70 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition flex items-center justify-center gap-2 ${paymentMethod === "Razorpay"
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-brand-orange hover:bg-[#E65100]"
+                  }`}
               >
                 {loading
                   ? "Please wait…"
                   : paymentMethod === "Razorpay"
-                    ? <><FaLock size={14} /> Pay ₹{totalPrice} Online</>
+                    ? <><FaLock size={14} /> Pay ₹{finalTotal} Online</>
                     : "🎉 Place Order"}
               </button>
             </div>

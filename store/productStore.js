@@ -125,15 +125,18 @@ export const useProductStore = create(
             data
           );
 
+        // Backend may return { updatedProduct }, { product }, or the object directly
+        const updatedProduct =
+          updated?.updatedProduct ?? updated?.product ?? updated;
+
         set((state) => ({
           products: state.products.map(
             (product) =>
               product._id === id
-                ? updated.updatedProduct
+                ? updatedProduct
                 : product
           ),
-          singleProduct:
-            updated.updatedProduct,
+          singleProduct: updatedProduct,
           loading: false,
         }));
 
