@@ -2,7 +2,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const api = axios.create({
-  // baseURL: "https://ojain-backend-2.onrender.com",
+  baseURL: "https://ojain-backend-2.onrender.com",
   // baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
   withCredentials: true,
   // timeout: 40000, // covers Render.com free-tier cold starts
