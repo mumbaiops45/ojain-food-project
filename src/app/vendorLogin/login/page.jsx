@@ -4,15 +4,29 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { FaStore, FaEnvelope, FaLock, FaLeaf } from "react-icons/fa";
+import { FaStore, FaEnvelope, FaLock, FaLeaf, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useVendor } from "../../../../hooks/useVendor";
 import { validateEmail, validatePassword } from "../../../../shared/validation";
+
+const InputField = ({ icon, type, name, placeholder, value, error, onChange, rightSlot }) => (
+  <div>
+    <div className={`flex items-center h-14 rounded-2xl border px-4 bg-white transition-all duration-300
+      ${error ? "border-red-400" : "border-gray-300 focus-within:border-brand-green focus-within:ring-4 focus-within:ring-brand-green-pale"}`}>
+      <div className="text-brand-green text-lg">{icon}</div>
+      <input type={type} name={name} placeholder={placeholder} value={value} onChange={onChange}
+        className="w-full h-full bg-transparent outline-none px-3 text-gray-800 placeholder:text-gray-400" />
+      {rightSlot && <div className="ml-2">{rightSlot}</div>}
+    </div>
+    {error && <p className="text-red-500 text-sm mt-1 ml-1">{error}</p>}
+  </div>
+);
 
 const VendorLogin = () => {
   const router = useRouter();
   const { loginVendor, loading } = useVendor();
   const [errors, setErrors]     = useState({});
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateField = (name, value) => {
     if (name === "email")    return validateEmail(value);
@@ -44,22 +58,15 @@ const VendorLogin = () => {
       toast.success("Login successful");
       setTimeout(() => router.push("/vendor/dashboard"), 1000);
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Login failed";
-      toast.error(msg);
+      const msg = err?.response?.data?.message || err?.message || "";
+      const notFound = /not found|not registered|no user|does not exist|invalid credentials/i.test(msg);
+      if (notFound) {
+        toast.error("Account not found. Please register first!", { duration: 4000 });
+      } else {
+        toast.error(msg || "Login failed");
+      }
     }
   };
-
-  const InputField = ({ icon, type, name, placeholder, value, error }) => (
-    <div>
-      <div className={`flex items-center h-14 rounded-2xl border px-4 bg-white transition-all duration-300
-        ${error ? "border-red-400" : "border-gray-300 focus-within:border-brand-green focus-within:ring-4 focus-within:ring-brand-green-pale"}`}>
-        <div className="text-brand-green text-lg">{icon}</div>
-        <input type={type} name={name} placeholder={placeholder} value={value} onChange={handleChange}
-          className="w-full h-full bg-transparent outline-none px-3 text-gray-800 placeholder:text-gray-400" />
-      </div>
-      {error && <p className="text-red-500 text-sm mt-1 ml-1">{error}</p>}
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center relative overflow-hidden"
@@ -114,8 +121,14 @@ const VendorLogin = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <InputField icon={<FaEnvelope />} type="email"    name="email"    placeholder="Enter Email Address" value={formData.email}    error={errors.email} />
-              <InputField icon={<FaLock />}     type="password" name="password" placeholder="Enter Password"       value={formData.password} error={errors.password} />
+              <InputField icon={<FaEnvelope />} type="email" name="email" placeholder="Enter Email Address" value={formData.email} error={errors.email} onChange={handleChange} />
+              <InputField icon={<FaLock />} type={showPassword ? "text" : "password"} name="password" placeholder="Enter Password" value={formData.password} error={errors.password} onChange={handleChange}
+                rightSlot={
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="text-gray-400 hover:text-brand-green transition">
+                    {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                  </button>
+                } />
 
               <button type="submit" disabled={loading}
                 className="w-full h-14 rounded-2xl bg-brand-green hover:bg-[#1B5E20] text-white text-lg font-bold shadow-lg transition-all duration-300 disabled:opacity-70">

@@ -324,16 +324,12 @@ function Navbar() {
                     aria-hidden={idx >= categories.length}
                     className="group flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-semibold text-gray-500 hover:text-brand-green hover:bg-brand-green-pale transition whitespace-nowrap shrink-0"
                   >
-                    {cat.image ? (
-                      <img
-                        src={getImageUrl(cat.image)}
-                        alt=""
-                        className="w-7 h-7 rounded-full object-cover shrink-0"
-                        onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
-                      />
-                    ) : (
-                      <span className="text-base">🍽</span>
-                    )}
+                    <img
+                      src={getImageUrl(cat.image) || "/category1.jpg"}
+                      alt=""
+                      className="w-7 h-7 rounded-full object-cover shrink-0"
+                      onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
+                    />
                     {cat.name}
                   </Link>
                 ))}
@@ -380,16 +376,12 @@ function Navbar() {
                   className="flex flex-col items-center gap-1 shrink-0"
                 >
                   <div className="w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-brand-green-pale">
-                    {cat.image ? (
-                      <img
-                        src={getImageUrl(cat.image)}
-                        alt={cat.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-brand-green-pale flex items-center justify-center text-xl">🍽</div>
-                    )}
+                    <img
+                      src={getImageUrl(cat.image) || "/category1.jpg"}
+                      alt={cat.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
+                    />
                   </div>
                   <span className="text-[9px] font-semibold text-gray-500 max-w-14 truncate text-center">
                     {cat.name}
