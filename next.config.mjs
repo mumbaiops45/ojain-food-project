@@ -60,7 +60,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "ojain-backend-2.onrender.com",
-        pathname: "/uploads/**",
+        pathname: "/**",
       },
     ],
   },

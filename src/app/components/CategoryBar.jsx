@@ -1,19 +1,71 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCategory } from "../../../hooks/useCategories";
 import { FaArrowRight, FaUtensils, FaChevronRight } from "react-icons/fa";
 import ScrollReveal from "./ScrollReveal";
 
 const getImageUrl = (imagePath) => {
-  if (!imagePath) return null;
+  if (!imagePath) return "/category1.jpg";
   if (imagePath.startsWith("blob:") || imagePath.startsWith("http")) return imagePath;
   let normalizedPath = imagePath.replace(/\\/g, "/");
   if (normalizedPath.startsWith("/")) normalizedPath = normalizedPath.slice(1);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ojain-backend-2.onrender.com";
   return `${API_BASE}/${normalizedPath}`;
 };
+
+// Each card manages its own image-loaded state so we get a shimmer → fade-in
+function CategoryCard({ cat, index }) {
+  const [loaded, setLoaded] = useState(false);
+  const [src, setSrc] = useState(getImageUrl(cat.image));
+
+  return (
+    <ScrollReveal animation="scale-up" delay={index * 70}>
+      <Link
+        href={`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
+        className="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-black/20 transition-all duration-500 hover:-translate-y-1.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/40"
+        style={{ background: "#0b160d" }}
+      >
+        <div className="aspect-4/3 relative w-full">
+
+          {/* Shimmer shown until image loads */}
+          {!loaded && (
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 animate-pulse" />
+          )}
+
+          <img
+            src={src}
+            alt={cat.name}
+            loading={index < 4 ? "eager" : "lazy"}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.06] ${
+              loaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setLoaded(true)}
+            onError={() => { setSrc("/category1.jpg"); setLoaded(true); }}
+          />
+
+          {/* Scrim for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+
+          {/* Hover ring */}
+          <div className="absolute inset-0 rounded-3xl ring-0 group-hover:ring-2 ring-brand-green/60 transition-all duration-500 pointer-events-none" />
+        </div>
+
+        {/* Card Footer */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8">
+          <h3 className="text-white font-black text-sm md:text-base leading-snug line-clamp-2 drop-shadow-md">
+            {cat.name}
+          </h3>
+          <div className="mt-2 flex items-center gap-1 text-[#FFA726] text-[11px] font-bold tracking-wide uppercase">
+            <span>Explore</span>
+            <FaChevronRight size={8} className="group-hover:translate-x-1 transition-transform duration-300" />
+          </div>
+        </div>
+      </Link>
+    </ScrollReveal>
+  );
+}
 
 export default function CategoryBar() {
   const { categories, fetchCategories, loading, error } = useCategory();
@@ -33,7 +85,7 @@ export default function CategoryBar() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="rounded-3xl overflow-hidden animate-pulse bg-gray-100 aspect-4/3" />
+              <div key={i} className="rounded-3xl overflow-hidden animate-pulse bg-gray-200 aspect-4/3" />
             ))}
           </div>
         </div>
@@ -52,13 +104,11 @@ export default function CategoryBar() {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden bg-white">
 
-      {/* Subtle background blobs */}
       <div className="absolute top-0 left-0 w-125 h-125 rounded-full bg-brand-green-pale/30 blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-125 h-125 rounded-full bg-brand-green-pale/20 blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* ── Section Header ── */}
         <ScrollReveal animation="fade-up" className="text-center mb-14 md:mb-18">
           <div className="inline-flex items-center gap-2 bg-brand-green-pale text-brand-green px-5 py-2 rounded-full text-sm font-bold shadow-sm mb-5">
             <FaUtensils size={12} />
@@ -75,47 +125,12 @@ export default function CategoryBar() {
           </p>
         </ScrollReveal>
 
-        {/* ── Category Grid ── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
           {categories.map((cat, i) => (
-            <ScrollReveal key={cat._id} animation="scale-up" delay={i * 70}>
-            <Link
-              href={`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
-              className="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-black/20 transition-all duration-500 hover:-translate-y-1.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/40"
-              style={{ background: "#0b160d" }}
-            >
-              {/* Full image — object-contain so nothing is cropped */}
-              <div className="aspect-4/3 relative w-full">
-                <img
-                  src={getImageUrl(cat.image)}
-                  alt={cat.name}
-                  className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-                  onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
-                />
-
-                {/* Scrim — only bottom quarter for text readability */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/10 to-transparent" />
-
-                {/* Hover shimmer ring */}
-                <div className="absolute inset-0 rounded-3xl ring-0 group-hover:ring-2 ring-brand-green/60 transition-all duration-500 pointer-events-none" />
-              </div>
-
-              {/* Card Footer */}
-              <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8">
-                <h3 className="text-white font-black text-sm md:text-base leading-snug line-clamp-2 drop-shadow-md">
-                  {cat.name}
-                </h3>
-                <div className="mt-2 flex items-center gap-1 text-[#FFA726] text-[11px] font-bold tracking-wide uppercase">
-                  <span>Explore</span>
-                  <FaChevronRight size={8} className="group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-              </div>
-            </Link>
-            </ScrollReveal>
+            <CategoryCard key={cat._id} cat={cat} index={i} />
           ))}
         </div>
 
-        {/* ── View All CTA ── */}
         <ScrollReveal animation="fade-up" delay={100} className="mt-12 flex justify-center">
           <Link
             href="/categories"

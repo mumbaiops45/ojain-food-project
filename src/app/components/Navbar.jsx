@@ -329,6 +329,7 @@ function Navbar() {
                         src={getImageUrl(cat.image)}
                         alt=""
                         className="w-7 h-7 rounded-full object-cover shrink-0"
+                        onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
                       />
                     ) : (
                       <span className="text-base">🍽</span>
@@ -378,9 +379,14 @@ function Navbar() {
                   aria-hidden={idx >= categories.length}
                   className="flex flex-col items-center gap-1 shrink-0"
                 >
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-brand-green-pale">
                     {cat.image ? (
-                      <img src={getImageUrl(cat.image)} alt={cat.name} className="w-full h-full object-cover" />
+                      <img
+                        src={getImageUrl(cat.image)}
+                        alt={cat.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.onerror = null; e.target.src = "/category1.jpg"; }}
+                      />
                     ) : (
                       <div className="w-full h-full bg-brand-green-pale flex items-center justify-center text-xl">🍽</div>
                     )}

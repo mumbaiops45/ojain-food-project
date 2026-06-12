@@ -122,12 +122,10 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
 
         {/* Hero image */}
         <div className="relative h-56 sm:h-72 w-full">
-          <Image
+          <ProductImage
             src={getImageUrl(product.images?.[0])}
             alt={product.name}
-            fill
             className="object-cover rounded-t-4xl sm:rounded-t-4xl"
-            unoptimized
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent rounded-t-4xl" />
 
@@ -313,6 +311,21 @@ function SkeletonCard() {
 /* ─────────────────────────────────────────────────────────
    Main component
 ───────────────────────────────────────────────────────── */
+function ProductImage({ src, alt, className }) {
+  const [imgSrc, setImgSrc] = useState(src);
+  useEffect(() => { setImgSrc(src); }, [src]);
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      className={className}
+      unoptimized
+      onError={() => setImgSrc("/category1.jpg")}
+    />
+  );
+}
+
 function FeaturedProducts() {
   const router = useRouter();
   const { user } = useAuth();
@@ -443,12 +456,10 @@ function FeaturedProducts() {
                       onClick={() => setSelectedProduct(product)}
                     >
                       <div className="relative h-56 w-full">
-                        <Image
+                        <ProductImage
                           src={getImageUrl(product.images?.[0])}
                           alt={product.name}
-                          fill
                           className="object-cover group-hover:scale-110 transition duration-700"
-                          unoptimized
                         />
                       </div>
                       <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-transparent" />

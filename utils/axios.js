@@ -2,10 +2,10 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const api = axios.create({
-  baseURL: "https://ojain-backend-2.onrender.com",
+  // baseURL: "https://ojain-backend-2.onrender.com",
   // baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
   withCredentials: true,
-  // timeout: 20000, // 20 s — covers Render.com free-tier cold starts
+  // timeout: 40000, // covers Render.com free-tier cold starts
 });
 
 // ==========================================
@@ -19,8 +19,7 @@ api.interceptors.request.use(
     if (typeof window !== "undefined") {
       const adminToken = localStorage.getItem("adminToken");
       const token = localStorage.getItem("token");
-      // const finalToken = adminToken || token;
-      const finalToken = token || adminToken;
+      const finalToken = adminToken || token;
       if (finalToken) {
         config.headers.Authorization = `Bearer ${finalToken}`;
       }

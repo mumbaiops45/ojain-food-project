@@ -135,6 +135,14 @@ function ViewCartBar() {
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
 
+  // Wake up the Render.com free-tier backend the moment the app loads.
+  // Without this, the first API call (categories / products) triggers the cold
+  // start and the user stares at a blank page for 30-60 s.
+  useEffect(() => {
+    const BASE = process.env.NEXT_PUBLIC_API_URL || "https://ojain-backend-2.onrender.com";
+    fetch(`${BASE}/api/category/all`, { method: "GET" }).catch(() => {});
+  }, []);
+
   const hideLayout =
     pathname.startsWith("/dashboard") ||
     (pathname.startsWith("/admin") && !pathname.startsWith("/adminlogin")) ||
