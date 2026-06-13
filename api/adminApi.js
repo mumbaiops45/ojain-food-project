@@ -4,9 +4,13 @@ import api from "../utils/axios";
 export const adminLogin = (data) =>
   api.post("/api/auth/admin/login", data);
 
-// ================= DASHBOARD =================
+// DASHBOARD STATS
 export const getDashboardStats = () =>
   api.get("/api/admin/dashboard");
+
+// ================= VENDORS (all) =================
+export const getAllVendors = () =>
+  api.get("/api/vendors");
 
 // ================= VENDORS =================
 export const getPendingVendors = () =>
@@ -16,25 +20,25 @@ export const getPendingVendors = () =>
 
 // APPROVE VENDOR
 export const approveVendor = (id) =>
-  api.put( `/api/admin/vendors/${id}/approve`);
+  api.put(`/api/vendors/${id}/approve`);
 
 // REJECT VENDOR
 export const rejectVendor = (id) =>
-  api.delete( `/api/admin/vendors/${id}/reject`);
+  api.delete(`/api/vendors/${id}`);
 
 // ================= PRODUCTS =================
 export const getAllProducts = () =>
-  api.get("/api/admin/products");
+  api.get("/api/products");
 
 export const approveProduct = (id) =>
-  api.put(`/api/admin/products/${id}/approve`);
+  api.put(`/api/products/${id}/approve`);
 
 export const rejectProduct = (id) =>
-  api.delete(`/api/admin/products/${id}/reject`);
+  api.delete(`/api/products/${id}`);
 
 // ================= ORDERS =================
 export const getAllOrders = () =>
-  api.get("/api/admin/orders");
+  api.get("/api/orders/admin/all");
 
 // ================= PAYOUTS =================
 export const getPayoutSummary = () =>

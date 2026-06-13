@@ -109,9 +109,12 @@
 
 import {
   adminLogin,
+
+  // DASHBOARD
   getDashboardStats,
 
   // VENDORS
+  getAllVendors,
   getPendingVendors,
   approveVendor,
   rejectVendor,
@@ -135,6 +138,14 @@ import {
   deleteUser,
 } from "../api/adminApi";
 
+const toArray = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  // handle { orders: [...] } / { users: [...] } / { vendors: [...] } / { products: [...] }
+  const nested = val.orders ?? val.users ?? val.vendors ?? val.products ?? val.data;
+  return Array.isArray(nested) ? nested : [];
+};
+
 /* =========================================
    ADMIN LOGIN
 ========================================= */
@@ -149,13 +160,35 @@ export const adminLoginService =
 /* =========================================
    DASHBOARD
 ========================================= */
-export const getDashboardStatsService =
-  async () => {
-    const res =
-      await getDashboardStats();
+export const getDashboardStatsService = async () => {
+  const [dashRes, ordersRes, usersRes, vendorsRes] = await Promise.allSettled([
+    getDashboardStats().then((r) => r?.data ?? r),
+    getAllOrders().then((r) => r?.data ?? r),
+    getAllUsers().then((r) => r?.data ?? r),
+    getAllVendors().then((r) => r?.data ?? r),
+  ]);
 
-    return res?.data ?? res;
+  const dash    = dashRes.status    === "fulfilled" ? (dashRes.value    ?? {}) : {};
+  const orders  = toArray(ordersRes.status  === "fulfilled" ? ordersRes.value  : null);
+  const users   = toArray(usersRes.status   === "fulfilled" ? usersRes.value   : null);
+  const vendors = toArray(vendorsRes.status === "fulfilled" ? vendorsRes.value : null);
+
+  const byDate = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
+
+  return {
+    stats: {
+      totalUsers:     dash.totalUsers    ?? users.length,
+      totalVendors:   dash.totalVendors  ?? vendors.filter((v) => v.isApproved).length,
+      totalProducts:  dash.totalProducts ?? 0,
+      totalOrders:    dash.totalOrders   ?? orders.length,
+      totalSales:     dash.totalRevenue  ?? 0,
+      pendingVendors: vendors.filter((v) => !v.isApproved).length,
+    },
+    recentOrders:  [...orders].sort(byDate).slice(0, 5),
+    recentUsers:   [...users].sort(byDate).slice(0, 5),
+    recentVendors: [...vendors].sort(byDate).slice(0, 5),
   };
+};
 
 /* =========================================
    VENDORS

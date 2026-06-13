@@ -3,16 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  MdPeople,
   MdStorefront,
   MdRestaurantMenu,
-  MdShoppingBag,
   MdAttachMoney,
   MdPendingActions,
   MdArrowForward,
   MdTrendingUp,
   MdCheckCircle,
-  MdCancel,
   MdAccessTime,
 } from "react-icons/md";
 import {

@@ -957,10 +957,8 @@ export const useAdminStore = create((set, get) => ({
   },
 
   // ================= VENDORS =================
-  // NEW: fetch ALL vendors (admin)
+  // fetch ALL vendors (admin)
   fetchAllVendors: async () => {
-    const { token } = get();
-    if (!token) return;
     set({ loading: true });
     try {
       const res = await api.get("/api/vendors");
@@ -985,27 +983,21 @@ export const useAdminStore = create((set, get) => ({
   },
 
   approveVendor: async (id) => {
-    if (!get().token) throw new Error("Not authenticated");
     await api.put(`/api/vendors/${id}/approve`, {});
     await get().fetchAllVendors();
   },
 
-  // NEW: unapprove a vendor
   unapproveVendor: async (id) => {
-    if (!get().token) throw new Error("Not authenticated");
     await api.put(`/api/vendors/${id}/unapprove`, {});
     await get().fetchAllVendors();
   },
 
-  // NEW: admin updates any vendor
   updateVendor: async (id, data) => {
-    if (!get().token) throw new Error("Not authenticated");
     await api.put(`/api/vendors/${id}`, data);
     await get().fetchAllVendors();
   },
 
   rejectVendor: async (id) => {
-    if (!get().token) throw new Error("Not authenticated");
     await api.delete(`/api/vendors/${id}`);
     await get().fetchAllVendors();
   },

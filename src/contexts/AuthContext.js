@@ -12,14 +12,19 @@ export function AuthProvider({ children }) {
   const logoutCustomer       = useCustomerStore((s) => s.logoutCustomer);
   const resetCart            = useCartStore((s) => s.resetCart);
 
-  // On mount: always verify the httpOnly cookie session in background.
-  // If cookie is valid → updates customer with fresh data from API.
-  // If cookie is expired/missing → fetchCustomerProfile sets customer to null
-  //   which also clears the localStorage entry via the persist middleware.
+  
   useEffect(() => {
-    fetchCustomerProfile().catch(() => {
-      // Not authenticated — handled inside fetchCustomerProfile (sets customer null on 401)
-    });
+    const hasToken =
+      typeof window !== "undefined" &&
+      (localStorage.getItem("token") ||
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("vendorToken"));
+
+    if (hasToken) {
+      fetchCustomerProfile().catch(() => {
+        // Not authenticated — handled inside fetchCustomerProfile (sets customer null on 401)
+      });
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
