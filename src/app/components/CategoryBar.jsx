@@ -24,12 +24,12 @@ function CategoryCard({ cat, index }) {
     <ScrollReveal animation="scale-up" delay={index * 70}>
       <Link
         href={`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
-        className="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-black/20 transition-all duration-500 hover:-translate-y-1.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/40"
+        className="group relative flex flex-col rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-black/20 transition-all duration-500 hover:-translate-y-1.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/40"
         style={{ background: "#0b160d" }}
       >
-        <div className="aspect-4/3 relative w-full">
+        {/* Image */}
+        <div className="aspect-4/3 relative w-full overflow-hidden">
 
-          {/* Shimmer shown until image loads */}
           {!loaded && (
             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 animate-pulse" />
           )}
@@ -45,19 +45,16 @@ function CategoryCard({ cat, index }) {
             onError={() => { setSrc("/category1.jpg"); setLoaded(true); }}
           />
 
-          {/* Scrim for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
-
           {/* Hover ring */}
-          <div className="absolute inset-0 rounded-3xl ring-0 group-hover:ring-2 ring-brand-green/60 transition-all duration-500 pointer-events-none" />
+          <div className="absolute inset-0 ring-0 group-hover:ring-2 ring-brand-green/60 transition-all duration-500 pointer-events-none" />
         </div>
 
-        {/* Card Footer */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8">
-          <h3 className="text-white font-black text-sm md:text-base leading-snug line-clamp-2 drop-shadow-md">
+        {/* Name footer — solid background, always readable */}
+        <div className="flex items-center justify-between gap-2 px-4 py-3 bg-[#0f1f11]">
+          <h3 className="text-white font-black text-sm md:text-base leading-snug line-clamp-1 flex-1">
             {cat.name}
           </h3>
-          <div className="mt-2 flex items-center gap-1 text-[#FFA726] text-[11px] font-bold tracking-wide uppercase">
+          <div className="flex items-center gap-1 text-[#FFA726] text-[11px] font-bold tracking-wide uppercase shrink-0">
             <span>Explore</span>
             <FaChevronRight size={8} className="group-hover:translate-x-1 transition-transform duration-300" />
           </div>
@@ -76,8 +73,8 @@ export default function CategoryBar() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-white">
+        <div className="sec-container">
           <div className="text-center mb-12">
             <div className="h-6 w-40 bg-gray-100 rounded-full mx-auto mb-4 animate-pulse" />
             <div className="h-10 w-72 bg-gray-100 rounded-xl mx-auto mb-3 animate-pulse" />
@@ -95,19 +92,19 @@ export default function CategoryBar() {
 
   if (error || categories.length === 0) {
     return (
-      <section className="py-16 bg-gray-50 text-center">
+      <section className="py-20 bg-gray-50 text-center">
         <p className="text-gray-500">{error ? `Error: ${error}` : "No categories yet"}</p>
       </section>
     );
   }
 
   return (
-    <section className="relative py-20 md:py-28 overflow-hidden bg-white">
+    <section className="relative py-24 md:py-32 overflow-hidden bg-white">
 
       <div className="absolute top-0 left-0 w-125 h-125 rounded-full bg-brand-green-pale/30 blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-125 h-125 rounded-full bg-brand-green-pale/20 blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 sec-container">
 
         <ScrollReveal animation="fade-up" className="text-center mb-14 md:mb-18">
           <div className="inline-flex items-center gap-2 bg-brand-green-pale text-brand-green px-5 py-2 rounded-full text-sm font-bold shadow-sm mb-5">

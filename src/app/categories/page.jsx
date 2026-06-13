@@ -45,13 +45,13 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 py-20">
+        <div className="sec-container">
           <div className="mb-12">
             <div className="h-10 bg-gray-200 rounded w-64 animate-pulse mb-4" />
             <div className="h-5 bg-gray-200 rounded w-96 animate-pulse" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="bg-white rounded-[28px] overflow-hidden shadow animate-pulse">
                 <div className="h-56 bg-gray-200" />
@@ -76,8 +76,8 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-20">
+      <div className="sec-container">
 
         {/* Header */}
         <div className="mb-12">
@@ -99,7 +99,7 @@ export default function CategoriesPage() {
             <p className="text-gray-400 text-lg">No categories found.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {categories.map((cat) => (
               <Link
                 key={cat._id}

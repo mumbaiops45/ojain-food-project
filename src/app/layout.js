@@ -288,14 +288,24 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "Ojain - Food Delivery",
-  description: "Fresh food delivered with love",
+  title: "O-Jain — Pure Jain & Satvik Premix Products",
+  description: "Discover O-Jain's range of instant Jain & Satvik premix products. Restaurant style taste, easy to make, pocket saving. 100% pure veg.",
+  icons: {
+    icon: [
+      { url: "/logo.png", sizes: "32x32",  type: "image/png" },
+      { url: "/logo.png", sizes: "48x48",  type: "image/png" },
+      { url: "/logo.png", sizes: "96x96",  type: "image/png" },
+      { url: "/logo.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: { url: "/logo.png", sizes: "48x48" },
+    apple:    { url: "/logo.png", sizes: "180x180", type: "image/png" },
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={plusJakarta.variable}>
+      <body className={plusJakarta.variable} suppressHydrationWarning>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

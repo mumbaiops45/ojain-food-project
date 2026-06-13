@@ -40,16 +40,27 @@ function Navbar() {
   const [locSuggestions, setLocSuggestions] = useState([]);
   const [locSearching, setLocSearching] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+    setMobileOpen(false);
+  };
   // const [loginMenuOpen, setLoginMenuOpen] = useState(false);
 
   const locRef = useRef(null);
   const userRef = useRef(null);
   // const loginRef = useRef(null);
 
-  const totalItems = useCartStore((s) => s.totalItems());
+  const totalItems = useCartStore((s) =>
+    s.cart.items.reduce((sum, i) => sum + i.quantity, 0)
+  );
   const categories = useCategoryStore((s) => s.categories);
   const fetchCategories = useCategoryStore((s) => s.fetchCategories);
 
@@ -218,17 +229,19 @@ function Navbar() {
             </div>
 
             {/* SEARCH BAR — desktop */}
-            <div className="hidden md:flex flex-1 items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-11 focus-within:border-brand-green focus-within:ring-2 focus-within:ring-brand-green/15 transition-all">
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-11 focus-within:border-brand-green focus-within:ring-2 focus-within:ring-brand-green/15 transition-all">
               <FaSearch className="ml-4 text-gray-400 shrink-0" size={13} />
               <input
                 type="text"
-                placeholder="Search for biryani, thali, sweets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for premix, spices, sweets..."
                 className="flex-1 px-3 py-0 h-full outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
               />
-              <button className="h-full bg-brand-green hover:bg-[#1B5E20] text-white px-5 text-[13px] font-bold transition-colors whitespace-nowrap">
+              <button type="submit" className="h-full bg-brand-green hover:bg-[#1B5E20] text-white px-5 text-[13px] font-bold transition-colors whitespace-nowrap">
                 Search
               </button>
-            </div>
+            </form>
 
             {/* RIGHT SECTION */}
             <div className="flex items-center gap-2 ml-auto lg:ml-0 shrink-0">
@@ -243,20 +256,37 @@ function Navbar() {
               </Link>
 
               {/* USER / LOGIN */}
-              {/* <div className="hidden md:block">
+              <div className="hidden md:block relative" ref={userRef}>
                 {user ? (
                   <>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
                       className="flex items-center gap-2 bg-brand-green-pale hover:bg-brand-green/15 text-brand-green px-3 py-2 rounded-xl transition"
                     >
-                      <div className="w-6 h-6 rounded-full bg-brand-green text-white flex items-center justify-center text-[11px] font-black shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-brand-green text-white flex items-center justify-center text-[12px] font-black shrink-0">
                         {(user.name || "U")[0].toUpperCase()}
                       </div>
                       <span className="text-[13px] font-bold max-w-[80px] truncate">
                         {user.name?.split(" ")[0] || "Account"}
                       </span>
+                      <FaChevronDown size={9} className={`text-brand-green transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
                     </button>
+
+                    {/* Dropdown */}
+                    {userMenuOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[9999] overflow-hidden">
+                        <div className="px-4 py-3 border-b border-gray-100 bg-brand-green-pale">
+                          <p className="text-sm font-bold text-gray-800 truncate">{user.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                        </div>
+                        <button
+                          onClick={() => { logout(); setUserMenuOpen(false); }}
+                          className="flex items-center gap-3 w-full px-4 py-3 text-[13px] font-semibold text-red-500 hover:bg-red-50 transition"
+                        >
+                          <FaSignOutAlt size={13} /> Sign Out
+                        </button>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <Link
@@ -267,15 +297,6 @@ function Navbar() {
                     Login
                   </Link>
                 )}
-              </div> */}
-              <div className="hidden md:block">
-                <Link
-                  href="/customerLogin/login"
-                  className="flex items-center gap-2 bg-brand-green hover:bg-[#1B5E20] text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition shadow-sm"
-                >
-                  <FaUserCircle size={14} />
-                  Login
-                </Link>
               </div>
               {/* CART */}
               <button
@@ -340,14 +361,19 @@ function Navbar() {
 
         {/* ── MOBILE SEARCH ── */}
         <div className="md:hidden px-4 pb-2 border-t border-gray-100 pt-2">
-          <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10">
+          <form onSubmit={handleSearch} className="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10">
             <FaSearch className="ml-3 text-gray-400 shrink-0" size={12} />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search food..."
               className="flex-1 px-3 h-full outline-none text-sm text-gray-700 placeholder-gray-400 bg-transparent"
             />
-          </div>
+            <button type="submit" className="h-full bg-brand-green text-white px-4 text-[12px] font-bold">
+              Go
+            </button>
+          </form>
         </div>
 
         {/* ── MOBILE CATEGORY STRIP ── */}
@@ -420,7 +446,6 @@ function Navbar() {
               ) : (
                 [
                   { href: "/customerLogin/login", label: "👤 Customer Login" },
-                  { href: "/adminlogin", label: "🔐 Admin Login" },
                   { href: "/vendorLogin/login", label: "🏪 Vendor Login" },
                 ].map(({ href, label }) => (
                   <Link

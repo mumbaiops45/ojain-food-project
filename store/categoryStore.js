@@ -1,7 +1,6 @@
 "use client";
 
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import {
   getCategoriesService,
   getSingleCategoryService,
@@ -12,19 +11,15 @@ import {
 
 let fetchRequest = null;
 
-export const useCategoryStore = create(
-  persist(
-    (set, get) => ({
+export const useCategoryStore = create((set, get) => ({
   categories: [],
   singleCategory: null,
   loading: false,
   error: null,
 
   fetchCategories: async ({ force = false } = {}) => {
-    // Skip if already loaded and not forced (stale-while-revalidate)
     const existing = get().categories;
     if (existing.length > 0 && !force) {
-      // Silently refresh in background without touching loading state
       getCategoriesService()
         .then((data) => {
           const list = Array.isArray(data) ? data : data?.categories ?? [];
@@ -34,7 +29,6 @@ export const useCategoryStore = create(
       return;
     }
 
-    // Deduplicate: reuse in-flight request
     if (fetchRequest) return fetchRequest;
     fetchRequest = (async () => {
       set({ loading: true, error: null });
@@ -108,12 +102,4 @@ export const useCategoryStore = create(
       throw error;
     }
   },
-    }),
-    {
-      name: "ojain-categories",
-      storage: createJSONStorage(() => localStorage),
-      // Only persist the category list, not transient UI state
-      partialize: (state) => ({ categories: state.categories }),
-    }
-  )
-);
+}));

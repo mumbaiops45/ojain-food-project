@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import {
   MdSearch,
   MdDeleteOutline,
@@ -133,7 +134,7 @@ export default function AdminUsersPage() {
       setUsers((prev) => prev.filter((u) => u._id !== id));
     } catch (err) {
       console.error(err);
-      alert("Delete failed");
+      toast.error("Delete failed");
     } finally {
       setDeletingId(null);
     }

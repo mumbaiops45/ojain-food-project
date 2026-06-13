@@ -2,13 +2,9 @@ import api from "../utils/axios";
 
 const PRODUCT_BASE = "/api/products";
 
-// TOKEN CONFIG — never manually set Content-Type for FormData;
+// Never manually set Content-Type for FormData;
 // axios auto-adds multipart/form-data with the correct boundary.
-const getConfig = () => ({
-  headers: {
-    Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("token") : ""}`,
-  },
-});
+const getConfig = () => ({});
 
 // GET ALL PRODUCTS
 export const getAllProducts =

@@ -26,13 +26,13 @@ const steps = [
 
 function HowItWorks() {
   return (
-    <section className="relative py-14 md:py-24 bg-gradient-to-b from-brand-bg to-brand-green-pale overflow-hidden">
+    <section className="relative py-20 md:py-28 bg-gradient-to-b from-brand-bg to-brand-green-pale overflow-hidden">
 
       {/* Background Blur */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-brand-green-pale rounded-full blur-3xl opacity-30"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-green-mid rounded-full blur-3xl opacity-10"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+      <div className="sec-container relative z-10">
 
         {/* Heading */}
         <ScrollReveal animation="fade-up" className="text-center max-w-3xl mx-auto">
@@ -41,7 +41,7 @@ function HowItWorks() {
             Fast & Simple Process
           </span>
 
-          <h2 className="mt-6 text-3xl sm:text-4xl md:text-6xl font-black tracking-tight leading-tight">
+          <h2 className="mt-6 text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
             <span className="text-slate-900">How</span>{" "}
             <span className="text-brand-green">It Works</span>
           </h2>
@@ -52,7 +52,7 @@ function HowItWorks() {
         </ScrollReveal>
 
         {/* Steps */}
-        <div className="relative mt-10 md:mt-20 grid md:grid-cols-3 gap-6 md:gap-8">
+        <div className="relative mt-10 md:mt-20 grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
 
           {/* Desktop Connecting Line */}
           <div className="hidden md:block absolute top-28 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-green-pale via-brand-green-mid to-brand-green-pale"></div>

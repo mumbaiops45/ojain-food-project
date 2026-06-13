@@ -79,10 +79,10 @@ export default function OrderConfirmation() {
           {/* Action buttons */}
           <div className="space-y-3">
             <Link
-              href="/"
+              href="/categories"
               className="flex items-center justify-center gap-2 w-full bg-brand-orange hover:bg-[#E65100] text-white py-4 rounded-2xl font-bold shadow-md transition"
             >
-              <FaShoppingBag /> Track My Order
+              <FaShoppingBag /> Continue Shopping
             </Link>
             <Link
               href="/"

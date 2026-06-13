@@ -626,6 +626,8 @@ import {
   FaPhone,
   FaCity,
   FaUniversity,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
 import { useVendor } from "../../../../hooks/useVendor";
@@ -646,6 +648,7 @@ const VendorRegister = () => {
   const { registerVendor, loading } = useVendor();
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -773,6 +776,7 @@ const VendorRegister = () => {
     placeholder,
     value,
     error,
+    rightSlot,
   }) => (
     <div>
       <div
@@ -793,6 +797,7 @@ const VendorRegister = () => {
           onChange={handleChange}
           className="w-full h-full bg-transparent outline-none px-3 text-gray-800 placeholder:text-gray-400"
         />
+        {rightSlot && <div className="ml-2">{rightSlot}</div>}
       </div>
 
       {error && (
@@ -889,11 +894,17 @@ const VendorRegister = () => {
 
               <InputField
                 icon={<FaLock />}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={formData.password}
                 error={errors.password}
+                rightSlot={
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="text-gray-400 hover:text-brand-green transition">
+                    {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                  </button>
+                }
               />
 
               <InputField

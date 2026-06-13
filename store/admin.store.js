@@ -889,6 +889,8 @@
 
 import { create } from "zustand";
 import api from "../utils/axios";
+import { useCustomerStore } from "./customer.store";
+import useCartStore from "./cartStore";
 import {
   adminLoginService,
   getDashboardStatsService,
@@ -907,7 +909,7 @@ import {
 export const useAdminStore = create((set, get) => ({
   // State
   admin: null,
-  token: typeof window !== "undefined" ? localStorage.getItem("adminToken") : null,
+  token: null,
   dashboard: null,
   vendors: [],
   products: [],
@@ -921,8 +923,9 @@ export const useAdminStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const res = await adminLoginService(data);
-      localStorage.setItem("adminToken", res.token);
-      localStorage.setItem("adminData", JSON.stringify(res.admin));
+      if (res?.token && typeof window !== "undefined") {
+        localStorage.setItem("adminToken", res.token);
+      }
       set({ admin: res.admin, token: res.token, loading: false });
       return res;
     } catch (err) {
@@ -932,8 +935,13 @@ export const useAdminStore = create((set, get) => ({
   },
 
   logoutAdmin: () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminData");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("ojain-customer");
+      localStorage.removeItem("token");
+    }
+    useCustomerStore.getState().reset();
+    useCartStore.getState().resetCart();
     set({ admin: null, token: null, vendors: [], products: [], orders: [], payouts: [] });
   },
 

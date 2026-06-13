@@ -607,9 +607,9 @@ export default function CategoryPage() {
       )}
 
       {/* PRODUCTS */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="sec-container py-8">
 
-        {products.length === 0 ? (
+        {(!products || products.length === 0) ? (
 
           <div className="text-center py-16 text-gray-400">
             No products found

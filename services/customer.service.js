@@ -1,10 +1,10 @@
-// services/customer.service.js
-
 import {
   registerCustomer,
   loginCustomer,
   getCustomerProfile,
   updateCustomerProfile,
+  changeCustomerPassword,
+  uploadCustomerAvatar,
   logoutCustomer,
 } from "../api/customerApi";
 
@@ -26,9 +26,21 @@ export const getCustomerProfileService = async () => {
   return res?.data ?? res;
 };
 
-// UPDATE PROFILE
+// UPDATE PROFILE (name / phone)
 export const updateCustomerProfileService = async (data) => {
   const res = await updateCustomerProfile(data);
+  return res?.data ?? res;
+};
+
+// CHANGE PASSWORD
+export const changeCustomerPasswordService = async (data) => {
+  const res = await changeCustomerPassword(data);
+  return res?.data ?? res;
+};
+
+// UPLOAD AVATAR
+export const uploadCustomerAvatarService = async (formData) => {
+  const res = await uploadCustomerAvatar(formData);
   return res?.data ?? res;
 };
 

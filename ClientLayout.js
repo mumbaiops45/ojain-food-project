@@ -132,12 +132,41 @@ function ViewCartBar() {
   );
 }
 
+// Floating scroll-to-top button
+function ScrollToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="Scroll to top"
+      className="fixed bottom-24 right-5 z-50 w-11 h-11 rounded-full bg-brand-green text-white shadow-lg flex items-center justify-center hover:bg-[#1B5E20] active:scale-95 transition-all duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M18 15l-6-6-6 6" />
+      </svg>
+    </button>
+  );
+}
+
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
 
+  // Always start at top on every page load / hard refresh
+  useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
+
   // Wake up the Render.com free-tier backend the moment the app loads.
-  // Without this, the first API call (categories / products) triggers the cold
-  // start and the user stares at a blank page for 30-60 s.
   useEffect(() => {
     const BASE = process.env.NEXT_PUBLIC_API_URL || "https://ojain-backend-2.onrender.com";
     fetch(`${BASE}/api/category/all`, { method: "GET" }).catch(() => {});
@@ -156,6 +185,7 @@ export default function ClientLayout({ children }) {
       <main>{children}</main>
       {!hideLayout && <Footer />}
       {!hideLayout && <ViewCartBar />}
+      {!hideLayout && <ScrollToTop />}
       {!hideLayout && <AuthPopup />}
     </AuthProvider>
   );

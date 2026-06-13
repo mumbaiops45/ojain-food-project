@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import {
   FaFacebookF,
   FaInstagram,
@@ -10,10 +11,18 @@ import {
   FaArrowRight,
   FaLeaf,
 } from "react-icons/fa";
-
 import { MdEmail } from "react-icons/md";
+import { useCategory } from "../../../hooks/useCategories";
 
 function Footer() {
+  const { categories, fetchCategories } = useCategory();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const toSlug = (name) => name?.toLowerCase().replace(/\s+/g, "-") ?? "";
+
   return (
     <footer className="relative overflow-hidden bg-white">
 
@@ -37,7 +46,7 @@ function Footer() {
               100% Pure Veg • A Brand That Serves Pure
             </span>
 
-            <h2 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight text-white">
+            <h2 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-white">
               Be O-Jain.{" "}
               <span className="text-brand-orange">Live O-Jain.</span>
             </h2>
@@ -46,6 +55,17 @@ function Footer() {
               Pure Jain & Satvik instant premix products with multiple flavour
               range — restaurant style taste that is easy to make and pocket saving.
             </p>
+
+            {/* Brand tagline quote */}
+            <div className="mt-6 flex items-start gap-3 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 max-w-xl">
+              <span className="text-brand-orange text-4xl font-black leading-none mt-1">"</span>
+              <div>
+                <p className="text-white font-black text-lg sm:text-xl leading-snug">
+                  All Jain items you get under one brand
+                </p>
+                <p className="text-white/60 text-sm mt-1 font-medium">And many more yet to come...</p>
+              </div>
+            </div>
 
           </div>
 
@@ -71,7 +91,7 @@ function Footer() {
         <div className="max-w-[1450px] mx-auto px-5 sm:px-6 lg:px-10 pt-16 pb-8">
 
           {/* GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
 
             {/* ───── BRAND SECTION ───── */}
             <div>
@@ -95,7 +115,7 @@ function Footer() {
               <p className="text-slate-500 leading-8 text-[15px]">
                 Instant & quick Jain premix products with multiple flavour range.
                 Restaurant style taste — easy to make and pocket saving.
-                Est. 2nd June 2020.
+              
               </p>
 
               {/* SOCIAL ICONS */}
@@ -179,43 +199,58 @@ function Footer() {
               </ul>
             </div>
 
-            {/* ───── EXPLORE SECTION ───── */}
+            {/* ───── CATEGORIES ───── */}
             <div>
 
               <h3 className="text-[22px] font-black text-brand-green">
-                Explore
+                Our Categories
               </h3>
 
               <div className="w-12 h-[3px] rounded-full bg-brand-orange mt-3 mb-7"></div>
 
               <ul className="space-y-4">
 
-                {[
-                  { label: "Home", href: "/" },
-                  { label: "All Categories", href: "/categories" },
-                  { label: "Pickles", href: "/pickles" },
-                  { label: "Cart", href: "/cart" },
-
-                  // CUSTOMER LOGIN
-                  { label: "Customer Login", href: "/customerLogin/login" },
-
-                ].map(({ label, href }) => (
-
-                  <li key={href} className="group flex items-center gap-3">
-
-                    <span className="w-2 h-2 rounded-full bg-brand-green group-hover:scale-150 transition-all duration-300 shrink-0"></span>
-
-                    <Link
-                      href={href}
-                      className="text-slate-500 hover:text-brand-green group-hover:translate-x-1 transition-all duration-300 font-medium"
-                    >
-                      {label}
-                    </Link>
-
-                  </li>
-                ))}
+                {categories.length > 0
+                  ? categories.slice(0, 6).map((cat) => (
+                    <li key={cat._id} className="group flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-brand-green group-hover:scale-150 transition-all duration-300 shrink-0"></span>
+                      <Link
+                        href={`/category/${toSlug(cat.name)}`}
+                        className="text-slate-500 hover:text-brand-green group-hover:translate-x-1 transition-all duration-300 font-medium"
+                      >
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))
+                  : [
+                    { label: "Home", href: "/" },
+                    { label: "All Categories", href: "/categories" },
+                    { label: "Cart", href: "/cart" },
+                    { label: "Customer Login", href: "/customerLogin/login" },
+                  ].map(({ label, href }) => (
+                    <li key={href} className="group flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-brand-green group-hover:scale-150 transition-all duration-300 shrink-0"></span>
+                      <Link
+                        href={href}
+                        className="text-slate-500 hover:text-brand-green group-hover:translate-x-1 transition-all duration-300 font-medium"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))
+                }
 
               </ul>
+
+              {categories.length > 0 && (
+                <Link
+                  href="/categories"
+                  className="inline-flex items-center gap-1.5 mt-5 text-brand-green font-bold text-sm hover:underline"
+                >
+                  View All <FaArrowRight size={10} />
+                </Link>
+              )}
+
             </div>
 
             {/* ───── CONTACT INFO ───── */}
@@ -242,7 +277,7 @@ function Footer() {
                     </p>
 
                     <h4 className="font-bold text-brand-text mt-0.5">
-                      +91 xxxxxxxxxx
+                      +91 7021833244
                     </h4>
                   </div>
 
@@ -280,9 +315,9 @@ function Footer() {
                     </p>
 
                     <h4 className="font-bold text-brand-text mt-0.5 leading-7">
-                      Hyderabad, Telangana
-                      <br />
-                      India
+                      Harihar Complex D-108,<br />
+                      Mankoli, Bhiwandi 421311,<br />
+                      Maharashtra, India
                     </h4>
                   </div>
 

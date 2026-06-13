@@ -7,8 +7,8 @@ function Hero() {
 
   return (
     <section className="bg-brand-bg overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10 md:pb-16">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      <div className="sec-container pt-8 sm:pt-12 pb-14 md:pb-20">
+        <div className="grid lg:grid-cols-[45%_55%] gap-8 lg:gap-12 items-center">
 
           {/* LEFT SIDE */}
           <div>
@@ -116,14 +116,14 @@ function Hero() {
             <div className="absolute bottom-12 right-8 w-40 h-40 bg-brand-green-pale/60 blur-2xl rounded-full pointer-events-none"></div>
 
             <div className="grid grid-cols-2 gap-3 sm:gap-4 relative z-10">
-              <img src="/heroimage1.jpeg" alt="O-Jain Premix" className="h-44 sm:h-56 md:h-64 lg:h-80 w-full object-cover object-center rounded-[28px] shadow-2xl animate-image" style={{ animationDelay: "0.1s" }} />
-              <img src="/heroimage2.jpeg" alt="O-Jain Product" className="h-44 sm:h-56 md:h-64 lg:h-80 w-full object-cover object-center rounded-[28px] mt-6 lg:mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.2s" }} />
-              <img src="/heroimage3.jpeg" alt="O-Jain Spice" className="h-44 sm:h-56 md:h-64 lg:h-80 w-full object-cover object-center rounded-[28px] -mt-6 lg:-mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.3s" }} />
-              <img src="/heroimage4.jpeg" alt="O-Jain Satvik" className="h-44 sm:h-56 md:h-64 lg:h-80 w-full object-cover object-center rounded-[28px] shadow-2xl animate-image" style={{ animationDelay: "0.4s" }} />
+              <img src="/heroimage1.jpeg" alt="O-Jain Premix" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] shadow-2xl animate-image" style={{ animationDelay: "0.1s" }} />
+              <img src="/heroimage2.jpeg" alt="O-Jain Product" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] mt-6 lg:mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.2s" }} />
+              <img src="/heroimage3.jpeg" alt="O-Jain Spice" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] -mt-6 lg:-mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.3s" }} />
+              <img src="/heroimage4.jpeg" alt="O-Jain Satvik" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] shadow-2xl animate-image" style={{ animationDelay: "0.4s" }} />
             </div>
 
             {/* Floating card — no preservatives */}
-            <div className="absolute bottom-4 sm:bottom-10 -left-2 sm:-left-3 lg:-left-5 z-20 bg-white rounded-2xl px-3 py-2.5 shadow-2xl border border-gray-100 flex items-center gap-2 lg:gap-3 animate-fade-up" style={{ animationDelay: "0.55s" }}>
+            <div className="hidden sm:flex absolute bottom-4 sm:bottom-10 -left-2 sm:-left-3 lg:-left-5 z-20 bg-white rounded-2xl px-3 py-2.5 shadow-2xl border border-gray-100 items-center gap-2 lg:gap-3 animate-fade-up" style={{ animationDelay: "0.55s" }}>
               <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-brand-green-pale flex items-center justify-center shrink-0 text-lg">
                 🌿
               </div>
@@ -135,7 +135,7 @@ function Hero() {
             </div>
 
             {/* Floating card — quick premix */}
-            <div className="absolute top-4 sm:top-6 -right-2 sm:-right-3 lg:-right-4 z-20 bg-white rounded-2xl px-3 py-2.5 shadow-2xl border border-gray-100 animate-fade-up" style={{ animationDelay: "0.6s" }}>
+            <div className="hidden sm:block absolute top-4 sm:top-6 -right-2 sm:-right-3 lg:-right-4 z-20 bg-white rounded-2xl px-3 py-2.5 shadow-2xl border border-gray-100 animate-fade-up" style={{ animationDelay: "0.6s" }}>
               <div className="flex items-center gap-2 lg:gap-3">
                 <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center shrink-0 text-lg">
                   ⚡

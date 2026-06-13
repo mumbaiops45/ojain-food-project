@@ -13,15 +13,15 @@ const api = axios.create({
 // ==========================================
 api.interceptors.request.use(
   (config) => {
-    // Track start time so we can warn on slow responses
     config._startTime = Date.now();
-
+    // Attach JWT token from localStorage so protected routes (cart, orders, etc.) are authenticated
     if (typeof window !== "undefined") {
-      const adminToken = localStorage.getItem("adminToken");
-      const token = localStorage.getItem("token");
-      const finalToken = adminToken || token;
-      if (finalToken) {
-        config.headers.Authorization = `Bearer ${finalToken}`;
+      const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("vendorToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
@@ -74,24 +74,24 @@ api.interceptors.response.use(
     //   }
     // } 
     else if (status === 401) {
-      const adminToken =
-        localStorage.getItem(
-          "adminToken"
-        );
+      const url = error.config?.url || "";
+      const method = error.config?.method || "";
+      const path = window.location.pathname;
 
-      localStorage.removeItem("token");
-      localStorage.removeItem("adminToken");
+      // Profile check on page load — user simply isn't logged in. Fail silently.
+      const isProfileCheck =
+        url.includes("/api/auth/profile") && method === "get";
 
-      toast.error(
-        "Session expired. Please login again."
-      );
-
-      if (adminToken) {
-        window.location.href =
-          "/adminlogin";
-      } else {
-        window.location.href =
-          "/";
+      if (!isProfileCheck) {
+        if (path.startsWith("/admin")) {
+          toast.error("Session expired. Please login again.");
+          window.location.href = "/adminlogin";
+        } else if (path.startsWith("/vendor")) {
+          toast.error("Session expired. Please login again.");
+          window.location.href = "/vendorLogin/login";
+        } else {
+          toast.error("Please login to continue.");
+        }
       }
     }
     else if (status >= 500) {

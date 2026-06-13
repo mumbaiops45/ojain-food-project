@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "O-Jain — Pure Jain & Satvik Premix Products",
+  description: "Discover O-Jain's range of instant Jain & Satvik premix products. Restaurant style taste, easy to make, pocket saving. 100% pure veg — no onion, no garlic. Est. 2020.",
+};
+
 import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import CategoryBar from "./components/CategoryBar";

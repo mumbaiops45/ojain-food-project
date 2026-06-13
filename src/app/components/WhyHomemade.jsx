@@ -27,13 +27,13 @@ const points = [
 
 function WhyHomemade() {
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden bg-linear-to-br from-white via-brand-bg to-brand-green-pale">
+    <section className="relative py-20 md:py-28 overflow-hidden bg-linear-to-br from-white via-brand-bg to-brand-green-pale">
 
       <div className="absolute top-0 left-0 w-72 h-72 bg-brand-green-pale rounded-full blur-3xl opacity-40"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-green-mid rounded-full blur-3xl opacity-15"></div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-brand-green-pale rounded-full blur-3xl opacity-20"></div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 sec-container">
 
         {/* Heading */}
         <ScrollReveal animation="fade-up" className="text-center max-w-3xl mx-auto">
@@ -55,7 +55,7 @@ function WhyHomemade() {
         </ScrollReveal>
 
         {/* Cards */}
-        <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {points.map((point, index) => (
             <ScrollReveal key={index} animation="scale-up" delay={index * 100}>
             <div
@@ -69,7 +69,7 @@ function WhyHomemade() {
                 <img
                   src={point.image}
                   alt={point.title}
-                  className="w-full h-50 sm:h-57.5 object-cover group-hover:scale-110 transition-all duration-700"
+                  className="w-full h-44 sm:h-52 md:h-56 object-cover group-hover:scale-110 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
 

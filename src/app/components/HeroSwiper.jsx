@@ -42,7 +42,7 @@ export default function HeroSwiper() {
   }
 
   return (
-    <section className="w-full px-2 sm:px-4 md:px-6 pt-3 pb-2">
+    <section className="w-full pt-3 pb-2">
 
       <style>{`
         @keyframes slideIn {
@@ -60,7 +60,7 @@ export default function HeroSwiper() {
       {/* ── SLIDER ── */}
       <div
         className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl"
-        style={{ height: "clamp(180px, 52vw, 520px)" }}
+        style={{ height: "clamp(220px, 60vw, 620px)" }}
       >
         {/* outgoing image */}
         {prev !== null && (

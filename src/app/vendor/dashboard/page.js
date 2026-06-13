@@ -5,7 +5,8 @@ import {
   useState,
 } from "react";
 
-import {getVendorDashboardService} from "../../../../services/vendor.service";
+import { getVendorDashboardService } from "../../../../services/vendor.service";
+import toast from "react-hot-toast";
 
 export default function VendorDashboardPage() {
   const [dashboard, setDashboard] =
@@ -27,9 +28,7 @@ export default function VendorDashboardPage() {
       } catch (error) {
         console.log(error);
 
-        alert(
-          "Failed to load dashboard"
-        );
+        toast.error("Failed to load dashboard");
       } finally {
         setLoading(false);
       }

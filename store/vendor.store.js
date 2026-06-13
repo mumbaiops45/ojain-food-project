@@ -387,6 +387,8 @@ import {
   // DASHBOARD
   getVendorDashboardService,
 } from "../services/vendor.service";
+import { useCustomerStore } from "./customer.store";
+import useCartStore from "./cartStore";
 
 export const useVendorStore =
   create((set, get) => ({
@@ -421,28 +423,8 @@ export const useVendorStore =
               data
             );
 
-          // SAVE TOKEN
-          if (res.token) {
-            localStorage.setItem(
-              "token",
-              res.token
-            );
-          }
-
-          // SAVE VENDOR
-          if (res.vendor) {
-            localStorage.setItem(
-              "vendor",
-              JSON.stringify(
-                res.vendor
-              )
-            );
-          }
-
           set({
-            vendor:
-              res.vendor || null,
-
+            vendor: res.vendor || null,
             loading: false,
           });
 
@@ -478,24 +460,12 @@ export const useVendorStore =
               formData
             );
 
-          // SAVE TOKEN
-          localStorage.setItem(
-            "token",
-            res.token
-          );
-
-          // SAVE VENDOR
-          localStorage.setItem(
-            "vendor",
-            JSON.stringify(
-              res.vendor
-            )
-          );
+          if (res?.token && typeof window !== "undefined") {
+            localStorage.setItem("vendorToken", res.token);
+          }
 
           set({
-            vendor:
-              res.vendor,
-
+            vendor: res.vendor,
             loading: false,
           });
 
@@ -535,14 +505,6 @@ export const useVendorStore =
 
             loading: false,
           });
-
-          // UPDATE STORAGE
-          localStorage.setItem(
-            "vendor",
-            JSON.stringify(
-              res.vendor
-            )
-          );
 
           return res;
         } catch (err) {
@@ -584,14 +546,6 @@ export const useVendorStore =
 
             loading: false,
           });
-
-          // UPDATE STORAGE
-          localStorage.setItem(
-            "vendor",
-            JSON.stringify(
-              res.vendor
-            )
-          );
 
           return res;
         } catch (err) {
@@ -688,24 +642,22 @@ export const useVendorStore =
       async () => {
         try {
           await logoutVendorService();
-
-          localStorage.removeItem(
-            "token"
-          );
-
-          localStorage.removeItem(
-            "vendor"
-          );
-
-          set({
-            vendor: null,
-            dashboard: null,
-            earnings: null,
-            error: null,
-          });
         } catch (err) {
           console.log(err);
         }
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("vendorToken");
+          localStorage.removeItem("ojain-customer");
+          localStorage.removeItem("token");
+        }
+        useCustomerStore.getState().reset();
+        useCartStore.getState().resetCart();
+        set({
+          vendor: null,
+          dashboard: null,
+          earnings: null,
+          error: null,
+        });
       },
 
     // =============================================

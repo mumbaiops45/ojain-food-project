@@ -13,17 +13,24 @@ import { useCart } from "../../../hooks/useCart";
 import { useAuth } from "../../contexts/AuthContext";
 import { useProduct } from "../../../hooks/useProduct";
 import getImageUrl from "../../../utils/getImageUrl";
+import api from "../../../utils/axios";
 
 /* ─────────────────────────────────────────────────────────
    Quick-view modal — uses real product data from backend
 ───────────────────────────────────────────────────────── */
 function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease }) {
   const qty = cartQty(product._id);
+  const { user } = useAuth();
+  const router = useRouter();
 
   const [adding, setAdding] = useState(false);
 
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [vendorId, setVendorId] = useState(
+    // Try to get vendor from product prop immediately (may already be populated)
+    product.vendor?._id || product.vendor || product.vendorId?._id || product.vendorId || null
+  );
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -32,17 +39,27 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
   useEffect(() => {
     if (!product?._id) return;
 
-    const loadReviews = async () => {
+    // Fetch reviews AND full product data in parallel.
+    // Full product fetch ensures vendor is populated even when list API omits it.
+    const loadData = async () => {
+      setReviewsLoading(true);
       try {
-        setReviewsLoading(true);
+        const [reviewsRes, productRes] = await Promise.allSettled([
+          api.get(`/api/reviews/product/${product._id}`),
+          api.get(`/api/products/${product._id}`),
+        ]);
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${product._id}`
-        );
+        if (reviewsRes.status === "fulfilled") {
+          setReviews(reviewsRes.value.data.reviews || []);
+        }
 
-        const data = await res.json();
-
-        setReviews(data.reviews || []);
+        if (productRes.status === "fulfilled") {
+          const full = productRes.value.data?.product || productRes.value.data;
+          const vid =
+            full?.vendor?._id || full?.vendor ||
+            full?.vendorId?._id || full?.vendorId;
+          if (vid) setVendorId(vid);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -50,8 +67,8 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
       }
     };
 
-    loadReviews();
-  }, [product]);
+    loadData();
+  }, [product._id]);
 
   const handleAdd = async () => {
     setAdding(true);
@@ -59,47 +76,39 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
     setAdding(false);
     onClose();
   };
+
   const submitReview = async () => {
+    if (!user) {
+      toast.error("Please login to submit a review");
+      onClose();
+      router.push("/customerLogin/login");
+      return;
+    }
+    if (!comment.trim()) { toast.error("Please write a comment"); return; }
+    if (!vendorId) { toast.error("Could not find vendor info. Please try again later."); return; }
+
+    setSubmittingReview(true);
     try {
-      setSubmittingReview(true);
-
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            productId: product._id,
-            vendorId: product.vendor?._id || product.vendor,
-            rating,
-            comment,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message);
+      await api.post("/api/reviews", {
+        productId: product._id,
+        vendorId,
+        rating,
+        comment,
+      });
 
       setComment("");
       setRating(5);
+      toast.success("Review submitted!");
+      onClose();
 
-      toast.success("Review submitted");
-
-      const reviewsRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/product/${product._id}`
-      );
-
-      const reviewsData = await reviewsRes.json();
-      setReviews(reviewsData.reviews || []);
-
+      // Re-fetch landing page reviews after modal is gone
+      setTimeout(() => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("reviewSubmitted"));
+        }
+      }, 400);
     } catch (err) {
-      toast.error(err.message || "Failed to submit review");
+      toast.error(err?.response?.data?.message || "Failed to submit review");
     } finally {
       setSubmittingReview(false);
     }
@@ -174,37 +183,49 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
           </div>
           {/* Write Review */}
           <div className="mt-8 border rounded-xl p-4">
-            <h3 className="font-bold text-lg mb-3">
-              Write a Review
-            </h3>
+            <h3 className="font-bold text-lg mb-3">Write a Review</h3>
 
-            <select
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              className="w-full border rounded-lg p-3 mb-3"
-            >
-              <option value={5}>⭐⭐⭐⭐⭐</option>
-              <option value={4}>⭐⭐⭐⭐</option>
-              <option value={3}>⭐⭐⭐</option>
-              <option value={2}>⭐⭐</option>
-              <option value={1}>⭐</option>
-            </select>
+            {!user ? (
+              <div className="text-center py-4">
+                <p className="text-gray-500 text-sm mb-3">Please login to write a review</p>
+                <button
+                  onClick={() => { onClose(); router.push("/customerLogin/login"); }}
+                  className="bg-brand-green text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#1B5E20] transition"
+                >
+                  Login to Review
+                </button>
+              </div>
+            ) : (
+              <>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                  className="w-full border rounded-lg p-3 mb-3"
+                >
+                  <option value={5}>⭐⭐⭐⭐⭐</option>
+                  <option value={4}>⭐⭐⭐⭐</option>
+                  <option value={3}>⭐⭐⭐</option>
+                  <option value={2}>⭐⭐</option>
+                  <option value={1}>⭐</option>
+                </select>
 
-            <textarea
-              rows={4}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write your review..."
-              className="w-full border rounded-lg p-3 mb-3"
-            />
+                <textarea
+                  rows={4}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Write your review..."
+                  className="w-full border rounded-lg p-3 mb-3"
+                />
 
-            <button
-              onClick={submitReview}
-              disabled={submittingReview || !comment.trim()}
-              className="bg-brand-green text-white px-5 py-3 rounded-xl font-bold"
-            >
-              {submittingReview ? "Submitting..." : "Submit Review"}
-            </button>
+                <button
+                  onClick={submitReview}
+                  disabled={submittingReview || !comment.trim()}
+                  className="bg-brand-green text-white px-5 py-3 rounded-xl font-bold disabled:opacity-60"
+                >
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </>
+            )}
           </div>
 
           {/* Customer Reviews */}
@@ -224,32 +245,33 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
               </div>
             ) : (
               <div className="space-y-4">
-                {reviews.map((review) => (
-                  <div
-                    key={review._id}
-                    className="border-b border-gray-100 pb-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm">
-                        {review.customerId?.name}
-                      </span>
-
-                      <span className="text-yellow-500 text-sm">
-                        {"⭐".repeat(review.rating)}
-                      </span>
+                {reviews.map((review) => {
+                  const name = review.customerId?.name || "User";
+                  const avatar = review.customerId?.avatar
+                    || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2E7D32&color=fff&size=64&bold=true`;
+                  return (
+                  <div key={review._id} className="border-b border-gray-100 pb-4">
+                    <div className="flex items-start gap-3">
+                      <img
+                        src={avatar}
+                        alt={name}
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-brand-green-pale"
+                        onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2E7D32&color=fff&size=64&bold=true`; }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-sm">{name}</span>
+                          <span className="text-yellow-500 text-xs">{"⭐".repeat(review.rating)}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">{review.comment}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {new Date(review.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
+                      </div>
                     </div>
-
-                    <p className="text-sm text-gray-600 mt-2">
-                      {review.comment}
-                    </p>
-
-                    <p className="text-xs text-gray-400 mt-1">
-                      {new Date(
-                        review.createdAt
-                      ).toLocaleDateString()}
-                    </p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -392,13 +414,13 @@ function FeaturedProducts() {
 
   return (
     <>
-      <section className="relative py-16 md:py-20 overflow-hidden bg-[#f8f8f8]">
+      <section className="relative py-20 md:py-28 overflow-hidden bg-[#f8f8f8]">
 
         {/* Glow blobs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-brand-green-pale/40 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-green-pale/30 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 sec-container">
 
           {/* Section header */}
           <ScrollReveal animation="fade-up" className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
@@ -426,7 +448,7 @@ function FeaturedProducts() {
           </ScrollReveal>
 
           {/* Product grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
             {/* Loading skeletons */}
             {loading && featured.length === 0 &&

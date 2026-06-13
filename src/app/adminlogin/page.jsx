@@ -18,6 +18,7 @@ import {
   MdEmail,
   MdLock,
 } from "react-icons/md";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function AdminLoginPage() {
 
@@ -34,6 +35,7 @@ export default function AdminLoginPage() {
       email: "",
       password: "",
     });
+  const [showPassword, setShowPassword] = useState(false);
 
   // HANDLE CHANGE
   const handleChange = (e) => {
@@ -152,7 +154,7 @@ export default function AdminLoginPage() {
                 <MdLock className="text-xl text-brand-green" />
 
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Enter password"
                   value={formData.password}
@@ -160,6 +162,11 @@ export default function AdminLoginPage() {
                   className="w-full h-full bg-transparent outline-none px-3 text-base text-gray-800"
                   required
                 />
+
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="ml-2 text-gray-400 hover:text-brand-green transition">
+                  {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                </button>
 
               </div>
 

@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaTrash, FaMapMarkerAlt, FaCheckCircle, FaLeaf, FaArrowLeft, FaPlus, FaMinus, FaMotorcycle, FaCreditCard, FaMoneyBillWave, FaLock } from "react-icons/fa";
+import toast from "react-hot-toast";
 import { addressAPI, orderAPI, paymentAPI } from "../../../services/api";
 import getImageUrl from "../../../utils/getImageUrl";
 
@@ -81,7 +82,7 @@ export default function CartPage() {
   };
   const detectCurrentAddress = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      toast.error("Geolocation is not supported by your browser");
       return;
     }
 
@@ -110,14 +111,14 @@ export default function CartPage() {
 
           setShowAddressForm(true);
         } catch {
-          alert("Unable to fetch address");
+          toast.error("Unable to fetch address from your location");
         } finally {
           setDetectingLocation(false);
         }
       },
       () => {
         setDetectingLocation(false);
-        alert("Location permission denied");
+        toast.error("Location permission denied. Please enable it in your browser settings.");
       }
     );
   };
@@ -130,7 +131,7 @@ export default function CartPage() {
       setShowAddressForm(false);
       setNewAddress(EMPTY_ADDR);
     } catch (err) {
-      alert(err?.response?.data?.message || "Failed to save address");
+      toast.error(err?.response?.data?.message || "Failed to save address");
     }
   };
 
@@ -140,7 +141,7 @@ export default function CartPage() {
       await addressAPI.remove(id);
       setAddresses((prev) => prev.filter((a) => a._id !== id));
       if (selectedAddressId === id) setSelectedAddressId("");
-    } catch { alert("Failed to delete address"); }
+    } catch { toast.error("Failed to delete address"); }
   };
 
   // ── COD flow ──────────────────────────────────────────────────────────────
@@ -151,7 +152,7 @@ export default function CartPage() {
       await fetchCart();
       router.push("/order-confirmation");
     } catch (err) {
-      alert(err?.response?.data?.message || "Order failed. Please try again.");
+      toast.error(err?.response?.data?.message || "Order failed. Please try again.");
     } finally { setLoading(false); }
   };
 
@@ -161,11 +162,11 @@ export default function CartPage() {
     try {
       // 1. Load checkout script
       const ok = await loadRazorpayScript();
-      if (!ok) { alert("Could not load Razorpay. Check your internet connection."); setLoading(false); return; }
+      if (!ok) { toast.error("Could not load Razorpay. Check your internet connection."); setLoading(false); return; }
 
       // 2. Create order on server (secret key stays server-side)
       const orderData = await paymentAPI.createOrder(finalTotal);
-      if (orderData.error) { alert(orderData.error); setLoading(false); return; }
+      if (orderData.error) { toast.error(orderData.error); setLoading(false); return; }
 
       // 3. Open Razorpay checkout popup
       const options = {
@@ -192,7 +193,7 @@ export default function CartPage() {
           });
 
           if (!verified.success) {
-            alert("Payment verification failed. Please contact support with Payment ID: " + response.razorpay_payment_id);
+            toast.error("Payment verification failed. Please contact support with Payment ID: " + response.razorpay_payment_id, { duration: 8000 });
             setLoading(false);
             return;
           }
@@ -208,7 +209,7 @@ export default function CartPage() {
             await fetchCart();
             router.push("/order-confirmation");
           } catch (err) {
-            alert(err?.response?.data?.message || "Payment succeeded but order save failed. Contact support.");
+            toast.error(err?.response?.data?.message || "Payment succeeded but order save failed. Contact support.", { duration: 8000 });
           } finally { setLoading(false); }
         },
 
@@ -219,19 +220,19 @@ export default function CartPage() {
 
       const rzp = new window.Razorpay(options);
       rzp.on("payment.failed", (resp) => {
-        alert("Payment failed: " + (resp.error?.description || "Unknown error"));
+        toast.error("Payment failed: " + (resp.error?.description || "Unknown error"));
         setLoading(false);
       });
       rzp.open();
     } catch (err) {
-      alert("Failed to initiate payment. Please try again.");
+      toast.error("Failed to initiate payment. Please try again.");
       setLoading(false);
     }
   };
 
   // ── Master handler ─────────────────────────────────────────────────────────
   const placeOrder = () => {
-    if (!selectedAddressId) { alert("Please select a delivery address"); return; }
+    if (!selectedAddressId) { toast.error("Please select a delivery address"); return; }
     if (paymentMethod === "COD") return placeCODOrder();
     if (paymentMethod === "Razorpay") return placeRazorpayOrder();
   };
@@ -460,17 +461,17 @@ export default function CartPage() {
 
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-5">
                     <h3 className="font-bold text-gray-800 mb-4">Add New Address</h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         onClick={detectCurrentAddress}
-                        className="w-full mb-4 bg-brand-green text-white py-3 rounded-xl font-bold hover:bg-[#1B5E20]"
+                        className="col-span-1 sm:col-span-2 w-full mb-4 bg-brand-green text-white py-3 rounded-xl font-bold hover:bg-[#1B5E20]"
                       >
                         📍 {detectingLocation ? "Detecting..." : "Use Current Location"}
                       </button>
                       <select
                         value={newAddress.label}
                         onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
-                        className="col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green"
+                        className="col-span-1 sm:col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green"
                       >
                         <option value="Home">🏠 Home</option>
                         <option value="Work">💼 Work</option>
@@ -478,13 +479,13 @@ export default function CartPage() {
                       </select>
                       <input placeholder="Full Name *" value={newAddress.fullName}
                         onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })}
-                        className="col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />
+                        className="col-span-1 sm:col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />
                       <input placeholder="Street / Area *" value={newAddress.street}
                         onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
-                        className="col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />
+                        className="col-span-1 sm:col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />
                       <input placeholder="Landmark" value={newAddress.landmark}
                         onChange={(e) => setNewAddress({ ...newAddress, landmark: e.target.value })}
-                        className="col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />
+                        className="col-span-1 sm:col-span-2 border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />
                       <input placeholder="City *" value={newAddress.city}
                         onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                         className="border border-gray-200 p-3 rounded-xl focus:outline-none focus:border-brand-green" />

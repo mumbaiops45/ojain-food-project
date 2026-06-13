@@ -1,10 +1,5 @@
-// =============================================
-// src/api/customerApi.js
-// =============================================
-
 import api from "../utils/axios";
 
-// BASE URL
 const BASE = "/api/auth";
 
 // REGISTER
@@ -19,10 +14,20 @@ export const loginCustomer = (data) =>
 export const logoutCustomer = () =>
   api.post(`${BASE}/logout`);
 
-// PROFILE
+// GET PROFILE
 export const getCustomerProfile = () =>
-  api.get(`/api/customer/profile`);
+  api.get(`${BASE}/profile`);
 
-// UPDATE PROFILE
+// UPDATE PROFILE (name / phone)
 export const updateCustomerProfile = (data) =>
-  api.put(`/api/customer/profile`, data); 
+  api.put(`${BASE}/profile`, data);
+
+// CHANGE PASSWORD
+export const changeCustomerPassword = (data) =>
+  api.put(`${BASE}/profile/change-password`, data);
+
+// UPLOAD AVATAR (form-data field: avatar)
+export const uploadCustomerAvatar = (formData) =>
+  api.put(`${BASE}/profile/avatar`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });

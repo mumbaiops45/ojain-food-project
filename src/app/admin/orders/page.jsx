@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import {
   MdSearch,
   MdDeleteOutline,
@@ -123,7 +124,7 @@ export default function AdminOrdersPage() {
       );
     } catch (err) {
       console.error(err);
-      alert("Status update failed");
+      toast.error("Status update failed");
     }
   };
 
@@ -136,7 +137,7 @@ export default function AdminOrdersPage() {
       setOrders((prev) => prev.filter((o) => o._id !== id));
     } catch (err) {
       console.error(err);
-      alert("Delete failed");
+      toast.error("Delete failed");
     } finally {
       setDeletingId(null);
     }
@@ -285,7 +286,7 @@ export default function AdminOrdersPage() {
         }}
       >
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px]">
+          <table className="w-full min-w-225">
 
             {/* Head */}
             <thead>

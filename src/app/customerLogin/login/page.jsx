@@ -73,16 +73,16 @@ export default function CustomerLoginPage() {
 
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-white/20 px-5 py-2 rounded-full text-sm font-medium backdrop-blur-md mb-6">
-              🍲 Food Platform
+              🌿 Pure Jain Food
             </div>
             <h1 className="text-5xl font-extrabold leading-tight mb-6">
-              Welcome <br /> Back To <br /> Home Taste
+              Welcome Back To OJain
             </h1>
             <p className="text-lg text-white/80 leading-8 max-w-md">
-              Login to explore healthy meals prepared with love by trusted chefs near you.
+              Login to explore pure Jain meals crafted with love by trusted chefs near you.
             </p>
             <div className="mt-10 space-y-4">
-              {[["🥘", "Fresh Daily Meals"], ["🚚", "Fast & Safe Delivery"], ["❤️", "Healthy & Fresh Food"]].map(([emoji, label]) => (
+              {[["🥗", "Fresh Daily Meals"], ["🚚", "Fast & Safe Delivery"], ["🌿", "Pure Veg & Satvik Food"]].map(([emoji, label]) => (
                 <div key={label} className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">{emoji}</div>
                   <span className="text-lg">{label}</span>
@@ -96,16 +96,16 @@ export default function CustomerLoginPage() {
               <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/20">
                 <div className="text-4xl mb-3">🥗</div>
                 <h3 className="font-semibold text-lg">Healthy Meals</h3>
-                <p className="text-sm text-white/70 mt-2 leading-6">Nutritious authentic recipes made fresh every day.</p>
+                <p className="text-sm text-white/70 mt-2 leading-6">Nutritious pure veg recipes made fresh every day.</p>
               </div>
               <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/20">
-                <div className="text-4xl mb-3">🍱</div>
-                <h3 className="font-semibold text-lg">Authentic Taste</h3>
-                <p className="text-sm text-white/70 mt-2 leading-6">Enjoy real home-cooked meals with traditional flavors.</p>
+                <div className="text-4xl mb-3">🌿</div>
+                <h3 className="font-semibold text-lg">Jain Authentic</h3>
+                <p className="text-sm text-white/70 mt-2 leading-6">Enjoy pure Satvik meals made with traditional Jain recipes.</p>
               </div>
             </div>
             <div className="mt-8 bg-white/10 rounded-2xl p-5 backdrop-blur-md border border-white/20">
-              <p className="text-lg italic leading-8 text-white/80">"Good food brings comfort to every heart."</p>
+              <p className="text-lg italic leading-8 text-white/80">"Pure Jain food — nourishing the body, calming the soul."</p>
             </div>
           </div>
         </div>
@@ -197,7 +197,13 @@ export default function CustomerLoginPage() {
 
             {loginType === "email" && (
               <div className="flex justify-end">
-                <button type="button" className="text-sm text-brand-green hover:underline">Forgot Password?</button>
+                <button
+                  type="button"
+                  className="text-sm text-brand-green hover:underline"
+                  onClick={() => toast("Please contact support@ojain.com to reset your password.", { icon: "📧" })}
+                >
+                  Forgot Password?
+                </button>
               </div>
             )}
 

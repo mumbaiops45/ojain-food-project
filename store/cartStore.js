@@ -59,6 +59,14 @@ const useCartStore = create(
         set({ cart: { items: [] } });
       },
 
+      // Local-only reset — called on logout without hitting the API
+      resetCart: () => {
+        set({ cart: { items: [] }, cartUpdatedAt: null, loading: false, error: null });
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cart-storage");
+        }
+      },
+
       totalItems: () => {
         const { cart } = get();
         return cart.items.reduce((sum, i) => sum + i.quantity, 0);
