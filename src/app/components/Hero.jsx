@@ -117,8 +117,8 @@ function Hero() {
 
             <div className="grid grid-cols-2 gap-3 sm:gap-4 relative z-10">
               <img src="/heroimage1.jpeg" alt="O-Jain Premix" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] shadow-2xl animate-image" style={{ animationDelay: "0.1s" }} />
-              <img src="/heroimage2.jpeg" alt="O-Jain Product" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] mt-6 lg:mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.2s" }} />
-              <img src="/heroimage3.jpeg" alt="O-Jain Spice" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] -mt-6 lg:-mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.3s" }} />
+              <img src="/masala4.jpg" alt="O-Jain Product" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] mt-6 lg:mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.2s" }} />
+              <img src="/hero5.jpeg" alt="O-Jain Spice" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] -mt-6 lg:-mt-10 shadow-2xl animate-image" style={{ animationDelay: "0.3s" }} />
               <img src="/heroimage4.jpeg" alt="O-Jain Satvik" className="h-48 sm:h-60 md:h-72 lg:h-96 w-full object-cover object-center rounded-[28px] shadow-2xl animate-image" style={{ animationDelay: "0.4s" }} />
             </div>
 
