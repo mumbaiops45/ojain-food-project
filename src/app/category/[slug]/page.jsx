@@ -595,14 +595,14 @@ export default function CategoryPage() {
           />
 
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
-
+{/* 
           <div className="absolute bottom-6 left-4 sm:left-8">
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
               {category.name}
             </h2>
 
-          </div>
+          </div> */}
         </div>
       )}
 
