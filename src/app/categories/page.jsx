@@ -54,7 +54,7 @@ export default function CategoriesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="bg-white rounded-[28px] overflow-hidden shadow animate-pulse">
-                <div className="h-56 bg-gray-200" />
+                <div className="h-44 bg-gray-200" />
                 <div className="p-5 space-y-2">
                   <div className="h-6 bg-gray-200 rounded w-3/4" />
                   <div className="h-4 bg-gray-200 rounded w-1/2" />
@@ -107,7 +107,7 @@ export default function CategoriesPage() {
                 className="group relative block bg-white rounded-[28px] shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-green-50"
               >
                 {/* Image */}
-                <div className="relative h-56 w-full overflow-hidden">
+                <div className="relative h-44 w-full overflow-hidden">
                   <img
                     src={getImageUrl(cat.image)}
                     alt={cat.name}
@@ -119,10 +119,10 @@ export default function CategoriesPage() {
 
                 {/* Card Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                  <h3 className="text-xl font-bold tracking-tight">{cat.name}</h3>
-                  {cat.description && (
+                  {/* <h3 className="text-xl font-bold tracking-tight">{cat.name}</h3> */}
+                  {/* {cat.description && (
                     <p className="text-white/70 text-sm mt-1 line-clamp-1">{cat.description}</p>
-                  )}
+                  )} */}
                   <div className="mt-3 flex items-center text-orange-400 font-semibold text-sm group-hover:text-orange-300 transition">
                     <span>Explore now</span>
                     <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />

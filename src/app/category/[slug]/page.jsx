@@ -630,7 +630,7 @@ export default function CategoryPage() {
                       />
 
                       {/* VEG */}
-                      {product.isVeg && (
+                      {/* {product.isVeg && (
 
                         <div className="absolute top-3 left-3 bg-brand-green text-white text-xs px-3 py-1 rounded-full font-bold shadow flex items-center gap-1">
 
@@ -639,7 +639,7 @@ export default function CategoryPage() {
                           Pure Veg
 
                         </div>
-                      )}
+                      )} */}
 
                       {/* RATING */}
                       <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur text-brand-green px-2 py-1 rounded-full text-xs font-bold shadow">
