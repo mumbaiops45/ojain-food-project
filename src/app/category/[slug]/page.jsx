@@ -582,29 +582,7 @@ export default function CategoryPage() {
       </div>
 
       {/* HERO */}
-      {category && (
-
-        <div className="relative h-52 sm:h-64 md:h-80 w-full overflow-hidden">
-
-          <img
-            src={getImageUrl(
-              category.image
-            )}
-            alt={category.name}
-            className="w-full h-full object-cover"
-          />
-
-          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
-{/* 
-          <div className="absolute bottom-6 left-4 sm:left-8">
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
-              {category.name}
-            </h2>
-
-          </div> */}
-        </div>
-      )}
+     
 
       {/* PRODUCTS */}
       <div className="sec-container py-8">

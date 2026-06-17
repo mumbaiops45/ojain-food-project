@@ -28,7 +28,7 @@ function CategoryCard({ cat, index }) {
         style={{ background: "#0b160d" }}
       >
         {/* Image */}
-        <div className="aspect-4/3 relative w-full overflow-hidden">
+        <div className="relative w-full h-40 md:h-44 overflow-hidden">
 
           {!loaded && (
             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 animate-pulse" />
@@ -51,9 +51,9 @@ function CategoryCard({ cat, index }) {
 
         {/* Name footer — solid background, always readable */}
         <div className="flex items-center justify-between gap-2 px-4 py-3 bg-[#0f1f11]">
-          <h3 className="text-white font-black text-sm md:text-base leading-snug line-clamp-1 flex-1">
+          {/* <h3 className="text-white font-black text-sm md:text-base leading-snug line-clamp-1 flex-1">
             {cat.name}
-          </h3>
+          </h3> */}
           <div className="flex items-center gap-1 text-[#FFA726] text-[11px] font-bold tracking-wide uppercase shrink-0">
             <span>Explore</span>
             <FaChevronRight size={8} className="group-hover:translate-x-1 transition-transform duration-300" />
