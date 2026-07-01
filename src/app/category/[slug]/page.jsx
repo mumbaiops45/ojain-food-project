@@ -617,7 +617,7 @@ export default function CategoryPage() {
                   >
 
                     {/* IMAGE */}
-                    <div className="relative h-48 sm:h-52 w-full shrink-0">
+                    <div className="relative aspect-square w-full bg-white">
 
                       <Image
                         src={getImageUrl(
@@ -625,7 +625,7 @@ export default function CategoryPage() {
                         )}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className="object-contain p-4"
                         unoptimized
                       />
 
@@ -642,7 +642,7 @@ export default function CategoryPage() {
                       )} */}
 
                       {/* RATING */}
-                      <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur text-brand-green px-2 py-1 rounded-full text-xs font-bold shadow">
+                      <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur text-brand-green px-2 py-1 rounded-full text-xs font-bold shadow">
 
                         <FaStar size={9} />
 

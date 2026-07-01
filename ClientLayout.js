@@ -175,7 +175,8 @@ export default function ClientLayout({ children }) {
   const hideLayout =
     pathname.startsWith("/dashboard") ||
     (pathname.startsWith("/admin") && !pathname.startsWith("/adminlogin")) ||
-    (pathname.startsWith("/vendor") && !pathname.startsWith("/vendorLogin"));
+    (pathname.startsWith("/vendor") && !pathname.startsWith("/vendorLogin"))||
+     pathname.startsWith("/cart");
 
   return (
     <AuthProvider>
