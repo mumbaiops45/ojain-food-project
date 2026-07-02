@@ -126,7 +126,7 @@ export default function AboutPage() {
 
             {/* Top right — masala1 */}
             <div className="absolute right-0 top-0 w-[38%] h-[38%] rounded-3xl overflow-hidden shadow-xl" style={{ animationDelay: "1s" }}>
-              <Image src="/masala1.png" alt="O-Jain Masala" fill className="object-cover" />
+              <Image src="/heroo8.png" alt="O-Jain Masala" fill className="object-cover" />
             </div>
 
             {/* Mid right — masala2 */}

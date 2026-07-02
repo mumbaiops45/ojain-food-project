@@ -828,29 +828,31 @@ function Navbar() {
 
             {/* Marquee — duplicated for seamless loop */}
             {categories.length > 0 && (
-              <div className="animate-marquee flex items-center gap-4 w-max">
+              <div className="animate-marquee flex items-center gap-4 w-max px-2">
                 {[...categories, ...categories].map((cat, idx) => (
                   <Link
                     key={idx}
                     href={`/category/${toSlug(cat.name)}`}
                     tabIndex={idx >= categories.length ? -1 : 0}
                     aria-hidden={idx >= categories.length}
-                    className="group flex flex-col items-center gap-2 p-3 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-28"
+                    // className="group flex flex-col items-center gap-2 p-3 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-28"
+                    className="group flex flex-col items-center gap-2 transition-all duration-300"
                   >
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white flex items-center justify-center">
+                    {/* <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white flex items-center justify-center"> */}
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center group-hover:border-brand-green group-hover:scale-105 transition-all duration-300">
                       <img
                         src={getImageUrl(cat.image) || "/category1.jpg"}
                         alt={cat.name}
-                        className="w-full h-full object-contain transition-all duration-300 group-hover:scale-110"
+                        className="w-full h-full object-cover object-right transition-all duration-300 group-hover:scale-110"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = "/category1.jpg";
                         }}
                       />
                     </div>
-                    {/* <span className="text-[13px] font-semibold text-gray-700 group-hover:text-brand-green text-center line-clamp-1">
+                    <span className="text-[13px] font-semibold text-gray-700 group-hover:text-brand-green text-center line-clamp-1">
                       {cat.name}
-                    </span> */}
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -891,23 +893,29 @@ function Navbar() {
 
           {/* Marquee — duplicated for seamless loop */}
           {categories.length > 0 && (
-            <div className="animate-marquee-mobile flex items-center gap-3 w-max px-4">
+            <div className="animate-marquee-mobile flex items-center gap-3 w-max px-8">
+              
               {[...categories, ...categories].map((cat, idx) => (
                 <Link
                   key={idx}
                   href={`/category/${toSlug(cat.name)}`}
                   tabIndex={idx >= categories.length ? -1 : 0}
                   aria-hidden={idx >= categories.length}
-                  className="flex flex-col items-center gap-1 shrink-0 p-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition"
+                  className="flex flex-col items-center gap-1 shrink-0 transition"
+                // className="flex flex-col items-center gap-1 shrink-0 p-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition"
                 >
-                  <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center p-1">
+                  {/* <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center p-1"> */}
+                  <div className="w-16 h-16 rounded-full bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center overflow-hidden group-hover:border-brand-green transition-all">
                     <img
                       src={getImageUrl(cat.image) || "/category1.jpg"}
-                      // alt={cat.name}
-                      className="w-full h-full object-contain"
+                      alt={cat.name}
+                      className="w-full h-full object-cover object-right"
                     />
                   </div>
-                 
+                  <span className="mt-2 text-[11px] font-medium text-center leading-4 line-clamp-2 text-gray-700">
+                    {cat.name}
+                  </span>
+
                 </Link>
               ))}
             </div>

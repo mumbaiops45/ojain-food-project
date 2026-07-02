@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FaStore, FaEnvelope, FaLock, FaLeaf, FaEye, FaEyeSlash } from "react-icons/fa";
-import { useVendor } from "../../../../hooks/useVendor";
+import { useDealer } from "../../../../hooks/useDealer";          // ← dealer hook
 import { validateEmail, validatePassword } from "../../../../shared/validation";
 
 const InputField = ({ icon, type, name, placeholder, value, error, onChange, rightSlot }) => (
@@ -21,10 +21,10 @@ const InputField = ({ icon, type, name, placeholder, value, error, onChange, rig
   </div>
 );
 
-const VendorLogin = () => {
+const DealerLogin = () => {
   const router = useRouter();
-  const { loginVendor, loading } = useVendor();
-  const [errors, setErrors]     = useState({});
+  const { login, isLoading } = useDealer();                       // ← useDealer hook
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -54,9 +54,13 @@ const VendorLogin = () => {
     e.preventDefault();
     if (!validateForm()) { toast.error("Please fix form errors"); return; }
     try {
-      await loginVendor(formData);
-      toast.success("Login successful");
-      setTimeout(() => router.push("/vendor/dashboard"), 1000);
+      const result = await login(formData);
+      if (result.success) {
+        toast.success("Login successful");
+        setTimeout(() => router.push("/dealer/dashboard"), 1000);
+      } else {
+        toast.error(result.error || "Login failed");
+      }
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || "";
       const notFound = /not found|not registered|no user|does not exist|invalid credentials/i.test(msg);
@@ -87,10 +91,10 @@ const VendorLogin = () => {
                 <FaStore size={42} />
               </div>
               <h1 className="text-5xl font-black leading-tight">
-                Welcome <br /> Back Vendor
+                Welcome <br /> Back Dealer
               </h1>
               <p className="mt-6 text-lg text-white/80 leading-relaxed">
-                Login to manage products, orders, payments and vendor dashboard with secure authentication.
+                Login to manage your commissions, orders, wallet and dealer dashboard with secure authentication.
               </p>
               <div className="mt-10 flex gap-4">
                 <div className="h-3 w-3 rounded-full bg-white" />
@@ -103,7 +107,6 @@ const VendorLogin = () => {
           {/* ── RIGHT PANEL ── */}
           <div className="p-8 md:p-12 flex flex-col justify-center">
 
-            {/* Mobile logo */}
             <div className="lg:hidden flex justify-center mb-6">
               <div className="h-20 w-20 rounded-3xl bg-brand-green-pale flex items-center justify-center shadow-lg">
                 <FaStore size={36} className="text-brand-green" />
@@ -112,12 +115,12 @@ const VendorLogin = () => {
 
             <div className="mb-8">
               <div className="inline-flex items-center gap-2 bg-brand-green-pale text-brand-green px-5 py-2 rounded-full text-sm font-bold mb-5">
-                <FaLeaf size={11} /> Vendor Access
+                <FaLeaf size={11} /> Dealer Access
               </div>
               <h2 className="text-4xl font-black text-gray-900">
-                <span className="text-brand-green">Vendor</span> Login
+                <span className="text-brand-green">Dealer</span> Login
               </h2>
-              <p className="text-gray-500 mt-3">Enter your details to continue</p>
+              <p className="text-gray-500 mt-3">Enter your credentials to continue</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -130,9 +133,9 @@ const VendorLogin = () => {
                   </button>
                 } />
 
-              <button type="submit" disabled={loading}
+              <button type="submit" disabled={isLoading}
                 className="w-full h-14 rounded-2xl bg-brand-green hover:bg-[#1B5E20] text-white text-lg font-bold shadow-lg transition-all duration-300 disabled:opacity-70">
-                {loading ? "Logging In..." : "Login Now"}
+                {isLoading ? "Logging In..." : "Login Now"}
               </button>
             </form>
 
@@ -148,4 +151,4 @@ const VendorLogin = () => {
   );
 };
 
-export default VendorLogin;
+export default DealerLogin;
