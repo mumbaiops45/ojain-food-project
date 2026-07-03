@@ -1,29 +1,23 @@
 import {
-  // AUTH
-  registerDealer,
-  loginDealer,
-  refreshDealerToken,
-  logoutDealer,
 
-  // DASHBOARD
-  getDealerDashboard,
+registerDealer,
+loginDealer,
+refreshDealerToken,
+logoutDealer,
 
-  // PROFILE
-  getDealerProfile,
-  updateDealerProfile,
+getDealerDashboard,
 
-  // EARNINGS / WALLET
-  getDealerEarnings,
+getDealerProfile,
+updateDealerProfile,
 
-  // ADMIN CRUD
-  getAllDealers,
-  getDealerById,
-  getPendingDealers,
-  approveDealer,
-  unapproveDealer,
-  updateDealer,
-  deleteDealer,
-} from "../api/dealerApi";   // ← you'll need to create this API file
+getDealerEarnings,
+
+getPendingDealers,
+approveDealer,
+unapproveDealer,
+rejectDealer,
+
+} from "../api/dealerApi";
 
 /* =========================================
    AUTH SERVICES

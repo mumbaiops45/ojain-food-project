@@ -489,7 +489,7 @@ import { FaArrowRight, FaTag } from "react-icons/fa";
 // ── PROMOTIONAL BANNERS ──
 const banners = [
   {
-    src: "/cake2.jpg",
+    src: "/hero21.png",
     alt: "New Dessert Collection",
     link: "/category/desserts",
     title: "Sweet Indulgence",
@@ -497,10 +497,10 @@ const banners = [
     tag: "NEW",
     discount: "20% OFF",
     buttonText: "Order Now",
-    overlay: "from-black/70 via-black/30 to-transparent",
+    // overlay: "from-black/70 via-black/30 to-transparent",
   },
   {
-    src: "/heroo8.png",
+    src: "/hero2333.png",
     alt: "50% Off on First Order",
     link: "/offers",
     title: "Welcome Offer",
@@ -508,7 +508,7 @@ const banners = [
     tag: "LIMITED",
     discount: "50% OFF",
     buttonText: "Claim Offer",
-    overlay: "from-red-900/70 via-red-600/30 to-transparent",
+    // overlay: "from-red-900/70 via-red-600/30 to-transparent",
   },
   {
     src: "/heroo.jpg",
@@ -519,7 +519,7 @@ const banners = [
     tag: "PURE",
     discount: "SATVIK",
     buttonText: "Explore",
-    overlay: "from-green-900/70 via-green-600/30 to-transparent",
+    // overlay: "from-green-900/70 via-green-600/30 to-transparent",
   },
 ];
 

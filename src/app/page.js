@@ -11,6 +11,7 @@ import FeaturedProducts from "./components/FeaturedProducts";
 import WhyHomemade from "./components/WhyHomemade";
 import Reviews from "./components/Reviews";
 import HeroSwiper from "./components/HeroSwiper";
+import OurBrandsPage from "./components/Our-brands";
 
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
       {/* <TopVendors /> */}
       <WhyHomemade />
       <Reviews />
+      <OurBrandsPage />
 
     </main>
   );

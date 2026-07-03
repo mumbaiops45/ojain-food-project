@@ -80,11 +80,61 @@ export const getDealerEarnings = () => api.get("/earnings");
 // ──────────────────────────────────────────────
 // ADMIN – DEALER MANAGEMENT
 // ──────────────────────────────────────────────
+// =========================================
+// ADMIN - DEALERS
+// =========================================
 
-export const getAllDealers = () => api.get("/admin/all");
-export const getDealerById = (id) => api.get(`/admin/${id}`);
-export const getPendingDealers = () => api.get("/admin/pending");
-export const approveDealer = (id) => api.put(`/admin/approve/${id}`);
-export const unapproveDealer = (id) => api.put(`/admin/unapprove/${id}`);
-export const updateDealer = (id, data) => api.put(`/admin/${id}`, data);
-export const deleteDealer = (id) => api.delete(`/admin/${id}`);
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE ||
+  "http://localhost:5000";
+
+// GET PENDING DEALERS
+export const getPendingDealers = () =>
+  axios.get(
+    `${BASE_URL}/api/admin/dealers/pending`,
+    {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    }
+  );
+
+// APPROVE DEALER
+export const approveDealer = (id) =>
+  axios.put(
+    `${BASE_URL}/api/admin/dealers/${id}/approve`,
+    {},
+    {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    }
+  );
+
+// UNAPPROVE DEALER
+export const unapproveDealer = (id) =>
+  axios.put(
+    `${BASE_URL}/api/admin/dealers/${id}/unapprove`,
+    {},
+    {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    }
+  );
+
+// REJECT DEALER
+export const rejectDealer = (id) =>
+  axios.delete(
+    `${BASE_URL}/api/admin/dealers/${id}/reject`,
+    {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    }
+  );  
+  

@@ -7,7 +7,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaTrash, FaMapMarkerAlt, FaCheckCircle, FaLeaf, FaArrowLeft, FaPlus, FaMinus, FaMotorcycle, FaCreditCard, FaMoneyBillWave, FaLock } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { addressAPI, orderAPI, paymentAPI } from "../../../services/api";
+import {
+  addressAPI,
+  orderAPI,
+  paymentAPI,verifyDealerCode,
+} from "../../../services/api";
 import getImageUrl from "../../../utils/getImageUrl";
 
 // Lazily injects the Razorpay checkout.js script (only once)
@@ -42,6 +46,10 @@ export default function CartPage() {
   const deliveryCharge = totalPrice >= 199 ? 0 : 40;
   const finalTotal = totalPrice + deliveryCharge;
 
+
+  const [dealerCode, setDealerCode] = useState("");
+  const [dealer, setDealer] = useState(null);
+  const [dealerLoading, setDealerLoading] = useState(false);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -134,6 +142,34 @@ export default function CartPage() {
       toast.error(err?.response?.data?.message || "Failed to save address");
     }
   };
+  const applyDealerCode = async () => {
+    if (!dealerCode.trim()) {
+      toast.error("Enter dealer referral code");
+      return;
+    }
+
+    try {
+      setDealerLoading(true);
+
+      const { data } = await verifyDealerCode(dealerCode);
+
+      setDealer(data.dealer);
+
+      toast.success("Dealer Applied Successfully");
+
+    } catch (err) {
+
+      setDealer(null);
+
+      toast.error(
+        err?.response?.data?.message ||
+        "Invalid Dealer Code"
+      );
+
+    } finally {
+      setDealerLoading(false);
+    }
+  };
 
   const handleDeleteAddress = async (id) => {
     if (!confirm("Delete this address?")) return;
@@ -148,7 +184,13 @@ export default function CartPage() {
   const placeCODOrder = async () => {
     setLoading(true);
     try {
-      await orderAPI.create({ addressId: selectedAddressId, paymentMethod: "COD" });
+      await orderAPI.create({
+        addressId: selectedAddressId,
+        paymentMethod: "COD",
+
+        dealerId: dealer?.id,
+        dealerCode: dealer?.dealerCode,
+      });
       await fetchCart();
       router.push("/order-confirmation");
     } catch (err) {
@@ -205,6 +247,8 @@ export default function CartPage() {
               paymentMethod: "Razorpay",
               paymentId: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
+              dealerId: dealer?.id,
+              dealerCode: dealer?.dealerCode,
             });
             await fetchCart();
             router.push("/order-confirmation");
@@ -552,6 +596,49 @@ export default function CartPage() {
             <h2 className="text-xl font-black text-gray-800 mb-5 flex items-center gap-2">
               <FaCreditCard className="text-brand-orange" /> Payment Method
             </h2>
+            <div className="bg-white rounded-2xl border p-4 mb-6">
+
+              <h3 className="font-bold mb-3">
+                Dealer Referral (Optional)
+              </h3>
+
+              <div className="flex gap-3">
+
+                <input
+                  type="text"
+                  placeholder="Enter Dealer Code"
+                  value={dealerCode}
+                  onChange={(e) => setDealerCode(e.target.value.toUpperCase())}
+                  className="flex-1 border rounded-xl px-4 py-3"
+                />
+
+                <button
+                  onClick={applyDealerCode}
+                  disabled={dealerLoading}
+                  className="bg-brand-green text-white px-5 rounded-xl"
+                >
+                  {dealerLoading ? "Checking..." : "Apply"}
+                </button>
+
+              </div>
+
+              {dealer && (
+                <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-3">
+
+                  <p className="font-semibold text-green-700">
+                    ✓ Dealer Applied
+                  </p>
+
+                  <p>{dealer.fullName}</p>
+
+                  <p className="text-sm text-gray-500">
+                    {dealer.dealerCode}
+                  </p>
+
+                </div>
+              )}
+
+            </div>
 
             <div className="space-y-4 mb-8">
               {[
