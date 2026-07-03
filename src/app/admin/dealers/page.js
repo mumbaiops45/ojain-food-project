@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getPendingDealers,
-  approveDealer,
-  rejectDealer,
-} from "@/services/dealerApi";
-import { CheckCircle, XCircle, Users } from "lucide-react";
+
+import { getPendingDealers, approveDealer,rejectDealer} from "../../../../api/dealerApi";
+import { FaCheckCircle, FaTimesCircle, FaUsers } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 
 export default function PendingDealersPage() {
@@ -83,7 +80,7 @@ export default function PendingDealersPage() {
     <div className="p-8">
 
       <div className="flex items-center gap-3 mb-8">
-        <Users className="w-8 h-8 text-orange-500" />
+        <FaUsers className="w-8 h-8 text-orange-500" />
         <h1 className="text-3xl font-bold">
           Pending Dealers
         </h1>
@@ -175,7 +172,7 @@ export default function PendingDealersPage() {
                         }
                         className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
                       >
-                        <CheckCircle size={18} />
+                        <FaCheckCircle size={18} />
                         Approve
                       </button>
 
@@ -188,7 +185,7 @@ export default function PendingDealersPage() {
                         }
                         className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
                       >
-                        <XCircle size={18} />
+                        <FaTimesCircle size={18} />
                         Reject
                       </button>
 
