@@ -1,140 +1,103 @@
-import axios from "axios";
+import api from "../utils/axios";
 
-// ── Base URL ──
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/dealer";
-
-// ── Axios instance ──
-const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,   // sends cookies (refresh token) automatically
-});
-
-// ── Request interceptor: attach access token ──
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("dealerToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// ── Response interceptor: handle token refresh on 401 ──
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const res = await axios.post(
-          `${API_URL}/refresh`,
-          {},
-          { withCredentials: true }
-        );
-        const newToken = res.data.token;
-        localStorage.setItem("dealerToken", newToken);
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed – clear token and redirect to login
-        localStorage.removeItem("dealerToken");
-        window.location.href = "/dealerLogin/login";
-        return Promise.reject(refreshError);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+// ── Base path (relative to the shared axios base URL) ──
+const DEALER_BASE = "/api/dealers";
 
 // ──────────────────────────────────────────────
 // AUTH ENDPOINTS
 // ──────────────────────────────────────────────
 
-export const registerDealer = (data) => api.post("/register", data);
-export const loginDealer = (data) => api.post("/login", data);
-export const refreshDealerToken = () => api.post("/refresh");
-export const logoutDealer = () => api.post("/logout");
+export const registerDealer = (data) =>
+  api.post(`${DEALER_BASE}/register`, data);
+
+export const loginDealer = (data) =>
+  api.post(`${DEALER_BASE}/login`, data);
+
+export const refreshDealerToken = () =>
+  api.post(`${DEALER_BASE}/refresh`);
+
+export const logoutDealer = () =>
+  api.post(`${DEALER_BASE}/logout`);
+
+export const verifyDealer = (data) =>
+  api.post(`${DEALER_BASE}/verify`, data);
+
+// =========================================
+// VERIFY DEALER CODE
+// =========================================
+
+export const verifyDealerCode = (dealerCode) =>
+  api.post(`${DEALER_BASE}/verify`, { dealerCode });
+
+
 
 // ──────────────────────────────────────────────
 // PROFILE
 // ──────────────────────────────────────────────
 
-export const getDealerProfile = () => api.get("/profile");
-export const updateDealerProfile = (data) => api.put("/profile", data);
+export const getDealerProfile = () =>
+  api.get(`${DEALER_BASE}/profile`);
+
+export const updateDealerProfile = (data) =>
+  api.put(`${DEALER_BASE}/profile`, data);
 
 // ──────────────────────────────────────────────
 // DASHBOARD
 // ──────────────────────────────────────────────
 
-export const getDealerDashboard = () => api.get("/dashboard");
+export const getDealerDashboard = () =>
+  api.get(`${DEALER_BASE}/dashboard`);
 
 // ──────────────────────────────────────────────
 // EARNINGS / WALLET
 // ──────────────────────────────────────────────
 
-export const getDealerEarnings = () => api.get("/earnings");
+export const getDealerEarnings = () =>
+  api.get(`${DEALER_BASE}/earnings`);
 
 // ──────────────────────────────────────────────
-// ADMIN – DEALER MANAGEMENT
+// ADMIN – DEALER MANAGEMENT (using raw axios)
 // ──────────────────────────────────────────────
-// =========================================
-// ADMIN - DEALERS
-// =========================================
+// If you want to keep admin endpoints separate, they can stay as is.
+// But to be consistent, you could also use the shared api instance.
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE ||
-  "http://localhost:5000";
+import axios from "axios";
 
-// GET PENDING DEALERS
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
+
 export const getPendingDealers = () =>
-  axios.get(
-    `${BASE_URL}/api/admin/dealers/pending`,
-    {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-      },
-    }
-  );
+  axios.get(`${BASE_URL}/api/admin/dealers/pending`, {
+    withCredentials: true,
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
 
-// APPROVE DEALER
-export const approveDealer = (id) =>
+export const getApprovedDealers = () =>
+  axios.get(`${BASE_URL}/api/admin/dealers/approved`, {
+    withCredentials: true,
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+  export const approveDealer = (id) =>
   axios.put(
     `${BASE_URL}/api/admin/dealers/${id}/approve`,
     {},
     {
       withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     }
   );
 
-// UNAPPROVE DEALER
 export const unapproveDealer = (id) =>
   axios.put(
     `${BASE_URL}/api/admin/dealers/${id}/unapprove`,
     {},
     {
       withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     }
   );
 
-// REJECT DEALER
 export const rejectDealer = (id) =>
-  axios.delete(
-    `${BASE_URL}/api/admin/dealers/${id}/reject`,
-    {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-      },
-    }
-  );  
-  
+  axios.delete(`${BASE_URL}/api/admin/dealers/${id}/reject`, {
+    withCredentials: true,
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });

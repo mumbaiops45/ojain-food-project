@@ -29,7 +29,7 @@ const STATIC_REVIEWS = [
   },
 ];
 
-const PREVIEW_COUNT = 6;
+const PREVIEW_COUNT = 3;
 
 function getAvatar(name, avatarUrl) {
   if (avatarUrl) return avatarUrl;

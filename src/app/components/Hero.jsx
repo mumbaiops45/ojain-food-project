@@ -48,12 +48,12 @@ function Hero() {
 
             {/* Buttons */}
             <div
-              className="mt-7 flex flex-wrap items-center gap-3 sm:gap-4 animate-fade-up"
+              className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 animate-fade-up"
               style={{ animationDelay: "0.3s" }}
             >
               <button
                 onClick={() => router.push("/categories")}
-                className="group bg-brand-orange hover:bg-[#E65100] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold shadow-lg transition-all duration-300 flex items-center gap-2"
+                className="group w-full sm:w-auto bg-brand-orange hover:bg-[#E65100] active:scale-95 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Browse Products
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -63,7 +63,7 @@ function Hero() {
 
               <button
                 onClick={() => router.push("/vendorLogin/login")}
-                className="border-2 border-brand-green text-brand-green hover:bg-brand-green hover:text-white active:scale-95 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold transition-all duration-300"
+                className="w-full sm:w-auto border-2 border-brand-green text-brand-green hover:bg-brand-green hover:text-white active:scale-95 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-[14px] sm:text-[15px] font-semibold transition-all duration-300"
               >
                 Sell With Us
               </button>
@@ -98,9 +98,9 @@ function Hero() {
               style={{ animationDelay: "0.4s" }}
             >
               {[
-                { value: "25K+",  label: "Happy Customers" },
-                { value: "50+",   label: "Flavour Range" },
-                { value: "4.9★",  label: "Customer Rating" },
+                { value: "25K+", label: "Happy Customers" },
+                { value: "50+", label: "Flavour Range" },
+                { value: "4.9★", label: "Customer Rating" },
               ].map((stat, i) => (
                 <div key={i} className="bg-white rounded-2xl px-3 sm:px-5 py-3 sm:py-4 shadow-sm border border-gray-100 text-center flex-1">
                   <p className="text-[22px] sm:text-[28px] font-extrabold text-brand-green leading-none">{stat.value}</p>

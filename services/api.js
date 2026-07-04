@@ -162,11 +162,3 @@ export const paymentAPI = {
     }).then((r) => r.json()),
 };
 
-// =========================================
-// VERIFY DEALER CODE
-// =========================================
-
-export const verifyDealerCode = (dealerCode) =>
-  api.post("/verify", {
-    dealerCode,
-  });

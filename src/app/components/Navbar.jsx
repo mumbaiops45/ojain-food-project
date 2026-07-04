@@ -1914,7 +1914,7 @@ function Navbar() {
       if (result.success) {
         toast.success("Login successful");
         closeModal();
-        setTimeout(() => router.push("/dealer/dashboard"), 1000);
+        setTimeout(() => router.push("/vendor/dashboard"), 1000);
       } else {
         toast.error(result.error || "Login failed");
       }
@@ -2032,7 +2032,8 @@ function Navbar() {
           <div className="w-full px-0">
           {/* ── TOP ROW ── */}
           {/* <div className="flex items-center h-16 md:h-[72px] gap-2 md:gap-5"> */}
-            <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-16">
+            {/* <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-16"> */}
+              <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-3 sm:px-6 lg:px-10">
             {/* <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 pl-0 pr-3 sm:pr-4 lg:pr-6"> */}
             {/* LOGO */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group">

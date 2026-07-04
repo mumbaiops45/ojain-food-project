@@ -10,8 +10,9 @@ import toast from "react-hot-toast";
 import {
   addressAPI,
   orderAPI,
-  paymentAPI,verifyDealerCode,
+  paymentAPI,
 } from "../../../services/api";
+import { verifyDealerCode } from "../../../api/dealerApi";
 import getImageUrl from "../../../utils/getImageUrl";
 
 // Lazily injects the Razorpay checkout.js script (only once)
@@ -43,8 +44,11 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [addrLoading, setAddrLoading] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [discountPercent, setDiscountPercent] = useState(0);
+
   const deliveryCharge = totalPrice >= 199 ? 0 : 40;
-  const finalTotal = totalPrice + deliveryCharge;
+  const discountAmount = (totalPrice * discountPercent) / 100;
+  const finalTotal = totalPrice + deliveryCharge - discountAmount;
 
 
   const [dealerCode, setDealerCode] = useState("");
@@ -150,22 +154,15 @@ export default function CartPage() {
 
     try {
       setDealerLoading(true);
-
       const { data } = await verifyDealerCode(dealerCode);
 
       setDealer(data.dealer);
-
-      toast.success("Dealer Applied Successfully");
-
+      setDiscountPercent(5); // 👈 Apply discount (e.g., 5%)
+      toast.success("Dealer Applied Successfully – 5% discount!");
     } catch (err) {
-
       setDealer(null);
-
-      toast.error(
-        err?.response?.data?.message ||
-        "Invalid Dealer Code"
-      );
-
+      setDiscountPercent(0); // Reset discount on error
+      toast.error(err?.response?.data?.message || "Invalid Dealer Code");
     } finally {
       setDealerLoading(false);
     }
@@ -393,7 +390,7 @@ export default function CartPage() {
             </div>
 
             {/* Order Summary */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
               <h3 className="font-bold text-gray-700 mb-3">Order Summary</h3>
               <div className="flex justify-between text-gray-600 mb-2">
                 <span>Items ({totalItems})</span>
@@ -423,6 +420,78 @@ export default function CartPage() {
               <div className="border-t pt-3 flex justify-between font-black text-xl text-gray-800">
                 <span>Total</span>
                 {/* <span className="text-brand-orange">₹{totalPrice}</span> */}
+            {/* <span className="text-brand-orange">₹{finalTotal}</span>
+              </div>
+            </div>  */}
+
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+              <h3 className="font-bold text-gray-700 mb-3">Order Summary</h3>
+              <div className="flex justify-between text-gray-600 mb-2">
+                <span>Items ({totalItems})</span>
+                <span>₹{totalPrice}</span>
+              </div>
+              <div className="flex justify-between text-gray-600 mb-2">
+                <span>Delivery</span>
+                {deliveryCharge === 0 ? (
+                  <span className="text-brand-green font-semibold">FREE</span>
+                ) : (
+                  <span className="text-red-500 font-semibold">₹{deliveryCharge}</span>
+                )}
+              </div>
+
+              {/* ⬇️ INSERT DISCOUNT LINE HERE */}
+            {/* {discountPercent > 0 && (
+                <div className="flex justify-between text-green-600 font-semibold mb-2">
+                  <span>🎉 Dealer Discount ({discountPercent}%)</span>
+                  <span>- ₹{discountAmount.toFixed(0)}</span>
+                </div>
+              )}
+
+              <div className="mb-3 text-xs">
+                {totalPrice < 199 ? (
+                  <span className="text-orange-500">
+                    Add ₹{199 - totalPrice} more for FREE Delivery 🚚
+                  </span>
+                ) : (
+                  <span className="text-green-600 font-semibold">
+                    🎉 You got FREE Delivery
+                  </span>
+                )}
+              </div>
+              <div className="border-t pt-3 flex justify-between font-black text-xl text-gray-800">
+                <span>Total</span>
+                <span className="text-brand-orange">₹{finalTotal}</span>
+              </div>
+            </div> */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-6">
+              <div className="flex justify-between text-gray-500 text-sm mb-1">
+                <span>Total ({totalItems} item{totalItems > 1 ? "s" : ""})</span>
+                <span className="font-black text-brand-orange text-lg">₹{totalPrice}</span>
+              </div>
+
+              {/* Discount line */}
+              {discountPercent > 0 && (
+                <div className="flex justify-between text-green-600 text-sm font-semibold mb-1">
+                  <span>🎉 Dealer Discount ({discountPercent}%)</span>
+                  <span>- ₹{discountAmount.toFixed(0)}</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 text-brand-green text-sm font-semibold mt-2">
+                {deliveryCharge === 0 ? (
+                  <span className="flex items-center gap-2 text-brand-green">
+                    <FaMotorcycle /> Free delivery included 🎉
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2 text-red-500">
+                    <FaMotorcycle /> Delivery Charge ₹{deliveryCharge}
+                  </span>
+                )}
+              </div>
+
+              {/* Final Total */}
+              <div className="border-t pt-3 mt-2 flex justify-between font-black text-xl text-gray-800">
+                <span>Final Total</span>
                 <span className="text-brand-orange">₹{finalTotal}</span>
               </div>
             </div>
@@ -691,7 +760,6 @@ export default function CartPage() {
                 <span className="font-black text-brand-orange text-lg">₹{totalPrice}</span>
               </div>
               <div className="flex items-center gap-2 text-brand-green text-sm font-semibold mt-2">
-                {/* <FaMotorcycle /> Free delivery included */}
                 {deliveryCharge === 0 ? (
                   <span className="flex items-center gap-2 text-brand-green">
                     <FaMotorcycle /> Free delivery included 🎉

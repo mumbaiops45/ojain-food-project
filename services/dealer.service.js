@@ -13,7 +13,7 @@ updateDealerProfile,
 getDealerEarnings,
 
 getPendingDealers,
-approveDealer,
+getApprovedDealers,
 unapproveDealer,
 rejectDealer,
 
@@ -107,7 +107,7 @@ export const getPendingDealersService = async () => {
 
 // APPROVE DEALER
 export const approveDealerService = async (id) => {
-  const res = await approveDealer(id);
+  const res = await getApprovedDealers(id);
   return res?.data ?? res;
 };
 
