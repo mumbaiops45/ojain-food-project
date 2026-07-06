@@ -1151,8 +1151,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import {
+  addToWishlistService,
+  removeFromWishlistService,
+} from "../../../services/wishlist.service";
+import {
   FaStar, FaTimes, FaMinus, FaPlus,
-  FaShoppingCart, FaFireAlt, FaLeaf, FaSpinner,
+  FaShoppingCart, FaFireAlt, FaLeaf, FaSpinner, FaRegHeart, FaHeart,
 } from "react-icons/fa";
 import ScrollReveal from "./ScrollReveal";
 import { useCart } from "../../../hooks/useCart";
@@ -1281,38 +1285,38 @@ function ProductModal({ product, cartQty, onClose, onAdd, onIncrease, onDecrease
         </button>
 
         {/* ── Hero image – now object-contain + padding ── */}
-      {/* ── Hero image ── */}
-<div className="relative h-56 sm:h-64 w-full bg-white">
-  <ProductImage
-    src={getImageUrl(product.images?.[0])}
-    alt={product.name}
-    className="object-contain p-4 rounded-t-4xl sm:rounded-t-4xl"
-  />
+        {/* ── Hero image ── */}
+        <div className="relative h-56 sm:h-64 w-full bg-white">
+          <ProductImage
+            src={getImageUrl(product.images?.[0])}
+            alt={product.name}
+            className="object-contain p-4 rounded-t-4xl sm:rounded-t-4xl"
+          />
 
-  {/* Gradient overlay */}
-  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/5 to-transparent rounded-t-4xl pointer-events-none" />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/5 to-transparent rounded-t-4xl pointer-events-none" />
 
-  {/* Veg badge – top left */}
-  {product.isVeg && (
-    <span className="absolute top-4 left-4 bg-brand-green text-white text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1 shadow z-10">
-      <FaLeaf size={9} /> Pure Veg
-    </span>
-  )}
+          {/* Veg badge – top left */}
+          {product.isVeg && (
+            <span className="absolute top-4 left-4 bg-brand-green text-white text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1 shadow z-10">
+              <FaLeaf size={9} /> Pure Veg
+            </span>
+          )}
 
-  {/* Product name – bottom left, with right margin to avoid rating */}
-  <div className="absolute bottom-4 left-4 right-20 z-10">
-    <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight drop-shadow">
-      {product.name}
-    </h2>
-  </div>
+          {/* Product name – bottom left, with right margin to avoid rating */}
+          <div className="absolute bottom-4 left-4 right-20 z-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight drop-shadow">
+              {product.name}
+            </h2>
+          </div>
 
-  {/* Rating – bottom right */}
-  <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-brand-green shadow z-10">
-    <FaStar size={9} />
-    {product.avgRating || 0}
-    <span className="text-gray-500">({product.reviewCount || 0})</span>
-  </div>
-</div>
+          {/* Rating – bottom right */}
+          <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-brand-green shadow z-10">
+            <FaStar size={9} />
+            {product.avgRating || 0}
+            <span className="text-gray-500">({product.reviewCount || 0})</span>
+          </div>
+        </div>
 
         {/* ── Body content ── */}
         <div className="p-5 sm:p-6 space-y-6 pb-32">
@@ -1482,6 +1486,7 @@ export default function FeaturedProducts() {
   const { user } = useAuth();
   const { cart, addItem, updateItem, removeItem } = useCart();
   const { products, loading, fetchProducts } = useProduct();
+  const [wishlist, setWishlist] = useState([]);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [addingId, setAddingId] = useState(null);
@@ -1493,6 +1498,35 @@ export default function FeaturedProducts() {
   const cartQty = (productId) => {
     const item = cart?.items?.find((i) => i.product?._id === productId);
     return item?.quantity ?? 0;
+  };
+  const handleWishlist = async (productId) => {
+    if (!user) {
+      toast.error("Please login to add wishlist");
+      router.push("/customerLogin/login");
+      return;
+    }
+
+    try {
+      if (wishlist.includes(productId)) {
+        await removeFromWishlistService(productId);
+
+        setWishlist((prev) =>
+          prev.filter((id) => id !== productId)
+        );
+
+        toast.success("Removed from wishlist");
+      } else {
+        await addToWishlistService(productId);
+
+        setWishlist((prev) => [...prev, productId]);
+
+        toast.success("Added to wishlist");
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Something went wrong"
+      );
+    }
   };
 
   const handleAddToCart = async (product) => {
@@ -1580,8 +1614,12 @@ export default function FeaturedProducts() {
 
               return (
                 <ScrollReveal key={product._id} animation="scale-up" delay={i * 100}>
-                  <div
+                  {/* <div
                     className="group bg-white rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full"
+                  > */}
+
+                  <div
+                    className="bg-white rounded-[28px] overflow-hidden border border-gray-100 flex flex-col h-full"
                   >
                     {/* ── Image ── */}
                     <div
@@ -1593,7 +1631,7 @@ export default function FeaturedProducts() {
                         <ProductImage
                           src={getImageUrl(product.images?.[0])}
                           alt={product.name}
-                          className="object-contain p-4 group-hover:scale-110 transition duration-700"
+                          className="object-contain p-4"
                         />
                       </div>
 
@@ -1610,6 +1648,19 @@ export default function FeaturedProducts() {
                         {product.avgRating || 0}
                         <span className="text-gray-500">({product.reviewCount || 0})</span>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWishlist(product._id);
+                        }}
+                        className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition"
+                      >
+                        {wishlist.includes(product._id) ? (
+                          <FaHeart className="text-red-500 text-lg" />
+                        ) : (
+                          <FaRegHeart className="text-gray-500 text-lg" />
+                        )}
+                      </button>
                     </div>
 
                     {/* ── Content ── */}

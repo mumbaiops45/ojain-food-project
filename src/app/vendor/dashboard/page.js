@@ -1,235 +1,230 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
-  useEffect,
-  useState,
-} from "react";
-
-import { getVendorDashboardService } from "../../../../services/vendor.service";
+  FaWallet,
+  FaMoneyBillWave,
+  FaShoppingBag,
+  FaUsers,
+  FaChartLine,
+  FaLeaf,
+  FaMotorcycle,
+  FaArrowRight,
+  FaClock,
+} from "react-icons/fa";
+import { MdAttachMoney, MdAccessTime } from "react-icons/md";
 import toast from "react-hot-toast";
+import { getDealerDashboardService } from "../../../../services/dealer.service";
 
-export default function VendorDashboardPage() {
-  const [dashboard, setDashboard] =
-    useState(null);
+// ─── Skeleton ────────────────────────────────────────
+const SkeletonStat = () => (
+  <div className="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse space-y-3">
+    <div className="h-4 bg-gray-200 rounded w-1/2" />
+    <div className="h-10 bg-gray-200 rounded w-3/4" />
+  </div>
+);
 
-  const [loading, setLoading] =
-    useState(true);
+const SkeletonRow = () => (
+  <div className="flex items-center gap-4 py-3 animate-pulse">
+    <div className="w-10 h-10 rounded-xl bg-gray-200" />
+    <div className="flex-1 space-y-2">
+      <div className="h-4 bg-gray-200 rounded w-1/3" />
+      <div className="h-3 bg-gray-100 rounded w-1/4" />
+    </div>
+    <div className="w-20 h-6 bg-gray-200 rounded-full" />
+  </div>
+);
 
-  // =========================================
-  // FETCH DASHBOARD
-  // =========================================
-  const fetchDashboard =
-    async () => {
-      try {
-        const res =
-          await getVendorDashboardService();
+// ─── Main Component ──────────────────────────────────
+export default function DealerDashboardPage() {
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-        setDashboard(res);
-      } catch (error) {
-        console.log(error);
-
-        toast.error("Failed to load dashboard");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchDashboard = async () => {
+    try {
+      const res = await getDealerDashboardService();
+      setDashboard(res);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchDashboard();
   }, []);
 
-  // =========================================
-  // LOADING
-  // =========================================
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading Dashboard...
-      </div>
-    );
-  }
-
-  const stats =
-    dashboard?.stats || {};
+  const stats = dashboard?.dashboard?.stats || {};
+  const dealerInfo = dashboard?.dashboard?.dealerInfo || {};
+  const recentOrders = dashboard?.dashboard?.recentOrders || [];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* HEADER */}
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Vendor Dashboard
-        </h1>
+    <div className="min-h-screen bg-green-50/50 pb-16">
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
-        <p className="text-gray-500 mt-2">
-          Manage your store &
-          orders easily.
-        </p>
-      </div>
-
-      {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        {/* PRODUCTS */}
-        <div className="bg-white rounded-3xl shadow-md p-6 border border-gray-100">
-          <h2 className="text-sm text-gray-500">
-            Total Products
-          </h2>
-
-          <p className="text-4xl font-bold text-orange-500 mt-3">
-            {
-              stats.totalProducts
-            }
-          </p>
+        {/* ── Header ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <FaLeaf className="text-green-600" />
+              <h1 className="text-3xl font-black text-green-800">Dealer Dashboard</h1>
+            </div>
+            <p className="text-sm text-green-600 mt-1">
+              Welcome back, {dealerInfo.fullName || "Dealer"} 👋
+            </p>
+          </div>
+          <div className="bg-white rounded-2xl px-5 py-3 shadow-sm border border-green-100">
+            <p className="text-xs font-semibold text-gray-400">Your Dealer Code</p>
+            <p className="text-xl font-black text-green-700 tracking-wider">
+              {dealerInfo.dealerCode || "—"}
+            </p>
+          </div>
         </div>
 
-        {/* ORDERS */}
-        <div className="bg-white rounded-3xl shadow-md p-6 border border-gray-100">
-          <h2 className="text-sm text-gray-500">
-            Total Orders
-          </h2>
+        {/* ── Stats Grid ── */}
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StatCard
+              icon={FaWallet}
+              label="Wallet Balance"
+              value={`₹${stats.walletBalance?.toFixed(2) || 0}`}
+              color="#2E7D32"
+              bg="#EBF5E9"
+            />
+            <StatCard
+              icon={FaMoneyBillWave}
+              label="Total Commission"
+              value={`₹${stats.totalCommission?.toFixed(2) || 0}`}
+              color="#FF8F00"
+              bg="#FFF8E1"
+            />
+            <StatCard
+              icon={FaShoppingBag}
+              label="Total Orders"
+              value={stats.totalOrders || 0}
+              color="#1565C0"
+              bg="#E3F2FD"
+            />
+            <StatCard
+              icon={FaUsers}
+              label="Referral Count"
+              value={stats.referralCount || 0}
+              color="#6A1B9A"
+              bg="#F3E5F5"
+            />
+          </div>
+        )}
 
-          <p className="text-4xl font-bold text-blue-500 mt-3">
-            {
-              stats.totalOrders
-            }
-          </p>
-        </div>
+        {/* ── Commission Rate & Quick Info ── */}
+        {!loading && (
+          <div className="bg-white rounded-2xl p-5 border border-green-100 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              <div>
+                <p className="text-xs text-gray-400">Commission Rate</p>
+                <p className="text-2xl font-black text-green-700">{stats.commissionRate || 10}%</p>
+              </div>
+              <div className="w-px h-10 bg-gray-200" />
+              <div>
+                <p className="text-xs text-gray-400">Total Earnings</p>
+                <p className="text-2xl font-black text-orange-500">
+                  ₹{((stats.walletBalance || 0) + (stats.totalCommission || 0)).toFixed(2)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-4 py-2 rounded-full">
+              <FaChartLine />
+              <span>Active since {new Date().getFullYear()}</span>
+            </div>
+          </div>
+        )}
 
-        {/* PENDING */}
-        <div className="bg-white rounded-3xl shadow-md p-6 border border-gray-100">
-          <h2 className="text-sm text-gray-500">
-            Pending Orders
-          </h2>
+        {/* ── Recent Orders ── */}
+        <div className="bg-white rounded-2xl border border-green-100 overflow-hidden shadow-sm">
+          <div className="px-6 py-4 border-b border-green-50 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-green-800 flex items-center gap-2">
+              <FaMotorcycle className="text-green-600" /> Recent Orders
+            </h2>
+            <span className="text-xs text-gray-400">Last 5 orders</span>
+          </div>
 
-          <p className="text-4xl font-bold text-yellow-500 mt-3">
-            {
-              stats.pendingOrders
-            }
-          </p>
-        </div>
-
-        {/* SALES */}
-        <div className="bg-white rounded-3xl shadow-md p-6 border border-gray-100">
-          <h2 className="text-sm text-gray-500">
-            Total Revenue
-          </h2>
-
-          <p className="text-4xl font-bold text-green-600 mt-3">
-            ₹
-            {
-              stats.totalSales
-            }
-          </p>
-        </div>
-      </div>
-
-      {/* RECENT ORDERS */}
-      <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Recent Orders
-        </h2>
-
-        <div className="space-y-4">
-          {dashboard?.recentOrders
-            ?.length > 0 ? (
-            dashboard.recentOrders.map(
-              (order) => (
-                <div
-                  key={
-                    order._id
-                  }
-                  className="flex items-center justify-between bg-gray-50 rounded-2xl p-4"
-                >
-                  <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {
-                        order
-                          .user
-                          ?.name
-                      }
-                    </h3>
-
-                    <p className="text-sm text-gray-500">
-                      ₹
-                      {
-                        order.totalAmount
-                      }
-                    </p>
+          {loading ? (
+            <div className="p-6 space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)}
+            </div>
+          ) : recentOrders.length === 0 ? (
+            <div className="p-10 text-center text-gray-400">
+              <FaShoppingBag className="mx-auto text-4xl mb-3 opacity-30" />
+              <p>No orders yet</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-green-50">
+              {recentOrders.map((order) => (
+                <div key={order._id} className="px-6 py-4 flex items-center justify-between hover:bg-green-50/50 transition">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-700">
+                      <MdAttachMoney size={20} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-800">
+                        ₹{order.totalAmount?.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-400 flex items-center gap-1">
+                        <MdAccessTime size={12} />
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-
                   <span
-                    className={`px-4 py-1 rounded-full text-sm font-medium
-                    ${
-                      order.orderStatus ===
-                      "Delivered"
-                        ? "bg-green-100 text-green-600"
-                        : order.orderStatus ===
-                          "Cancelled"
-                        ? "bg-red-100 text-red-600"
-                        : "bg-yellow-100 text-yellow-600"
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      order.orderStatus === "Delivered"
+                        ? "bg-green-100 text-green-700"
+                        : order.orderStatus === "Cancelled"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {
-                      order.orderStatus
-                    }
+                    {order.orderStatus}
                   </span>
                 </div>
-              )
-            )
-          ) : (
-            <p className="text-gray-500">
-              No recent orders
-            </p>
+              ))}
+            </div>
           )}
+          <div className="px-6 py-3 bg-green-50/50 text-right text-xs text-green-600">
+            Showing recent orders from your referrals
+          </div>
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="text-center text-xs text-gray-400 pt-4 border-t border-green-100">
+          <FaLeaf className="inline mr-1 text-green-500" /> Ojain Dealer Portal – v1.0
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* RECENT PRODUCTS */}
-      <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          Recent Products
-        </h2>
-
-        <div className="space-y-4">
-          {dashboard?.recentProducts
-            ?.length > 0 ? (
-            dashboard.recentProducts.map(
-              (product) => (
-                <div
-                  key={
-                    product._id
-                  }
-                  className="flex items-center justify-between bg-gray-50 rounded-2xl p-4"
-                >
-                  <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {
-                        product.name
-                      }
-                    </h3>
-
-                    <p className="text-sm text-gray-500">
-                      ₹
-                      {
-                        product.price
-                      }
-                    </p>
-                  </div>
-
-                  <span className="bg-orange-100 text-orange-600 px-4 py-1 rounded-full text-sm font-medium">
-                    {
-                      product.category
-                    }
-                  </span>
-                </div>
-              )
-            )
-          ) : (
-            <p className="text-gray-500">
-              No products found
-            </p>
-          )}
+// ─── Stat Card ────────────────────────────────────────
+function StatCard({ icon: Icon, label, value, color, bg }) {
+  return (
+    <div
+      className="bg-white rounded-2xl p-5 border border-green-100 shadow-sm hover:shadow-md transition-all duration-200"
+    >
+      <div className="flex items-start justify-between">
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center`} style={{ background: bg }}>
+          <Icon className="text-xl" style={{ color }} />
         </div>
+        <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-green-50 text-green-600">
+          Today
+        </span>
       </div>
+      <p className="text-2xl font-extrabold text-gray-800 mt-3">{value}</p>
+      <p className="text-xs font-medium text-gray-400 mt-0.5">{label}</p>
     </div>
   );
 }

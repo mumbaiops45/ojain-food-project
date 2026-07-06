@@ -1691,9 +1691,11 @@ import {
   validateIfsc,
 } from "../../../shared/validation";
 import getImageUrl from "../../../utils/getImageUrl";
+import useWishlistStore from "../../../store/wishlistStore";
 
 // ─── Helpers ─────────────────────────────────────────────
 const toSlug = (name) => name?.toLowerCase().replace(/\s+/g, "-") ?? "";
+
 
 const fetchLocationSuggestions = async (query) => {
   if (!query.trim() || query.length < 2) return [];
@@ -1751,6 +1753,11 @@ function Navbar() {
   const router = useRouter();
   const { user, logout } = useAuth();
   const { login, register, isLoading } = useDealer();
+  const { wishlist, fetchWishlist, resetWishlist } = useWishlistStore();
+  const wishlistCount = wishlist.length;
+
+
+
 
   // ─── Location / Search / Mobile state ──────────────
   const [location, setLocation] = useState("Set location");
@@ -1798,6 +1805,14 @@ function Navbar() {
   );
   const categories = useCategoryStore((s) => s.categories);
   const fetchCategories = useCategoryStore((s) => s.fetchCategories);
+
+  useEffect(() => {
+    if (user) {
+      fetchWishlist();
+    } else {
+      resetWishlist();
+    }
+  }, [user]);
 
   // ─── Effects ──────────────────────────────────────────
   useEffect(() => {
@@ -2029,11 +2044,11 @@ function Navbar() {
       {/* ── MAIN NAVBAR ── */}
       <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
         {/* <div className="w-full px-4 sm:px-6 lg:px-10"> */}
-          <div className="w-full px-0">
+        <div className="w-full px-0">
           {/* ── TOP ROW ── */}
           {/* <div className="flex items-center h-16 md:h-[72px] gap-2 md:gap-5"> */}
-            {/* <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-16"> */}
-              <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-3 sm:px-6 lg:px-10">
+          {/* <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-16"> */}
+          <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 px-3 sm:px-6 lg:px-10">
             {/* <div className="flex items-center h-16 md:h-[72px] gap-3 md:gap-5 pl-0 pr-3 sm:pr-4 lg:pr-6"> */}
             {/* LOGO */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
@@ -2227,6 +2242,7 @@ function Navbar() {
                         <button
                           onClick={() => {
                             logout();
+                            resetWishlist();
                             setUserMenuOpen(false);
                           }}
                           className="flex items-center gap-3 w-full px-4 py-3 text-[13px] font-semibold text-red-500 hover:bg-red-50 transition"
@@ -2248,10 +2264,16 @@ function Navbar() {
               </div>
               <button
                 onClick={() => router.push("/wishlist")}
-                className="hidden lg:flex items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-600 px-3 py-2 rounded-xl text-[13px] font-bold transition border border-pink-200/60 hover:border-pink-300"
+                className="relative hidden lg:flex items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-600 px-3 py-2 rounded-xl border border-pink-200"
               >
-                <FaHeart size={14} />
+                <FaHeart size={15} />
                 Wishlist
+
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">
+                    {wishlistCount}
+                  </span>
+                )}
               </button>
               {/* CART */}
               <button
@@ -2278,47 +2300,47 @@ function Navbar() {
           </div>
 
           {/* ── DESKTOP CATEGORY STRIP ── */}
-    {/* ── DESKTOP CATEGORY STRIP ── */}
-<div className="hidden md:block border-t border-gray-100 py-4 overflow-hidden relative">
-  {categories.length === 0 && (
-    <div className="flex items-center gap-6 px-4">
-      {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-        <div
-          key={i}
-          className="w-24 h-24 rounded-2xl bg-gray-100 animate-pulse shrink-0"
-        />
-      ))}
-    </div>
-  )}
-  {categories.length > 0 && (
-    <div className="animate-marquee flex items-center gap-6 w-max px-4">
-      {[...categories, ...categories].map((cat, idx) => (
-        <Link
-          key={idx}
-          href={`/category/${toSlug(cat.name)}`}
-          tabIndex={idx >= categories.length ? -1 : 0}
-          aria-hidden={idx >= categories.length}
-          className="group flex flex-col items-center gap-2 transition-all duration-300 w-24"
-        >
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center group-hover:border-brand-green group-hover:scale-105 transition-all duration-300">
-            <img
-              src={getImageUrl(cat.image) || "/category1.jpg"}
-              alt={cat.name}
-              className="w-full h-full object-contain object-center p-1 transition-all duration-300 group-hover:scale-110"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "/category1.jpg";
-              }}
-            />
+          {/* ── DESKTOP CATEGORY STRIP ── */}
+          <div className="hidden md:block border-t border-gray-100 py-4 overflow-hidden relative">
+            {categories.length === 0 && (
+              <div className="flex items-center gap-6 px-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <div
+                    key={i}
+                    className="w-24 h-24 rounded-2xl bg-gray-100 animate-pulse shrink-0"
+                  />
+                ))}
+              </div>
+            )}
+            {categories.length > 0 && (
+              <div className="animate-marquee flex items-center gap-6 w-max px-4">
+                {[...categories, ...categories].map((cat, idx) => (
+                  <Link
+                    key={idx}
+                    href={`/category/${toSlug(cat.name)}`}
+                    tabIndex={idx >= categories.length ? -1 : 0}
+                    aria-hidden={idx >= categories.length}
+                    className="group flex flex-col items-center gap-2 transition-all duration-300 w-24"
+                  >
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center group-hover:border-brand-green group-hover:scale-105 transition-all duration-300">
+                      <img
+                        src={getImageUrl(cat.image) || "/category1.jpg"}
+                        alt={cat.name}
+                        className="w-full h-full object-contain object-center p-1 transition-all duration-300 group-hover:scale-110"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/category1.jpg";
+                        }}
+                      />
+                    </div>
+                    <span className="text-[13px] font-semibold text-gray-700 group-hover:text-brand-green text-center line-clamp-1 max-w-[90px]">
+                      {cat.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-          <span className="text-[13px] font-semibold text-gray-700 group-hover:text-brand-green text-center line-clamp-1 max-w-[90px]">
-            {cat.name}
-          </span>
-        </Link>
-      ))}
-    </div>
-  )}
-</div>
         </div>
 
         {/* ── MOBILE SEARCH ── */}
@@ -2409,6 +2431,7 @@ function Navbar() {
                   <button
                     onClick={() => {
                       logout();
+                      resetWishlist();
                       setMobileOpen(false);
                     }}
                     className="flex items-center gap-3 w-full px-3 py-3 text-[14px] font-semibold text-red-500 hover:bg-red-50 rounded-xl transition"

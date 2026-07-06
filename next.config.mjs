@@ -62,6 +62,11 @@ const nextConfig = {
         hostname: "ojain-backend-2.onrender.com",
         pathname: "/**",
       }, 
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
     ],
   },
 };

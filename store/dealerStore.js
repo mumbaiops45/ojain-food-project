@@ -2,7 +2,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { loginDealerService,  logoutDealerService,
+import {
+  loginDealerService, logoutDealerService,
   refreshDealerTokenService,
   getDealerProfileService,
   updateDealerProfileService,
@@ -13,7 +14,8 @@ import { loginDealerService,  logoutDealerService,
   unapproveDealerService,
   deleteDealerService,
   registerDealerService,
-  updateDealerService, } from "../services/dealer.service";
+  updateDealerService,
+} from "../services/dealer.service";
 
 const useDealerStore = create(
   persist(
@@ -38,6 +40,9 @@ const useDealerStore = create(
         try {
           const res = await loginDealerService(credentials);
           if (res.success) {
+
+            localStorage.setItem("dealerToken", res.token);
+
             set({
               token: res.token,
               dealer: res.dealer,
@@ -45,8 +50,11 @@ const useDealerStore = create(
               isLoading: false,
               error: null,
             });
+
             return { success: true };
-          } else {
+          }
+
+          else {
             set({ isLoading: false, error: res.message });
             return { success: false, error: res.message };
           }
@@ -56,17 +64,20 @@ const useDealerStore = create(
         }
       },
 
-      logout: async () => {
-        try {
-          await logoutDealerService();
-        } catch (e) { /* ignore */ }
-        set({
-          token: null,
-          dealer: null,
-          isAuthenticated: false,
-          dashboard: null,
-        });
-      },
+    logout: async () => {
+    try {
+        await logoutDealerService();
+    } catch (e) {}
+
+    localStorage.removeItem("dealerToken");
+
+    set({
+        token: null,
+        dealer: null,
+        isAuthenticated: false,
+        dashboard: null,
+    });
+},
 
       refreshToken: async () => {
         try {
@@ -223,7 +234,7 @@ const useDealerStore = create(
           return { success: false, error: error.message };
         }
       },
-        register: async (data) => {
+      register: async (data) => {
         set({ isLoading: true, error: null });
         try {
           const res = await registerDealerService(data);

@@ -11,22 +11,22 @@ import {
   MdClose,
 } from "react-icons/md";
 import { FaLeaf } from "react-icons/fa";
-import { useVendor } from "../../../../hooks/useVendor";
+import { useDealer } from "../../../../hooks/useDealer";
 
 export default function VendorSidebar({ onClose }) {
   const pathname = usePathname();
-  const { logoutVendor } = useVendor();
+  const { logoutDealer   } = useDealer();
 
   const menuItems = [
     { name: "Dashboard",  path: "/vendor/dashboard",       icon: <MdDashboard />      },
-    { name: "Category",   path: "/vendor/categorymanager", icon: <MdCategory />       },
-    { name: "Products",   path: "/vendor/product",         icon: <MdRestaurantMenu /> },
+    // { name: "Category",   path: "/vendor/categorymanager", icon: <MdCategory />       },
+    // { name: "Products",   path: "/vendor/product",         icon: <MdRestaurantMenu /> },
     { name: "Profile",    path: "/vendor/profile",         icon: <MdPerson />         },
   ];
 
   const handleLogout = async () => {
-    await logoutVendor();
-    window.location.href = "/vendorLogin/login";
+    await logoutDealer  ();
+    window.location.href = "/";
   };
 
   return (
@@ -63,7 +63,7 @@ export default function VendorSidebar({ onClose }) {
               className="block text-[10px] font-medium tracking-wider"
               style={{ color: "#A5D6A7", letterSpacing: "0.12em" }}
             >
-              Vendor Panel
+              Dealer  Panel
             </span>
           </div>
         </div>

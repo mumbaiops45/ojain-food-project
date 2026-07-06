@@ -23,7 +23,7 @@ export default function Sidebar({ onClose }) {
     { name: "Dashboard",  path: "/admin/dashboard",         icon: <MdDashboard />      },
     { name: "Orders",     path: "/admin/orders",            icon: <FaShoppingCart />   },
     { name: "Users",  path: "/admin/users",         icon: <FaUsers />          },
-    { name: "Vendors",    path: "/admin/vendorList",        icon: <GiChefToque />      },
+    { name: "Dealers",    path: "/admin/dealers",        icon: <GiChefToque />      },
     { name: "Products",   path: "/admin/approve-products",  icon: <MdRestaurantMenu /> },
     // { name: "Analytics",  path: "/admin/analytics",        icon: <MdAnalytics />      },
   ];

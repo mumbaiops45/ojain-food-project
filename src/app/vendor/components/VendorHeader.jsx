@@ -8,10 +8,10 @@ import {
   MdMenu,
 } from "react-icons/md";
 import { FaLeaf, FaUser, FaSignOutAlt, FaChevronDown } from "react-icons/fa";
-import { useVendor } from "../../../../hooks/useVendor";
+import { useDealer } from "../../../../hooks/useDealer";
 
 export default function VendorHeader({ onMenuClick }) {
-  const { vendor, logoutVendor } = useVendor();
+  const { dealer, logoutDealer   } = useDealer();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -27,14 +27,14 @@ export default function VendorHeader({ onMenuClick }) {
   }, []);
 
   const handleLogout = async () => {
-    await logoutVendor();
-    window.location.href = "/vendorLogin/login";
+    await logoutDealer  ();
+    window.location.href = "/";
   };
 
   // Get first letter for avatar
   const getInitial = () => {
-    if (vendor?.fullName) return vendor.fullName.charAt(0).toUpperCase();
-    if (vendor?.shopName) return vendor.shopName.charAt(0).toUpperCase();
+    if (dealer?.fullName) return dealer.fullName.charAt(0).toUpperCase();
+    // if (dealer?.shopName) return dealer.shopName.charAt(0).toUpperCase();
     return "V";
   };
 
@@ -73,10 +73,10 @@ export default function VendorHeader({ onMenuClick }) {
         {/* Page title — desktop */}
         <div className="hidden lg:block">
           <h1 className="text-2xl font-bold" style={{ color: "#1B5E20" }}>
-            Vendor Dashboard
+            Dealer  Dashboard
           </h1>
           <p className="text-sm" style={{ color: "#66BB6A" }}>
-            Welcome back 👋 Manage your store
+            Welcome back 👋 Manage your referrals & commissions
           </p>
         </div>
       </div>
@@ -121,10 +121,10 @@ export default function VendorHeader({ onMenuClick }) {
           >
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold" style={{ color: "#1B5E20" }}>
-                {vendor?.fullName || vendor?.shopName || "Vendor"}
+                {dealer?.fullName }
               </p>
               <p className="text-xs" style={{ color: "#66BB6A" }}>
-                {vendor?.email || "Seller"}
+                {dealer?.email || "Dealer"}
               </p>
             </div>
             <div

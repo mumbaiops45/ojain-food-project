@@ -60,7 +60,8 @@ function mapReview(r) {
 
 function ReviewCard({ name, city, image, review, rating, index, plain }) {
   const inner = (
-    <div className="group relative overflow-hidden rounded-[35px] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_10px_40px_rgba(46,125,50,0.08)] hover:shadow-[0_20px_70px_rgba(46,125,50,0.15)] transition-all duration-500 hover:-translate-y-3 h-full">
+    // <div className="group relative overflow-hidden rounded-[35px] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_10px_40px_rgba(46,125,50,0.08)] hover:shadow-[0_20px_70px_rgba(46,125,50,0.15)] transition-all duration-500 hover:-translate-y-3 h-full">
+    <div className="relative overflow-hidden rounded-[35px] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_10px_40px_rgba(46,125,50,0.08)] h-full">
       <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-brand-green via-brand-green-mid to-brand-green" />
       <div className="absolute -top-20 -right-20 w-52 h-52 bg-brand-green/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
 

@@ -184,7 +184,8 @@ export default function ClientLayout({ children }) {
       <Toaster position="top-right" />
       {!hideLayout && <Navbar />}
       <main>{children}</main>
-      {!hideLayout && <Footer />}
+      {!hideLayout && pathname !== "/wishlist" && <Footer />}
+      {/* {!hideLayout && <Footer />} */}
       {!hideLayout && <ViewCartBar />}
       {!hideLayout && <ScrollToTop />}
       {!hideLayout && <AuthPopup />}

@@ -65,7 +65,7 @@ export const useDealer = () => {
 
         // Auth
         login,
-        logout,
+        logoutDealer: logout,
         refreshToken,
         fetchProfile,
         register,
