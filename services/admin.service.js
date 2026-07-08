@@ -187,6 +187,7 @@ export const getDashboardStatsService = async () => {
     recentOrders:  [...orders].sort(byDate).slice(0, 5),
     recentUsers:   [...users].sort(byDate).slice(0, 5),
     recentVendors: [...vendors].sort(byDate).slice(0, 5),
+       topDealers:    dash.topDealers || [],
   };
 };
 

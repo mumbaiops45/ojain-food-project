@@ -176,10 +176,7 @@ function Footer() {
                   { label: "Contact Us", href: "mailto:support@ojain.com" },
                   { label: "Privacy Policy", href: "/privacy-policy" },
                   { label: "Terms & Conditions", href: "/terms" },
-
-                  // NEW VENDOR OPTIONS
-                  // { label: "Vendor Login", href: "/vendorLogin/login" },
-
+                  { label: "My Orders", href: "/myorders" },
                 ].map(({ label, href }) => (
 
                   <li key={href} className="group flex items-center gap-3">
@@ -227,6 +224,7 @@ function Footer() {
                     { label: "All Categories", href: "/categories" },
                     { label: "Cart", href: "/cart" },
                     { label: "Customer Login", href: "/customerLogin/login" },
+
                   ].map(({ label, href }) => (
                     <li key={href} className="group flex items-center gap-3">
                       <span className="w-2 h-2 rounded-full bg-brand-green group-hover:scale-150 transition-all duration-300 shrink-0"></span>
