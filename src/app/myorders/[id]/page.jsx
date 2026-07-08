@@ -11,8 +11,8 @@ import {
     FaClock,
     FaTimesCircle,
     FaSpinner,
+    FaWallet,
 } from "react-icons/fa";
-import { MdPackage } from "react-icons/md";
 import toast from "react-hot-toast";
 import { getOrderById } from "../../../../../services/orders.service";
 // import { useAuth } from "../../../contexts/AuthContext";
@@ -21,7 +21,7 @@ import {useAuth} from "../../../contexts/AuthContext";
 const statusStyles = {
     Placed: { bg: "bg-blue-100", text: "text-blue-700", icon: FaClock },
     Processing: { bg: "bg-indigo-100", text: "text-indigo-700", icon: FaClock },
-    Packed: { bg: "bg-purple-100", text: "text-purple-700", icon: MdPackage },
+    Packed: { bg: "bg-purple-100", text: "text-purple-700", icon: FaWallet },
     Shipped: { bg: "bg-cyan-100", text: "text-cyan-700", icon: FaTruck },
     "Out for Delivery": { bg: "bg-orange-100", text: "text-orange-700", icon: FaTruck },
     Delivered: { bg: "bg-green-100", text: "text-green-700", icon: FaCheckCircle },
