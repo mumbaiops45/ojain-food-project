@@ -143,7 +143,7 @@ api.interceptors.request.use(
       let token = null;
 
       if (path.startsWith("/admin")) {
-        token = localStorage.getItem("adminToken");
+        token = localStorage.getItem("token");
       } else if (
         path.startsWith("/vendor") ||
         path.startsWith("/dealer")

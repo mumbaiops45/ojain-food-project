@@ -625,7 +625,7 @@ export default function CategoryPage() {
                         )}
                         alt={product.name}
                         fill
-                        className="object-contain p-4"
+                        className="object-contain"
                         unoptimized
                       />
 

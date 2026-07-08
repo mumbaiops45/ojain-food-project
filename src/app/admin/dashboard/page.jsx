@@ -51,13 +51,13 @@ const fmtDate = (d) =>
 
 const orderStatusStyle = (s) => {
   const m = {
-    Delivered:         { bg: "#EBF5E9", color: "#2E7D32", border: "#A5D6A7" },
-    Cancelled:         { bg: "#FFEBEE", color: "#B71C1C", border: "#EF9A9A" },
-    Placed:            { bg: "#EBF5E9", color: "#1B5E20", border: "#C8E6C9" },
-    Processing:        { bg: "#FFF8E1", color: "#E65100", border: "#FFD54F" },
-    Shipped:           { bg: "#F3E5F5", color: "#6A1B9A", border: "#CE93D8" },
-    "Out for Delivery":{ bg: "#FFF3E0", color: "#BF360C", border: "#FFCC80" },
-    Packed:            { bg: "#E3F2FD", color: "#1565C0", border: "#90CAF9" },
+    Delivered: { bg: "#EBF5E9", color: "#2E7D32", border: "#A5D6A7" },
+    Cancelled: { bg: "#FFEBEE", color: "#B71C1C", border: "#EF9A9A" },
+    Placed: { bg: "#EBF5E9", color: "#1B5E20", border: "#C8E6C9" },
+    Processing: { bg: "#FFF8E1", color: "#E65100", border: "#FFD54F" },
+    Shipped: { bg: "#F3E5F5", color: "#6A1B9A", border: "#CE93D8" },
+    "Out for Delivery": { bg: "#FFF3E0", color: "#BF360C", border: "#FFCC80" },
+    Packed: { bg: "#E3F2FD", color: "#1565C0", border: "#90CAF9" },
   };
   return m[s] || { bg: "#F0F7F0", color: "#555", border: "#C8E6C9" };
 };
@@ -252,7 +252,7 @@ function QuickAction({ icon: Icon, label, href, color, bg }) {
 // ─────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [dashboard, setDashboard] = useState(null);
-  const [loading, setLoading]     = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const fetchDashboard = async () => {
     try {
@@ -267,10 +267,12 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchDashboard(); }, []);
 
-  const stats         = dashboard?.stats         || {};
-  const recentOrders  = dashboard?.recentOrders  || [];
-  const recentUsers   = dashboard?.recentUsers   || [];
+  const stats = dashboard?.stats || {};
+  const recentOrders = dashboard?.recentOrders || [];
+  const recentUsers = dashboard?.recentUsers || [];
   const recentVendors = dashboard?.recentVendors || [];
+  const topDealers = dashboard?.topDealers || [];
+
 
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
@@ -412,10 +414,10 @@ export default function DashboardPage() {
             Quick Actions:
           </span>
           {[
-            { label: "Orders",   href: "/admin/orders",           icon: FaShoppingCart, color: "#FF8F00", bg: "#FFF8E1" },
-            { label: "Vendors",  href: "/admin/vendorList",        icon: GiChefToque,    color: "#66BB6A", bg: "#EBF5E9" },
-            { label: "Products", href: "/admin/approve-products",  icon: MdRestaurantMenu, color: "#42A5F5", bg: "#E3F2FD" },
-            { label: "Users",    href: "/admin/users",             icon: FaUsers,        color: "#AB47BC", bg: "#F3E5F5" },
+            { label: "Orders", href: "/admin/orders", icon: FaShoppingCart, color: "#FF8F00", bg: "#FFF8E1" },
+            { label: "Vendors", href: "/admin/vendorList", icon: GiChefToque, color: "#66BB6A", bg: "#EBF5E9" },
+            { label: "Products", href: "/admin/approve-products", icon: MdRestaurantMenu, color: "#42A5F5", bg: "#E3F2FD" },
+            { label: "Users", href: "/admin/users", icon: FaUsers, color: "#AB47BC", bg: "#F3E5F5" },
           ].map((a) => (
             <QuickAction key={a.label} {...a} />
           ))}
@@ -427,8 +429,8 @@ export default function DashboardPage() {
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonStatCard key={i} />)
           : statCards.map((card) => (
-              <StatCard key={card.label} {...card} />
-            ))}
+            <StatCard key={card.label} {...card} />
+          ))}
       </div>
 
       {/* ── Middle Row: Recent Orders + Recent Users ─────────── */}
@@ -519,8 +521,8 @@ export default function DashboardPage() {
                 {recentUsers.map((user, i) => {
                   const [g1, g2] = grad(i + 2);
                   const roleMap = {
-                    admin:    { bg: "#EDE7F6", color: "#4527A0" },
-                    vendor:   { bg: "#FFF8E1", color: "#E65100" },
+                    admin: { bg: "#EDE7F6", color: "#4527A0" },
+                    vendor: { bg: "#FFF8E1", color: "#E65100" },
                     customer: { bg: "#EBF5E9", color: "#2E7D32" },
                   };
                   const rs = roleMap[user.role?.toLowerCase()] || { bg: "#F0F7F0", color: "#555" };
@@ -656,6 +658,59 @@ export default function DashboardPage() {
           </div>
         )}
       </Section>
+      {/* ── Top Dealers ───────────────────────────────────── */}
+      <Section
+        title="Top Dealers"
+        subtitle="Dealers generating highest sales & commission"
+      >
+        {topDealers.length === 0 ? (
+          <EmptyState
+            icon={<FaUsers />}
+            message="No dealer sales available"
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3">Dealer</th>
+                  <th className="text-left py-3">Code</th>
+                  <th className="text-center py-3">Orders</th>
+                  <th className="text-center py-3">Sales</th>
+                  <th className="text-center py-3">Commission</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {topDealers.map((dealer) => (
+                  <tr
+                    key={dealer._id}
+                    className="border-b hover:bg-gray-50"
+                  >
+                    <td className="py-3 font-semibold">
+                      {dealer.fullName}
+                    </td>
+
+                    <td>{dealer.dealerCode}</td>
+
+                    <td className="text-center">
+                      {dealer.totalOrders}
+                    </td>
+
+                    <td className="text-center">
+                      ₹{Number(dealer.totalSales).toLocaleString("en-IN")}
+                    </td>
+
+                    <td className="text-center text-green-600 font-bold">
+                      ₹{Number(dealer.totalCommission).toLocaleString("en-IN")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Section>
 
       {/* ── Platform Summary Footer ──────────────────────────── */}
       <div
@@ -673,10 +728,10 @@ export default function DashboardPage() {
         </div>
         <div className="flex flex-wrap gap-4 text-xs" style={{ color: "#81C784" }}>
           {[
-            { label: "Users",    value: stats.totalUsers,    color: "#2E7D32" },
-            { label: "Vendors",  value: stats.totalVendors,  color: "#FF8F00" },
+            { label: "Users", value: stats.totalUsers, color: "#2E7D32" },
+            { label: "Vendors", value: stats.totalVendors, color: "#FF8F00" },
             { label: "Products", value: stats.totalProducts, color: "#1565C0" },
-            { label: "Orders",   value: stats.totalOrders,   color: "#6A1B9A" },
+            { label: "Orders", value: stats.totalOrders, color: "#6A1B9A" },
           ].map((s) => (
             <span key={s.label} className="flex items-center gap-1">
               {s.label}:{" "}

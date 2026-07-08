@@ -70,11 +70,11 @@ function RouteProgressBar() {
 // Shows for 4 seconds after any cart action, then auto-hides.
 // Hides immediately when the user navigates to a different page.
 function ViewCartBar() {
-  const router         = useRouter();
-  const pathname       = usePathname();
-  const totalItems     = useCartStore((s) => s.totalItems());
-  const totalPrice     = useCartStore((s) => s.totalPrice());
-  const cartUpdatedAt  = useCartStore((s) => s.cartUpdatedAt);
+  const router = useRouter();
+  const pathname = usePathname();
+  const totalItems = useCartStore((s) => s.totalItems());
+  const totalPrice = useCartStore((s) => s.totalPrice());
+  const cartUpdatedAt = useCartStore((s) => s.cartUpdatedAt);
 
   const [visible, setVisible] = useState(false);
   const timerRef = useRef(null);
@@ -169,14 +169,14 @@ export default function ClientLayout({ children }) {
   // Wake up the Render.com free-tier backend the moment the app loads.
   useEffect(() => {
     const BASE = process.env.NEXT_PUBLIC_API_URL || "https://ojain-backend-2.onrender.com";
-    fetch(`${BASE}/api/category/all`, { method: "GET" }).catch(() => {});
+    fetch(`${BASE}/api/category/all`, { method: "GET" }).catch(() => { });
   }, []);
 
   const hideLayout =
     pathname.startsWith("/dashboard") ||
     (pathname.startsWith("/admin") && !pathname.startsWith("/adminlogin")) ||
-    (pathname.startsWith("/vendor") && !pathname.startsWith("/vendorLogin"))||
-     pathname.startsWith("/cart");
+    (pathname.startsWith("/vendor") && !pathname.startsWith("/vendorLogin")) ||
+    pathname.startsWith("/cart");
 
   return (
     <AuthProvider>
@@ -184,7 +184,7 @@ export default function ClientLayout({ children }) {
       <Toaster position="top-right" />
       {!hideLayout && <Navbar />}
       <main>{children}</main>
-      {!hideLayout && pathname !== "/wishlist" && <Footer />}
+      {!hideLayout && pathname !== "/wishlist" && !pathname.startsWith("/category/") && <Footer />}
       {/* {!hideLayout && <Footer />} */}
       {!hideLayout && <ViewCartBar />}
       {!hideLayout && <ScrollToTop />}

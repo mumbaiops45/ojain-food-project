@@ -2322,15 +2322,12 @@ function Navbar() {
                     aria-hidden={idx >= categories.length}
                     className="group flex flex-col items-center gap-2 transition-all duration-300 w-24"
                   >
-                    <div className="w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center group-hover:border-brand-green group-hover:scale-105 transition-all duration-300">
+                    {/* ── Image container ── */}
+                    <div className="w-20 h-20 rounded-none overflow-hidden bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center group-hover:border-brand-green group-hover:scale-105 transition-all duration-300">
                       <img
                         src={getImageUrl(cat.image) || "/category1.jpg"}
                         alt={cat.name}
-                        className="w-full h-full object-contain object-center p-1 transition-all duration-300 group-hover:scale-110"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/category1.jpg";
-                        }}
+                        className="w-full h-full object-contain object-center transition-all duration-300 group-hover:scale-110"
                       />
                     </div>
                     <span className="text-[13px] font-semibold text-gray-700 group-hover:text-brand-green text-center line-clamp-1 max-w-[90px]">

@@ -1631,7 +1631,7 @@ export default function FeaturedProducts() {
                         <ProductImage
                           src={getImageUrl(product.images?.[0])}
                           alt={product.name}
-                          className="object-contain p-4"
+                          className="object-cover"
                         />
                       </div>
 
