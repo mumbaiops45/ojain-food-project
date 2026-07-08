@@ -13,7 +13,7 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { getOrderById } from "../../../../services/orders.service";
+import { getOrderById } from "../../../../../services/orders.service";
 import { useAuth } from "../../../../contexts/AuthContext";
 
 const statusStyles = {
