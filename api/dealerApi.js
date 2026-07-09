@@ -61,43 +61,62 @@ export const getDealerEarnings = () =>
 // If you want to keep admin endpoints separate, they can stay as is.
 // But to be consistent, you could also use the shared api instance.
 
-import axios from "axios";
+// import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
+
+// export const getPendingDealers = () =>
+//   axios.get(`${BASE_URL}/api/admin/dealers/pending`, {
+//     withCredentials: true,
+//     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+//   });
+
+// export const getApprovedDealers = () =>
+//   axios.get(`${BASE_URL}/api/admin/dealers/approved`, {
+//     withCredentials: true,
+//     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+//   });
+//   export const approveDealer = (id) =>
+//   axios.put(
+//     `${BASE_URL}/api/admin/dealers/${id}/approve`,
+//     {},
+//     {
+//       withCredentials: true,
+//       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+//     }
+//   );
+
+// export const unapproveDealer = (id) =>
+//   axios.put(
+//     `${BASE_URL}/api/admin/dealers/${id}/unapprove`,
+//     {},
+//     {
+//       withCredentials: true,
+//       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+//     }
+//   );
+
+// export const rejectDealer = (id) =>
+//   axios.delete(`${BASE_URL}/api/admin/dealers/${id}/reject`, {
+//     withCredentials: true,
+//     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+//   });
+
+// ──────────────────────────────────────────────
+// ADMIN – DEALER MANAGEMENT (using shared api)
+// ──────────────────────────────────────────────
 
 export const getPendingDealers = () =>
-  axios.get(`${BASE_URL}/api/admin/dealers/pending`, {
-    withCredentials: true,
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
+  api.get("/api/admin/dealers/pending");
 
 export const getApprovedDealers = () =>
-  axios.get(`${BASE_URL}/api/admin/dealers/approved`, {
-    withCredentials: true,
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
-  export const approveDealer = (id) =>
-  axios.put(
-    `${BASE_URL}/api/admin/dealers/${id}/approve`,
-    {},
-    {
-      withCredentials: true,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }
-  );
+  api.get("/api/admin/dealers/approved");
+
+export const approveDealer = (id) =>
+  api.put(`/api/admin/dealers/${id}/approve`, {});
 
 export const unapproveDealer = (id) =>
-  axios.put(
-    `${BASE_URL}/api/admin/dealers/${id}/unapprove`,
-    {},
-    {
-      withCredentials: true,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    }
-  );
+  api.put(`/api/admin/dealers/${id}/unapprove`, {});
 
 export const rejectDealer = (id) =>
-  axios.delete(`${BASE_URL}/api/admin/dealers/${id}/reject`, {
-    withCredentials: true,
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
+  api.delete(`/api/admin/dealers/${id}/reject`);

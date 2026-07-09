@@ -9,6 +9,7 @@ import {
   MdAnalytics,
   MdLogout,
   MdClose,
+  MdCategory,
 } from "react-icons/md";
 import { FaUsers, FaShoppingCart, FaLeaf } from "react-icons/fa";
 import { GiChefToque } from "react-icons/gi";
@@ -24,6 +25,8 @@ export default function Sidebar({ onClose }) {
     { name: "Orders",     path: "/admin/orders",            icon: <FaShoppingCart />   },
     { name: "Users",  path: "/admin/users",         icon: <FaUsers />          },
     { name: "Dealers",    path: "/admin/dealers",        icon: <GiChefToque />      },
+    { name: "Category",   path: "/admin/categorymanager", icon: <MdCategory />       }, 
+    { name: "Add Products",   path: "/admin/product",         icon: <MdRestaurantMenu /> },
     { name: "Products",   path: "/admin/approve-products",  icon: <MdRestaurantMenu /> },
     // { name: "Analytics",  path: "/admin/analytics",        icon: <MdAnalytics />      },
   ];

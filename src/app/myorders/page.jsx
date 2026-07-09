@@ -208,7 +208,8 @@ export default function MyOrdersPage() {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <Link
-                                                    href={`/orders/${order._id}`}
+                                                  
+                                                     href={`/myorders/${order._id}`}  
                                                     className="inline-flex items-center gap-1 text-brand-green hover:text-[#1B5E20] font-semibold text-sm"
                                                 >
                                                     View <FaEye size={14} />

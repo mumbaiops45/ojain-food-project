@@ -3,7 +3,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import {
-  loginDealerService, logoutDealerService,
+  loginDealerService,
+  logoutDealerService,
   refreshDealerTokenService,
   getDealerProfileService,
   updateDealerProfileService,
@@ -40,8 +41,8 @@ const useDealerStore = create(
         try {
           const res = await loginDealerService(credentials);
           if (res.success) {
-
-            localStorage.setItem("dealerToken", res.token);
+            // ✅ store as "token" – matches the interceptor
+            localStorage.setItem("token", res.token);
 
             set({
               token: res.token,
@@ -52,9 +53,7 @@ const useDealerStore = create(
             });
 
             return { success: true };
-          }
-
-          else {
+          } else {
             set({ isLoading: false, error: res.message });
             return { success: false, error: res.message };
           }
@@ -64,25 +63,32 @@ const useDealerStore = create(
         }
       },
 
-    logout: async () => {
-    try {
-        await logoutDealerService();
-    } catch (e) {}
+      // ── logout – unified (removes 'token') ──
+      logout: async () => {
+        try {
+          await logoutDealerService();
+        } catch (e) {
+          // ignore errors on logout
+        }
 
-    localStorage.removeItem("dealerToken");
+        // ✅ remove the key used by the interceptor
+        localStorage.removeItem("token");
 
-    set({
-        token: null,
-        dealer: null,
-        isAuthenticated: false,
-        dashboard: null,
-    });
-},
+        set({
+          token: null,
+          dealer: null,
+          isAuthenticated: false,
+          dashboard: null,
+        });
+      },
 
+      // ── refreshToken – now also updates localStorage ──
       refreshToken: async () => {
         try {
           const res = await refreshDealerTokenService();
           if (res.success) {
+            // ✅ keep localStorage in sync
+            localStorage.setItem("token", res.token);
             set({ token: res.token });
             return { success: true };
           }
@@ -234,6 +240,7 @@ const useDealerStore = create(
           return { success: false, error: error.message };
         }
       },
+
       register: async (data) => {
         set({ isLoading: true, error: null });
         try {
@@ -266,7 +273,7 @@ const useDealerStore = create(
       },
     }),
     {
-      name: "dealer-storage", // persists in localStorage
+      name: "dealer-storage",
       partialize: (state) => ({
         token: state.token,
         dealer: state.dealer,
