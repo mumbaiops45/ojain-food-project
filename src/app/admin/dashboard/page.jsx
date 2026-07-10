@@ -292,16 +292,16 @@ export default function DashboardPage() {
       iconColor: "#2E7D32",
       href: "/admin/users",
     },
-    {
-      icon: GiChefToque,
-      label: "Total Vendors",
-      value: stats.totalVendors,
-      sublabel: "Onboarded vendors",
-      bg: "#FFF8E1",
-      iconColor: "#FF8F00",
-      valueColor: "#FF8F00",
-      href: "/admin/vendorList",
-    },
+    // {
+    //   icon: GiChefToque,
+    //   label: "Total Vendors",
+    //   value: stats.totalVendors,
+    //   sublabel: "Onboarded vendors",
+    //   bg: "#FFF8E1",
+    //   iconColor: "#FF8F00",
+    //   valueColor: "#FF8F00",
+    //   href: "/admin/vendorList",
+    // },
     {
       icon: MdRestaurantMenu,
       label: "Total Products",
@@ -333,13 +333,13 @@ export default function DashboardPage() {
     },
     {
       icon: MdPendingActions,
-      label: "Pending Vendors",
-      value: stats.pendingVendors,
+      label: "Pending Dealers",
+      value: stats.pendingDealers,
       sublabel: "Awaiting approval",
       bg: "#FFF8E1",
       iconColor: "#E65100",
       valueColor: "#E65100",
-      href: "/admin/vendorList",
+      href: "/admin/dealers",
     },
   ];
 
@@ -415,7 +415,7 @@ export default function DashboardPage() {
           </span>
           {[
             { label: "Orders", href: "/admin/orders", icon: FaShoppingCart, color: "#FF8F00", bg: "#FFF8E1" },
-            { label: "Vendors", href: "/admin/vendorList", icon: GiChefToque, color: "#66BB6A", bg: "#EBF5E9" },
+            { label: "Dealers", href: "/admin/dealers", icon: GiChefToque, color: "#66BB6A", bg: "#EBF5E9" },
             { label: "Products", href: "/admin/approve-products", icon: MdRestaurantMenu, color: "#42A5F5", bg: "#E3F2FD" },
             { label: "Users", href: "/admin/users", icon: FaUsers, color: "#AB47BC", bg: "#F3E5F5" },
           ].map((a) => (
@@ -659,7 +659,7 @@ export default function DashboardPage() {
         )}
       </Section>
       {/* ── Top Dealers ───────────────────────────────────── */}
-      <Section
+      {/* <Section
         title="Top Dealers"
         subtitle="Dealers generating highest sales & commission"
       >
@@ -710,7 +710,7 @@ export default function DashboardPage() {
             </table>
           </div>
         )}
-      </Section>
+      </Section> */}
 
       {/* ── Platform Summary Footer ──────────────────────────── */}
       <div
