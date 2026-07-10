@@ -2301,7 +2301,7 @@ function Navbar() {
 
           {/* ── DESKTOP CATEGORY STRIP ── */}
           {/* ── DESKTOP CATEGORY STRIP ── */}
-          <div className="hidden md:block border-t border-gray-100 py-4 overflow-hidden relative">
+          {/* <div className="hidden md:block border-t border-gray-100 py-4 overflow-hidden relative">
             {categories.length === 0 && (
               <div className="flex items-center gap-6 px-4">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -2316,28 +2316,24 @@ function Navbar() {
               <div className="animate-marquee flex items-center gap-6 w-max px-4">
                 {[...categories, ...categories].map((cat, idx) => (
                   <Link
-                    key={idx}
+                    key={`${cat._id || cat.name}-${idx}`}
                     href={`/category/${toSlug(cat.name)}`}
                     tabIndex={idx >= categories.length ? -1 : 0}
                     aria-hidden={idx >= categories.length}
-                    className="group flex flex-col items-center gap-2 transition-all duration-300 w-24"
+                    className="group flex-shrink-0"
                   >
-                    {/* ── Image container ── */}
-                    <div className="w-20 h-20 rounded-none overflow-hidden bg-white border-2 border-brand-green/20 shadow-md flex items-center justify-center group-hover:border-brand-green group-hover:scale-105 transition-all duration-300">
+                    <div className="w-28 h-28 rounded-full overflow-hidden bg-black border-4 border-brand-green/80 shadow-md flex items-center justify-center transition-all duration-300 group-hover:border-brand-green group-hover:scale-105">
                       <img
                         src={getImageUrl(cat.image) || "/category1.jpg"}
                         alt={cat.name}
-                        className="w-full h-full object-contain object-center transition-all duration-300 group-hover:scale-110"
+                        className="w-full h-full object-contain object-center"
                       />
                     </div>
-                    <span className="text-[13px] font-semibold text-gray-700 group-hover:text-brand-green text-center line-clamp-1 max-w-[90px]">
-                      {cat.name}
-                    </span>
                   </Link>
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* ── MOBILE SEARCH ── */}
@@ -2364,7 +2360,7 @@ function Navbar() {
         </div>
 
         {/* ── MOBILE CATEGORY STRIP ── */}
-        <div className="md:hidden overflow-hidden pb-3 border-t border-gray-100 pt-2">
+        {/* <div className="md:hidden overflow-hidden pb-3 border-t border-gray-100 pt-2">
           {categories.length === 0 && (
             <div className="flex items-center gap-4 px-4">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -2403,7 +2399,7 @@ function Navbar() {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* ── MOBILE MENU PANEL ── */}
         {mobileOpen && (

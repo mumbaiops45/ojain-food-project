@@ -42,7 +42,7 @@ const useDealerStore = create(
           const res = await loginDealerService(credentials);
           if (res.success) {
             // ✅ store as "token" – matches the interceptor
-            localStorage.setItem("token", res.token);
+            localStorage.setItem("dealerToken", res.token);
 
             set({
               token: res.token,
@@ -72,7 +72,7 @@ const useDealerStore = create(
         }
 
         // ✅ remove the key used by the interceptor
-        localStorage.removeItem("token");
+        localStorage.removeItem("dealerToken");
 
         set({
           token: null,
@@ -88,7 +88,7 @@ const useDealerStore = create(
           const res = await refreshDealerTokenService();
           if (res.success) {
             // ✅ keep localStorage in sync
-            localStorage.setItem("token", res.token);
+            localStorage.setItem("dealerToken", res.token);
             set({ token: res.token });
             return { success: true };
           }

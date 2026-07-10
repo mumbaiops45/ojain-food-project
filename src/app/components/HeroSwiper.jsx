@@ -1175,7 +1175,7 @@ const banners = [
   {
     src: "/02.jpeg",
     alt: "50% Off on First Order",
-    link: "/offers",
+    link: "/",
   },
   {
     src: "/03.jpeg",
@@ -1272,7 +1272,7 @@ export default function HeroSwiper() {
       <div
         className="relative w-full overflow-hidden bg-gray-100 swiper-container"
         style={{
-          height: "clamp(180px, 25vw, 400px)",
+          height: "clamp(280px, 25vw, 400px)",
         }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}

@@ -181,7 +181,20 @@ export default function ClientLayout({ children }) {
   return (
     <AuthProvider>
       <RouteProgressBar />
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-center"
+        containerStyle={{ zIndex: 99999 }}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#fff",
+            color: "#333",
+            padding: "16px 24px",
+            borderRadius: "12px",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+          },
+        }}
+      />
       {!hideLayout && <Navbar />}
       <main>{children}</main>
       {!hideLayout && pathname !== "/wishlist" && !pathname.startsWith("/category/") && <Footer />}
