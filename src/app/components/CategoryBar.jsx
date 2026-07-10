@@ -28,7 +28,7 @@ function CategoryCard({ cat, index }) {
         style={{ background: "#0b160d" }}
       >
         {/* Image */}
-        <div className="relative w-full h-40 md:h-44 overflow-hidden">
+        <div className="relative w-full h-44 md:h-52 overflow-hidden">
 
           {!loaded && (
             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 animate-pulse" />
