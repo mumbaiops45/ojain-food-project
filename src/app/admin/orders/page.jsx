@@ -30,13 +30,13 @@ const STATUS_OPTIONS = [
 
 const statusStyle = (s) => {
   const map = {
-    Placed:            { bg: "#EBF5E9", color: "#2E7D32",  border: "#A5D6A7" },
-    Processing:        { bg: "#FFF8E1", color: "#E65100",  border: "#FFD54F" },
-    Packed:            { bg: "#E3F2FD", color: "#1565C0",  border: "#90CAF9" },
-    Shipped:           { bg: "#F3E5F5", color: "#6A1B9A",  border: "#CE93D8" },
-    "Out for Delivery":{ bg: "#FFF3E0", color: "#BF360C",  border: "#FFCC02" },
-    Delivered:         { bg: "#E8F5E9", color: "#1B5E20",  border: "#66BB6A" },
-    Cancelled:         { bg: "#FFEBEE", color: "#B71C1C",  border: "#EF9A9A" },
+    Placed: { bg: "#EBF5E9", color: "#2E7D32", border: "#A5D6A7" },
+    Processing: { bg: "#FFF8E1", color: "#E65100", border: "#FFD54F" },
+    Packed: { bg: "#E3F2FD", color: "#1565C0", border: "#90CAF9" },
+    Shipped: { bg: "#F3E5F5", color: "#6A1B9A", border: "#CE93D8" },
+    "Out for Delivery": { bg: "#FFF3E0", color: "#BF360C", border: "#FFCC02" },
+    Delivered: { bg: "#E8F5E9", color: "#1B5E20", border: "#66BB6A" },
+    Cancelled: { bg: "#FFEBEE", color: "#B71C1C", border: "#EF9A9A" },
   };
   return map[s] || { bg: "#F0F7F0", color: "#2E7D32", border: "#C8E6C9" };
 };
@@ -95,11 +95,11 @@ const StatCard = ({ icon: Icon, label, value, bg, iconColor, valueColor }) => (
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────
 export default function AdminOrdersPage() {
-  const [orders, setOrders]   = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState("");
+  const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [deletingId, setDeletingId]     = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   // ── Fetch ──────────────────────────────────────────────────
   const fetchOrders = async () => {
@@ -145,13 +145,20 @@ export default function AdminOrdersPage() {
 
   // ── Derived stats ──────────────────────────────────────────
   const totalRevenue = orders.reduce((s, o) => s + (o.totalAmount || 0), 0);
-  const paidCount    = orders.filter((o) => o.paymentStatus === "Paid").length;
+  const paidCount = orders.filter((o) => o.paymentStatus === "Paid").length;
   const deliveredCount = orders.filter((o) => o.orderStatus === "Delivered").length;
   const cancelledCount = orders.filter((o) => o.orderStatus === "Cancelled").length;
 
   // ── Filter ─────────────────────────────────────────────────
+  // ── Filter + SORT (newest first) ──────────────────────────
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    // 1. Sort by createdAt descending (latest first)
+    const sorted = [...orders].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    // 2. Apply search and status filters
+    return sorted.filter((order) => {
       const keyword = search.toLowerCase();
       const matchSearch =
         order.user?.name?.toLowerCase().includes(keyword) ||
