@@ -120,3 +120,6 @@ export const unapproveDealer = (id) =>
 
 export const rejectDealer = (id) =>
   api.delete(`/api/admin/dealers/${id}/reject`);
+
+export const getAllDealers = () =>
+  api.get("/api/admin/dealers");

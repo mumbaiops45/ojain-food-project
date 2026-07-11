@@ -270,7 +270,8 @@ export default function DashboardPage() {
   const stats = dashboard?.stats || {};
   const recentOrders = dashboard?.recentOrders || [];
   const recentUsers = dashboard?.recentUsers || [];
-  const recentVendors = dashboard?.recentVendors || [];
+  // const recentVendors = dashboard?.recentVendors || [];
+  const recentDealers = dashboard?.recentDealers || [];
   const topDealers = dashboard?.topDealers || [];
 
 
@@ -325,7 +326,7 @@ export default function DashboardPage() {
     {
       icon: FaChartLine,
       label: "Total Revenue",
-      value: stats.totalSales != null ? `₹${Number(stats.totalSales).toLocaleString("en-IN")}` : "—",
+      value: stats.totalRevenue != null ? `₹${Number(stats.totalRevenue).toLocaleString("en-IN")}` : "—",
       sublabel: "Gross sales",
       bg: "#E8F5E9",
       iconColor: "#1B5E20",
@@ -341,6 +342,16 @@ export default function DashboardPage() {
       valueColor: "#E65100",
       href: "/admin/dealers",
     },
+    {
+  icon: GiChefToque,
+  label: "Total Dealers",
+  value: stats.totalDealers,
+  sublabel: "All registered dealers",
+  bg: "#FFF8E1",
+  iconColor: "#FF8F00",
+  valueColor: "#FF8F00",
+  href: "/admin/dealers",
+},
   ];
 
   return (
@@ -393,7 +404,7 @@ export default function DashboardPage() {
             >
               <p className="text-xs font-medium" style={{ color: "#A5D6A7" }}>Total Revenue</p>
               <p className="text-3xl font-extrabold text-white mt-1">
-                ₹{Number(stats.totalSales || 0).toLocaleString("en-IN")}
+                ₹{Number(stats.totalRevenue || 0).toLocaleString("en-IN")}
               </p>
               <span
                 className="flex items-center gap-1 text-[10px] font-bold mt-1.5 px-2 py-0.5 rounded-full"
@@ -570,11 +581,12 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Recent Vendors ──────────────────────────────────── */}
+      {/* ── Recent Dealers ──────────────────────────────────── */}
       <Section
-        title="Recent Vendors"
-        subtitle="Newly registered vendor accounts"
-        href="/admin/vendorList"
-        linkLabel="All Vendors"
+        title="Recent Dealers"
+        subtitle="Newly registered dealer accounts"
+        href="/admin/dealers"
+        linkLabel="All Dealers"
       >
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -594,15 +606,15 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        ) : recentVendors.length === 0 ? (
-          <EmptyState icon={<GiChefToque />} message="No recent vendors" />
+        ) : recentDealers.length === 0 ? (
+          <EmptyState icon={<GiChefToque />} message="No recent dealers" />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {recentVendors.map((vendor, i) => {
+            {recentDealers.map((dealer, i) => {
               const [g1, g2] = grad(i + 1);
               return (
                 <div
-                  key={vendor._id}
+                  key={dealer._id}
                   className="flex items-center gap-3 p-4 rounded-xl border transition-all duration-200"
                   style={{
                     borderColor: "#E8F5E9",
@@ -624,17 +636,17 @@ export default function DashboardPage() {
                     className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base shrink-0"
                     style={{ background: `linear-gradient(135deg,${g1},${g2})` }}
                   >
-                    {initials(vendor.fullName)}
+                    {initials(dealer.fullName)}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm truncate" style={{ color: "#1B5E20" }}>
-                      {vendor.fullName || "—"}
+                      {dealer.fullName || "—"}
                     </p>
                     <p className="text-xs truncate flex items-center gap-1 mt-0.5" style={{ color: "#81C784" }}>
                       <MdStorefront className="text-sm shrink-0" />
-                      {vendor.shopName || "No shop name"}
+                      {dealer.dealerCode || "No code"}   {/* ← use dealerCode, not shopName */}
                     </p>
                   </div>
 
@@ -642,12 +654,12 @@ export default function DashboardPage() {
                   <span
                     className="text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 flex items-center gap-1"
                     style={
-                      vendor.isApproved
+                      dealer.isApproved
                         ? { background: "#EBF5E9", color: "#2E7D32" }
                         : { background: "#FFF8E1", color: "#E65100" }
                     }
                   >
-                    {vendor.isApproved
+                    {dealer.isApproved
                       ? <><MdCheckCircle className="text-sm" /> Approved</>
                       : <><MdPendingActions className="text-sm" /> Pending</>
                     }
@@ -729,7 +741,7 @@ export default function DashboardPage() {
         <div className="flex flex-wrap gap-4 text-xs" style={{ color: "#81C784" }}>
           {[
             { label: "Users", value: stats.totalUsers, color: "#2E7D32" },
-            { label: "Vendors", value: stats.totalVendors, color: "#FF8F00" },
+            { label: "Dealers", value: stats.totalDealers, color: "#FF8F00" },
             { label: "Products", value: stats.totalProducts, color: "#1565C0" },
             { label: "Orders", value: stats.totalOrders, color: "#6A1B9A" },
           ].map((s) => (

@@ -161,33 +161,22 @@ export const adminLoginService =
    DASHBOARD
 ========================================= */
 export const getDashboardStatsService = async () => {
-  const [dashRes, ordersRes, usersRes, vendorsRes] = await Promise.allSettled([
-    getDashboardStats().then((r) => r?.data ?? r),
-    getAllOrders().then((r) => r?.data ?? r),
-    getAllUsers().then((r) => r?.data ?? r),
-    getAllVendors().then((r) => r?.data ?? r),
-  ]);
-
-  const dash    = dashRes.status    === "fulfilled" ? (dashRes.value    ?? {}) : {};
-  const orders  = toArray(ordersRes.status  === "fulfilled" ? ordersRes.value  : null);
-  const users   = toArray(usersRes.status   === "fulfilled" ? usersRes.value   : null);
-  const vendors = toArray(vendorsRes.status === "fulfilled" ? vendorsRes.value : null);
-
-  const byDate = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
-
+  const res = await getDashboardStats();
+  const dash = res?.data ?? res;
+  const stats = dash.stats || {};
   return {
     stats: {
-      totalUsers:     dash.totalUsers    ?? users.length,
-      totalVendors:   dash.totalVendors  ?? vendors.filter((v) => v.isApproved).length,
-      totalProducts:  dash.totalProducts ?? 0,
-      totalOrders:    dash.totalOrders   ?? orders.length,
-      totalSales:     dash.totalRevenue  ?? 0,
-      pendingVendors: vendors.filter((v) => !v.isApproved).length,
+      totalUsers: stats.totalUsers || 0,
+      totalDealers: stats.totalDealers || 0,
+      pendingDealers: stats.pendingDealers || 0,
+      totalProducts: stats.totalProducts || 0,
+      totalOrders: stats.totalOrders || 0,
+      totalRevenue: stats.totalRevenue || 0,
     },
-    recentOrders:  [...orders].sort(byDate).slice(0, 5),
-    recentUsers:   [...users].sort(byDate).slice(0, 5),
-    recentVendors: [...vendors].sort(byDate).slice(0, 5),
-       topDealers:    dash.topDealers || [],
+    recentOrders: dash.recentOrders || [],
+    recentUsers: dash.recentUsers || [],
+    recentDealers: dash.recentDealers || [],
+    topDealers: dash.topDealers || [],
   };
 };
 
