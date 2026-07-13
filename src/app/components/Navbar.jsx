@@ -1931,7 +1931,14 @@ function Navbar() {
         closeModal();
         setTimeout(() => router.push("/vendor/dashboard"), 1000);
       } else {
-        toast.error(result.error || "Login failed");
+        toast.error(
+          result?.message ||
+          result?.error ||
+          "Login failed",
+          {
+            duration: 4000,
+          }
+        );
       }
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || "";
@@ -2003,7 +2010,14 @@ function Navbar() {
         closeModal();
         setTimeout(() => router.push("/"), 1200);
       } else {
-        toast.error(result.error || "Registration failed");
+        toast.error(
+          result?.message ||
+          result?.error ||
+          "Registration failed",
+          {
+            duration: 4000,
+          }
+        );
       }
     } catch (err) {
       toast.error(

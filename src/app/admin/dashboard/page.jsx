@@ -580,7 +580,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Recent Vendors ──────────────────────────────────── */}
       {/* ── Recent Dealers ──────────────────────────────────── */}
       <Section
         title="Recent Dealers"

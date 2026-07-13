@@ -37,11 +37,16 @@ const useDealerStore = create(
 
       // ── Auth Actions ──
       login: async (credentials) => {
-        set({ isLoading: true, error: null });
+        set({
+          isLoading: true,
+          error: null,
+        });
+
         try {
           const res = await loginDealerService(credentials);
+
           if (res.success) {
-            // ✅ store as "token" – matches the interceptor
+            // Save dealer token
             localStorage.setItem("dealerToken", res.token);
 
             set({
@@ -52,14 +57,49 @@ const useDealerStore = create(
               error: null,
             });
 
-            return { success: true };
-          } else {
-            set({ isLoading: false, error: res.message });
-            return { success: false, error: res.message };
+            return {
+              success: true,
+              message: res.message,
+            };
           }
+
+          // Handles success: false responses
+          const message =
+            res.message ||
+            res.error ||
+            "Dealer login failed";
+
+          set({
+            isLoading: false,
+            error: message,
+          });
+
+          return {
+            success: false,
+            message,
+          };
         } catch (error) {
-          set({ isLoading: false, error: error.message });
-          return { success: false, error: error.message };
+          // Get the actual message sent by the backend
+          const message =
+            error?.response?.data?.message ||
+            error?.response?.data?.error ||
+            error?.message ||
+            "Dealer login failed";
+
+          console.log(
+            "Dealer login error:",
+            error?.response?.data
+          );
+
+          set({
+            isLoading: false,
+            error: message,
+          });
+
+          return {
+            success: false,
+            message,
+          };
         }
       },
 
@@ -242,19 +282,65 @@ const useDealerStore = create(
       },
 
       register: async (data) => {
-        set({ isLoading: true, error: null });
+        set({
+          isLoading: true,
+          error: null,
+        });
+
         try {
           const res = await registerDealerService(data);
-          if (res.success) {
-            set({ isLoading: false });
-            return { success: true };
-          } else {
-            set({ isLoading: false, error: res.message });
-            return { success: false, error: res.message };
+
+          if (res?.success) {
+            set({
+              isLoading: false,
+              error: null,
+            });
+
+            return {
+              success: true,
+              message:
+                res?.message ||
+                "Dealer account registered successfully.",
+            };
           }
+
+          // Handles API response with success: false
+          const message =
+            res?.message ||
+            res?.error ||
+            "Dealer registration failed";
+
+          set({
+            isLoading: false,
+            error: message,
+          });
+
+          return {
+            success: false,
+            message,
+          };
         } catch (error) {
-          set({ isLoading: false, error: error.message });
-          return { success: false, error: error.message };
+          // Gets actual backend error message
+          const message =
+            error?.response?.data?.message ||
+            error?.response?.data?.error ||
+            error?.message ||
+            "Dealer registration failed";
+
+          console.log(
+            "Dealer registration error:",
+            error?.response?.data
+          );
+
+          set({
+            isLoading: false,
+            error: message,
+          });
+
+          return {
+            success: false,
+            message,
+          };
         }
       },
 

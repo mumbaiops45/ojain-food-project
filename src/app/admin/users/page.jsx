@@ -205,14 +205,7 @@ export default function AdminUsersPage() {
           iconColor="#4527A0"
           valueColor="#4527A0"
         />
-        {/* <StatCard
-          icon={FaLeaf}
-          label="Vendors"
-          value={vendorCount}
-          bg="#FFF8E1"
-          iconColor="#FF8F00"
-          valueColor="#FF8F00"
-        /> */}
+       
         <StatCard
           icon={MdVerifiedUser}
           label="Customers"
